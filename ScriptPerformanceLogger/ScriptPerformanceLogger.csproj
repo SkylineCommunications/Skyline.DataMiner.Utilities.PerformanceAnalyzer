@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net462</TargetFramework>
+		<PlatformTarget>x86</PlatformTarget>
+		<CodeAnalysisRuleSet>style.ruleset</CodeAnalysisRuleSet>
+		<RootNamespace>Skyline.DataMiner.Utils.ScriptPerformanceLogger</RootNamespace>
+		<AssemblyName>Skyline.DataMiner.Utils.ScriptPerformanceLogger</AssemblyName>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Authors>SkylineCommunications</Authors>
+		<Company>Skyline Communications</Company>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>Icon.png</PackageIcon>
+		<PackageVersion>1.0.0</PackageVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="$(MSBuildProjectName)Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="stylecop.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\_NuGetItems\Icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\_NuGetItems\LICENSE.txt">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\_NuGetItems\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+	  <PackageReference Include="Skyline.DataMiner.Dev.Automation" Version="10.2.0.14" />
+	</ItemGroup>
+
+</Project>

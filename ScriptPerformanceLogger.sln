@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLogger", "ScriptPerformanceLogger\ScriptPerformanceLogger.csproj", "{67E87C89-E2BB-4F9D-9304-E3498EE07420}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptPerformanceLoggerTests", "ScriptPerformanceLoggerTests\ScriptPerformanceLoggerTests.csproj", "{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{67E87C89-E2BB-4F9D-9304-E3498EE07420}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67E87C89-E2BB-4F9D-9304-E3498EE07420}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67E87C89-E2BB-4F9D-9304-E3498EE07420}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67E87C89-E2BB-4F9D-9304-E3498EE07420}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3456BB63-B601-4DAB-95AD-6DD96866820C}
+	EndGlobalSection
+EndGlobal
