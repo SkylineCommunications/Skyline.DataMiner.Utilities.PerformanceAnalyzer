@@ -9,13 +9,15 @@
 
 	public class LogCreator
 	{
-		private MethodInvocation currentMethodInvocation;
+		private MethodInvocation runningMethodInvocation;
 
 		public Result Result { get; } = new Result();
 
 		public IDisposable StartDisposableMethodCallMetric(string className, string methodName)
 		{
-			return new DisposableCapture(this, className, methodName);
+			var disposable = new DisposableCapture(this);
+			StartMethodCallMetric(className, methodName);
+			return disposable;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
@@ -23,24 +25,27 @@
 		{
 			MethodBase methodBase = new StackTrace().GetFrame(1).GetMethod();
 			string className = methodBase.ReflectedType?.FullName;
-			return new DisposableCapture(this, className, methodBase.Name);
+			var disposable = new DisposableCapture(this);
+			StartMethodCallMetric(className, methodBase.Name);
+			return disposable;
 		}
 
-		private static List<MethodInvocation> FlattenMethodCallMetrics(IEnumerable<MethodInvocation> methodCallMetrics)
+		private static IEnumerable<MethodInvocation> GetInvocationsRecursive(IEnumerable<MethodInvocation> methodInvocations)
 		{
-			var flattenedMetrics = new List<MethodInvocation>();
-			foreach (MethodInvocation metric in methodCallMetrics)
+			foreach (MethodInvocation invocation in methodInvocations)
 			{
-				if (metric == null)
+				if (invocation == null)
 				{
 					continue;
 				}
 
-				flattenedMetrics.Add(metric);
-				flattenedMetrics.AddRange(FlattenMethodCallMetrics(metric.ChildInvocations));
-			}
+				yield return invocation;
 
-			return flattenedMetrics;
+				foreach (MethodInvocation methodInvocation in GetInvocationsRecursive(invocation.ChildInvocations))
+				{
+					yield return methodInvocation;
+				}
+			}
 		}
 
 		private void StartMethodCallMetric(string className, string methodName)
@@ -55,54 +60,46 @@
 				throw new ArgumentNullException(nameof(methodName));
 			}
 
-			var newMethodCallMetric = new MethodInvocation
-			{
-				ClassName = className,
-				MethodName = methodName,
-				TimeStamp = DateTime.Now,
-			};
+			var methodInvocation = new MethodInvocation(className, methodName, this);
 
-			if (currentMethodInvocation == null)
+			if (runningMethodInvocation == null)
 			{
-				Result.MethodInvocations.Add(newMethodCallMetric);
+				Result.MethodInvocations.Add(methodInvocation);
 			}
 			else
 			{
-				currentMethodInvocation.ChildInvocations.Add(newMethodCallMetric);
+				runningMethodInvocation.ChildInvocations.Add(methodInvocation);
 			}
 
-			currentMethodInvocation = newMethodCallMetric;
+			runningMethodInvocation = methodInvocation;
+			methodInvocation.Start();
 		}
 
-		private void CompleteMethodCallMetric(TimeSpan? executionTime)
+		private void CompleteMethodCallMetric()
 		{
-			currentMethodInvocation.ExecutionTime = executionTime ?? TimeSpan.Zero;
-			currentMethodInvocation = GetParentMethodCallMetric(currentMethodInvocation);
+			runningMethodInvocation.Stop();
+			runningMethodInvocation = GetParentMethodInvocation(runningMethodInvocation);
 		}
 
-		private MethodInvocation GetParentMethodCallMetric(MethodInvocation childMethodInvocation)
+		private MethodInvocation GetParentMethodInvocation(MethodInvocation methodInvocation)
 		{
-			var allMetrics = FlattenMethodCallMetrics(Result.MethodInvocations);
-
-			return allMetrics.SingleOrDefault(m => m.ChildInvocations.Contains(childMethodInvocation));
+			// todo could be optimised
+			IEnumerable<MethodInvocation> invocations = GetInvocationsRecursive(Result.MethodInvocations);
+			return invocations.SingleOrDefault(m => m.ChildInvocations.Contains(methodInvocation));
 		}
 
 		private class DisposableCapture : IDisposable
 		{
 			private readonly LogCreator logCreator;
-			private readonly Stopwatch stopwatch = new Stopwatch();
 
-			public DisposableCapture(LogCreator logCreator, string className, string methodName)
+			public DisposableCapture(LogCreator logCreator)
 			{
 				this.logCreator = logCreator;
-				logCreator.StartMethodCallMetric(className, methodName);
-				stopwatch.Start();
 			}
 
 			public void Dispose()
 			{
-				stopwatch.Stop();
-				logCreator.CompleteMethodCallMetric(stopwatch.Elapsed);
+				logCreator.CompleteMethodCallMetric();
 			}
 		}
 	}

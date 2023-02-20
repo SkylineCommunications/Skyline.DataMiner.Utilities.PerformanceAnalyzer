@@ -33,7 +33,7 @@
 
 		public static IDisposable Start(string className, string methodName)
 		{
-			return GetCreator().StartDisposableMethodCallMetric();
+			return GetCreator().StartDisposableMethodCallMetric(className, methodName);
 		}
 
 		/// <summary>
@@ -99,7 +99,7 @@
 					continue;
 				}
 
-				if ((methodInvocation.TimeStamp - utcNow.AddDays(1)).Duration() > TimeSpan.FromDays(1))
+				if ((utcNow - methodInvocation.TimeStamp) > TimeSpan.FromDays(1))
 				{
 					Storage.TryRemove(pair.Key, out _);
 				}
