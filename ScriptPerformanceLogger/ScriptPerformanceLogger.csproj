@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net462</TargetFramework>
-		<PlatformTarget>x86</PlatformTarget>
+		<PlatformTarget>anycpu</PlatformTarget>
 		<CodeAnalysisRuleSet>style.ruleset</CodeAnalysisRuleSet>
 		<RootNamespace>Skyline.DataMiner.Utils.ScriptPerformanceLogger</RootNamespace>
 		<AssemblyName>Skyline.DataMiner.Utils.ScriptPerformanceLogger</AssemblyName>
