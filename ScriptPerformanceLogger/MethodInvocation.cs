@@ -2,29 +2,29 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Linq;
 
 	using Newtonsoft.Json;
 
 	[Serializable]
 	public class MethodInvocation
 	{
-		private readonly Stopwatch stopwatch;
-		private MethodInvocation firstMethodInvocation;
-
 		[JsonConstructor]
 		private MethodInvocation()
 		{
 		}
 
-		public MethodInvocation(string className, string methodName, LogCreator logCreator)
+		internal MethodInvocation(string className, string methodName)
 		{
-			ClassName = className;
-			MethodName = methodName;
-			stopwatch = new Stopwatch();
+			ClassName = className ?? throw new ArgumentNullException(nameof(className));
+			MethodName = methodName ?? throw new ArgumentNullException(nameof(methodName));
+		}
 
-			firstMethodInvocation = logCreator.Result.MethodInvocations.FirstOrDefault();
+		public MethodInvocation(string className, string methodName, DateTime timeStamp, TimeSpan executionTime)
+		{
+			ClassName = className ?? throw new ArgumentNullException(nameof(className));
+			MethodName = methodName ?? throw new ArgumentNullException(nameof(methodName));
+			TimeStamp = timeStamp;
+			ExecutionTime = executionTime;
 		}
 
 		[JsonProperty(Order = 0)]
@@ -42,18 +42,10 @@
 		[JsonProperty(Order = 4)]
 		public List<MethodInvocation> ChildInvocations { get; private set; } = new List<MethodInvocation>();
 
-		public void Start()
+		internal void SetExecutionTime(DateTime timeStamp, TimeSpan executionTime)
 		{
-			TimeStamp = firstMethodInvocation == null
-				? DateTime.UtcNow
-				: firstMethodInvocation.TimeStamp.AddTicks(this.firstMethodInvocation.stopwatch.Elapsed.Ticks);
-
-			stopwatch.Start();
-		}
-
-		public void Stop()
-		{
-			ExecutionTime = stopwatch.Elapsed;
+			TimeStamp = timeStamp;
+			ExecutionTime = executionTime;
 		}
 	}
 }

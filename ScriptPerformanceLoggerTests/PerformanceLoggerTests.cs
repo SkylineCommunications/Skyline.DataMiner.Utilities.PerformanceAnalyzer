@@ -13,18 +13,38 @@
 	public class MetricCreatorTests
 	{
 		[TestMethod]
-		public void PerformanceLoggerTests()
+		public void PerformanceLoggerTests_Measurements()
 		{
 			// act
 			PerformanceLogger.SetProperty("Script Name", "MyTestScript");
 			PerformanceLogger.SetProperty("Start Time", DateTime.UtcNow.ToString("O"));
+
 			DoStuff();
-			Result result = PerformanceLogger.PerformCleanupAndReturn();
+
+			var result = PerformanceLogger.PerformCleanupAndReturn();
 
 			// assert
 			result.MethodInvocations.Should().HaveCount(1);
 			result.MethodInvocations.Single().MethodName.Should().Be(nameof(DoStuff));
 			result.MethodInvocations.Single().ChildInvocations.Single().MethodName.Should().Be(nameof(DoSomeStuff));
+		}
+
+		[TestMethod]
+		public void PerformanceLoggerTests_RegisterResult()
+		{
+			// act
+			PerformanceLogger.SetProperty("Script Name", "MyTestScript");
+			PerformanceLogger.SetProperty("Start Time", DateTime.UtcNow.ToString("O"));
+
+			PerformanceLogger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
+			PerformanceLogger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoSomeStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
+
+			var result = PerformanceLogger.PerformCleanupAndReturn();
+
+			// assert
+			result.MethodInvocations.Should().HaveCount(2);
+			result.MethodInvocations[0].MethodName.Should().Be(nameof(DoStuff));
+			result.MethodInvocations[1].MethodName.Should().Be(nameof(DoSomeStuff));
 		}
 
 		public void DoStuff()

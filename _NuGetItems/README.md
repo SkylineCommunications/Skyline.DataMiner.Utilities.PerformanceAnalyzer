@@ -22,3 +22,19 @@ public void MyMethod()
     }
 }
 ```
+
+Custom metrics can also be added to the result:
+```C#
+public void Run(Engine engine)
+{
+    try
+    {
+		PerformanceLogger.RegisterResult("MyClass", "MyMethod1", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
+		PerformanceLogger.RegisterResult("MyClass", "MyMethod2", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
+    }
+    finally
+    {
+        PerformanceLogger.PerformCleanUpAndStoreResult("MyScript");
+    }
+}
+```

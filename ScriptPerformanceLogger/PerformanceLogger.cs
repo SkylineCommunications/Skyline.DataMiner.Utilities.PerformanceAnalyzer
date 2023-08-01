@@ -1,39 +1,49 @@
 ﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger
 {
 	using System;
-	using System.Collections.Concurrent;
-	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.IO;
-	using System.Linq;
-	using System.Reflection;
 	using System.Runtime.CompilerServices;
 
 	using Newtonsoft.Json;
 
 	public static class PerformanceLogger
 	{
-		private static readonly ConcurrentDictionary<int, LogCreator> Storage =
-			new ConcurrentDictionary<int, LogCreator>();
+		const string DirectoryPath = @"C:\Skyline_Data\ScriptPerformanceLogger";
+
+		[ThreadStatic]
+		private static LogCreator _logCreator;
 
 		public static void SetProperty(string name, string value)
 		{
-			LogCreator logCreator = GetCreator();
+			var logCreator = GetCreator();
 			logCreator.Result.Properties[name] = value;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static IDisposable Start()
+		public static Measurement Start()
 		{
-			LogCreator creator = GetCreator();
-			MethodBase methodBase = new StackTrace().GetFrame(1).GetMethod();
-			string className = methodBase.ReflectedType?.FullName;
-			return creator.StartDisposableMethodCallMetric(className, methodBase.Name);
+			var methodBase = new StackTrace().GetFrame(1).GetMethod();
+			var className = methodBase.ReflectedType?.FullName;
+
+			return Start(className, methodBase.Name);
 		}
 
-		public static IDisposable Start(string className, string methodName)
+		public static Measurement Start(string className, string methodName)
 		{
-			return GetCreator().StartDisposableMethodCallMetric(className, methodName);
+			var logCreator = GetCreator();
+			return logCreator.StartMeasurement(className, methodName);
+		}
+
+		public static void RegisterResult(MethodInvocation methodInvocation)
+		{
+			var logCreator = GetCreator();
+			logCreator.RegisterResult(methodInvocation);
+		}
+
+		public static void RegisterResult(string className, string methodName, DateTime timeStamp, TimeSpan executionTime)
+		{
+			RegisterResult(new MethodInvocation(className, methodName, timeStamp, executionTime));
 		}
 
 		/// <summary>
@@ -44,7 +54,7 @@
 		/// <exception cref="SystemException">When writing the file fails.</exception>
 		public static void PerformCleanUpAndStoreResult(string title)
 		{
-			Result result = PerformCleanupAndReturn();
+			var result = PerformCleanupAndReturn();
 			if (result == null)
 			{
 				return;
@@ -55,21 +65,22 @@
 
 		internal static Result PerformCleanupAndReturn()
 		{
-			if (!TryPerformCleanup(out LogCreator creator))
-			{
-				return null;
-			}
+			var result = _logCreator?.Result;
 
-			return creator.Result;
+			_logCreator = null;
+
+			return result;
 		}
 
 		private static void Store(Result result, string title)
 		{
 			// todo get rid of old results?
-			const string DirectoryPath = @"C:\Skyline_Data\ScriptPerformanceLogger";
+
 			Directory.CreateDirectory(DirectoryPath);
-			var fileName = $"{DateTime.UtcNow.ToString("yyyy-MM-dd hh-mm-ss.fff ")}_{Path.ChangeExtension(title ?? "Untitled", "json")}";
-			using (StreamWriter fileStream = File.CreateText(Path.Combine(DirectoryPath, fileName)))
+
+			var fileName = $"{DateTime.UtcNow:yyyy-MM-dd hh-mm-ss.fff}_{title ?? "Untitled"}.json";
+
+			using (var fileStream = File.CreateText(Path.Combine(DirectoryPath, fileName)))
 			{
 				var jsonSerializer = new JsonSerializer
 				{
@@ -82,40 +93,9 @@
 			}
 		}
 
-		private static bool TryPerformCleanup(out LogCreator creator)
-		{
-			GetRidOfDayOldMetrics();
-			return Storage.TryRemove(Environment.CurrentManagedThreadId, out creator);
-		}
-
-		private static void GetRidOfDayOldMetrics()
-		{
-			DateTime utcNow = DateTime.UtcNow;
-			foreach (KeyValuePair<int, LogCreator> pair in Storage.ToArray())
-			{
-				MethodInvocation methodInvocation = pair.Value.Result.MethodInvocations.FirstOrDefault();
-				if (methodInvocation == null)
-				{
-					continue;
-				}
-
-				if ((utcNow - methodInvocation.TimeStamp) > TimeSpan.FromDays(1))
-				{
-					Storage.TryRemove(pair.Key, out _);
-				}
-			}
-		}
-
 		private static LogCreator GetCreator()
 		{
-			int threadId = Environment.CurrentManagedThreadId;
-			if (!Storage.TryGetValue(threadId, out LogCreator creator))
-			{
-				creator = new LogCreator();
-				Storage.TryAdd(threadId, creator);
-			}
-
-			return creator;
+			return _logCreator ?? (_logCreator = new LogCreator());
 		}
 	}
 }

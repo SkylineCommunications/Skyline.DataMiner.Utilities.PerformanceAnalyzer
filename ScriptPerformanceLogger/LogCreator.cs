@@ -2,104 +2,56 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Linq;
-	using System.Reflection;
-	using System.Runtime.CompilerServices;
 
 	public class LogCreator
 	{
-		private MethodInvocation runningMethodInvocation;
+		private readonly Stack<MethodInvocation> _runningMethods = new Stack<MethodInvocation>();
 
 		public Result Result { get; } = new Result();
 
-		public IDisposable StartDisposableMethodCallMetric(string className, string methodName)
+		public void RegisterResult(MethodInvocation methodInvocation)
 		{
-			var disposable = new DisposableCapture(this);
-			StartMethodCallMetric(className, methodName);
-			return disposable;
+			if (methodInvocation == null) throw new ArgumentNullException(nameof(methodInvocation));
+
+			Result.MethodInvocations.Add(methodInvocation);
 		}
 
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		public IDisposable StartDisposableMethodCallMetric()
+		public Measurement StartMeasurement(string className, string methodName)
 		{
-			MethodBase methodBase = new StackTrace().GetFrame(1).GetMethod();
-			string className = methodBase.ReflectedType?.FullName;
-			var disposable = new DisposableCapture(this);
-			StartMethodCallMetric(className, methodBase.Name);
-			return disposable;
+			var invocation = StartMethodCallMetric(className, methodName);
+			var measurement = new Measurement(this, invocation);
+
+			return measurement;
 		}
 
-		private static IEnumerable<MethodInvocation> GetInvocationsRecursive(IEnumerable<MethodInvocation> methodInvocations)
+		private MethodInvocation StartMethodCallMetric(string className, string methodName)
 		{
-			foreach (MethodInvocation invocation in methodInvocations)
+			var invocation = new MethodInvocation(className, methodName);
+
+			if (_runningMethods.Count > 0)
 			{
-				if (invocation == null)
-				{
-					continue;
-				}
-
-				yield return invocation;
-
-				foreach (MethodInvocation methodInvocation in GetInvocationsRecursive(invocation.ChildInvocations))
-				{
-					yield return methodInvocation;
-				}
+				_runningMethods.Peek().ChildInvocations.Add(invocation);
 			}
+
+			_runningMethods.Push(invocation);
+
+			return invocation;
 		}
 
-		private void StartMethodCallMetric(string className, string methodName)
+		internal void CompleteMethodCallMetric(Measurement measurement)
 		{
-			if (String.IsNullOrWhiteSpace(className))
+			var runningMethodInvocation = _runningMethods.Pop();
+
+			if (runningMethodInvocation != measurement.Invocation)
 			{
-				throw new ArgumentNullException(nameof(className));
+				throw new InvalidOperationException("Result of incorrect invocation received!");
 			}
 
-			if (String.IsNullOrWhiteSpace(methodName))
+			runningMethodInvocation.SetExecutionTime(measurement.StartTime, measurement.Elapsed);
+
+			if (_runningMethods.Count == 0)
 			{
-				throw new ArgumentNullException(nameof(methodName));
-			}
-
-			var methodInvocation = new MethodInvocation(className, methodName, this);
-
-			if (runningMethodInvocation == null)
-			{
-				Result.MethodInvocations.Add(methodInvocation);
-			}
-			else
-			{
-				runningMethodInvocation.ChildInvocations.Add(methodInvocation);
-			}
-
-			runningMethodInvocation = methodInvocation;
-			methodInvocation.Start();
-		}
-
-		private void CompleteMethodCallMetric()
-		{
-			runningMethodInvocation.Stop();
-			runningMethodInvocation = GetParentMethodInvocation(runningMethodInvocation);
-		}
-
-		private MethodInvocation GetParentMethodInvocation(MethodInvocation methodInvocation)
-		{
-			// todo could be optimised
-			IEnumerable<MethodInvocation> invocations = GetInvocationsRecursive(Result.MethodInvocations);
-			return invocations.SingleOrDefault(m => m.ChildInvocations.Contains(methodInvocation));
-		}
-
-		private class DisposableCapture : IDisposable
-		{
-			private readonly LogCreator logCreator;
-
-			public DisposableCapture(LogCreator logCreator)
-			{
-				this.logCreator = logCreator;
-			}
-
-			public void Dispose()
-			{
-				logCreator.CompleteMethodCallMetric();
+				RegisterResult(runningMethodInvocation);
 			}
 		}
 	}
