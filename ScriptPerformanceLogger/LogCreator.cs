@@ -2,6 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Threading;
 
 	public class LogCreator
 	{
@@ -13,7 +14,14 @@
 		{
 			if (methodInvocation == null) throw new ArgumentNullException(nameof(methodInvocation));
 
-			Result.MethodInvocations.Add(methodInvocation);
+			if (_runningMethods.Count > 0)
+			{
+				_runningMethods.Peek().ChildInvocations.Add(methodInvocation);
+			}
+			else
+			{
+				Result.MethodInvocations.Add(methodInvocation);
+			}
 		}
 
 		public Measurement StartMeasurement(string className, string methodName)
@@ -46,8 +54,6 @@
 			{
 				throw new InvalidOperationException("Result of incorrect invocation received!");
 			}
-
-			runningMethodInvocation.SetExecutionTime(measurement.StartTime, measurement.Elapsed);
 
 			if (_runningMethods.Count == 0)
 			{

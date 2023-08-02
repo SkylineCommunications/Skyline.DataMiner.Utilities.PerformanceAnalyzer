@@ -29,6 +29,8 @@
 		{
 			_stopwatch.Stop();
 
+			Invocation.SetExecutionTime(StartTime, Elapsed);
+
 			_logCreator.CompleteMethodCallMetric(this);
 		}
 	}
