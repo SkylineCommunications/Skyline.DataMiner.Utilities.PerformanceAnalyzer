@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>net462</TargetFramework>
 		<PlatformTarget>anycpu</PlatformTarget>
@@ -14,6 +13,10 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>Icon.png</PackageIcon>
 		<PackageVersion>1.0.0</PackageVersion>
+		<Description>This is used to log the performance of DataMiner automation scripts.</Description>
+		<PackageProjectUrl>https://github.com/SkylineCommunications/Skyline.DataMiner.Utils.ScriptPerformanceLogger</PackageProjectUrl>
+		<PackageTags>Skyline;DataMiner</PackageTags>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -25,29 +28,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\_NuGetItems\Icon.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="..\_NuGetItems\LICENSE.txt">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="..\_NuGetItems\README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
+		<None Include="..\README.md" Pack="true" PackagePath="" />
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="" />
+		<None Include="..\nuget\Icon.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	  <PackageReference Include="Skyline.DataMiner.Dev.Automation" Version="10.2.0.14" />
+	  <PackageReference Include="Skyline.DataMiner.Dev.Automation" Version="10.3.10" />
 	</ItemGroup>
 
 </Project>
