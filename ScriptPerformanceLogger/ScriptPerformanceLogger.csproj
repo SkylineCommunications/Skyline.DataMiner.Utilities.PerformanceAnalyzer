@@ -2,9 +2,11 @@
 	<PropertyGroup>
 		<TargetFramework>net462</TargetFramework>
 		<PlatformTarget>anycpu</PlatformTarget>
-		<CodeAnalysisRuleSet>style.ruleset</CodeAnalysisRuleSet>
+		<CodeAnalysisRuleSet>..\Internal\Code Analysis\debug.ruleset</CodeAnalysisRuleSet>
+		<IsPackable>True</IsPackable>
 		<RootNamespace>Skyline.DataMiner.Utils.ScriptPerformanceLogger</RootNamespace>
 		<AssemblyName>Skyline.DataMiner.Utils.ScriptPerformanceLogger</AssemblyName>
+		<Description>This is used to log the performance of DataMiner automation scripts.</Description>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>SkylineCommunications</Authors>
@@ -13,7 +15,6 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>Icon.png</PackageIcon>
 		<PackageVersion>1.0.0</PackageVersion>
-		<Description>This is used to log the performance of DataMiner automation scripts.</Description>
 		<PackageProjectUrl>https://github.com/SkylineCommunications/Skyline.DataMiner.Utils.ScriptPerformanceLogger</PackageProjectUrl>
 		<PackageTags>Skyline;DataMiner</PackageTags>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
@@ -21,10 +22,6 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(MSBuildProjectName)Tests" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="stylecop.json" />
 	</ItemGroup>
 
 	<ItemGroup>

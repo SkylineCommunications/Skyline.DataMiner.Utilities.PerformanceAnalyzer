@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="QActions - Debug" Description="This rule set is to be used for QActions in debug mode." ToolsVersion="15.0">
+<RuleSet Name="Flow Engineering - Debug" Description="This rule set is to be used for Flow Engineering in debug mode." ToolsVersion="17.0">
   <Include Path="allrules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
     <Rule Id="CS1587" Action="None" />
@@ -309,47 +309,46 @@
     <Rule Id="S927" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
-<!--    <Rule Id="SA1600" Action="None" />-->
-    <Rule Id="SA1601" Action="None" />
-    <Rule Id="SA1602" Action="None" />
-    <Rule Id="SA1609" Action="None" />
-    <Rule Id="SA1610" Action="None" />
-    <Rule Id="SA1633" Action="None" />
-    <Rule Id="SA1634" Action="None" />
-    <Rule Id="SA1635" Action="None" />
-    <Rule Id="SA1637" Action="None" />
-    <Rule Id="SA1636" Action="None" />
-    <Rule Id="SA1639" Action="None" />
-    <Rule Id="SA1640" Action="None" />
-    <Rule Id="SA1641" Action="None" />
-    <Rule Id="SA1638" Action="None"/>
-    <Rule Id="SA1649" Action="None"/>
-    <Rule Id="SA1503" Action="None"/>
-    <Rule Id="SA1402" Action="None"/>
-    <Rule Id="SA1403" Action="None"/>
-    <Rule Id="SA1309" Action="None"/>
-    <Rule Id="SA1310" Action="None"/>
-    <Rule Id="SA1101" Action="None"/>
-    <Rule Id="SA1123" Action="None"/>
-    <Rule Id="SA1124" Action="None"/>
-    <Rule Id="SA1127" Action="None"/>
-    <Rule Id="SA1128" Action="None"/>
-    <Rule Id="SA1121" Action="None"/>
-    <Rule Id="SA1000" Action="None"/>
-    <Rule Id="SA1001" Action="None"/>
-    <Rule Id="SA1003" Action="None"/>
-    <Rule Id="SA1008" Action="None"/>
-    <Rule Id="SA1009" Action="None"/>
-    <Rule Id="SA1010" Action="None"/>
-    <Rule Id="SA1011" Action="None"/>
-    <Rule Id="SA1012" Action="None"/>
-    <Rule Id="SA1013" Action="None"/>
+    <Rule Id="SA1000" Action="None" />
+    <Rule Id="SA1001" Action="None" />
+    <Rule Id="SA1003" Action="None" />
+    <Rule Id="SA1008" Action="None" />
+    <Rule Id="SA1009" Action="None" />
+    <Rule Id="SA1010" Action="None" />
+    <Rule Id="SA1011" Action="None" />
+    <Rule Id="SA1012" Action="None" />
+    <Rule Id="SA1013" Action="None" />
     <Rule Id="SA1014" Action="None" />
     <Rule Id="SA1015" Action="None" />
     <Rule Id="SA1016" Action="None" />
     <Rule Id="SA1017" Action="None" />
     <Rule Id="SA1018" Action="None" />
     <Rule Id="SA1027" Action="None" />
+    <Rule Id="SA1101" Action="None" />
+    <Rule Id="SA1121" Action="None" />
+    <Rule Id="SA1123" Action="None" />
+    <Rule Id="SA1124" Action="None" />
+    <Rule Id="SA1127" Action="None" />
+    <Rule Id="SA1128" Action="None" />
     <Rule Id="SA1305" Action="Warning" />
+    <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1310" Action="None" />
+    <Rule Id="SA1402" Action="None" />
+    <Rule Id="SA1403" Action="None" />
+    <Rule Id="SA1413" Action="None" />
+    <Rule Id="SA1503" Action="None" />
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1601" Action="None" />
+    <Rule Id="SA1602" Action="None" />
+    <Rule Id="SA1610" Action="None" />
+    <Rule Id="SA1633" Action="None" />
+    <Rule Id="SA1634" Action="None" />
+    <Rule Id="SA1635" Action="None" />
+    <Rule Id="SA1636" Action="None" />
+    <Rule Id="SA1637" Action="None" />
+    <Rule Id="SA1638" Action="None" />
+    <Rule Id="SA1640" Action="None" />
+    <Rule Id="SA1641" Action="None" />
+    <Rule Id="SA1649" Action="None" />
   </Rules>
 </RuleSet>
