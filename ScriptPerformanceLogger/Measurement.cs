@@ -5,13 +5,12 @@
 
 	public class Measurement : IDisposable
 	{
-		private readonly LogCreator _logCreator;
-
+		private readonly PerformanceLogger _logger;
 		private readonly Stopwatch _stopwatch;
 
-		internal Measurement(LogCreator logCreator, MethodInvocation invocation)
+		internal Measurement(PerformanceLogger logger, MethodInvocation invocation)
 		{
-			_logCreator = logCreator ?? throw new ArgumentNullException(nameof(logCreator));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
 			Invocation = invocation ?? throw new ArgumentNullException(nameof(invocation));
 
@@ -31,7 +30,7 @@
 
 			Invocation.SetExecutionTime(StartTime, Elapsed);
 
-			_logCreator.CompleteMethodCallMetric(this);
+			_logger.CompleteMethodCallMetric(this);
 		}
 	}
 }

@@ -15,13 +15,15 @@
 		[TestMethod]
 		public void PerformanceLoggerTests_Measurements()
 		{
+			var logger = new PerformanceLogger();
+
 			// act
-			PerformanceLogger.SetProperty("Script Name", "MyTestScript");
-			PerformanceLogger.SetProperty("Start Time", DateTime.UtcNow.ToString("O"));
+			logger.SetProperty("Script Name", "MyTestScript");
+			logger.SetProperty("Start Time", DateTime.UtcNow.ToString("O"));
 
-			DoStuff();
+			DoStuff(logger);
 
-			var result = PerformanceLogger.PerformCleanupAndReturn();
+			var result = logger.PerformCleanupAndReturn();
 
 			// assert
 			result.MethodInvocations.Should().HaveCount(1);
@@ -32,14 +34,16 @@
 		[TestMethod]
 		public void PerformanceLoggerTests_RegisterResult()
 		{
+			var logger = new PerformanceLogger();
+
 			// act
-			PerformanceLogger.SetProperty("Script Name", "MyTestScript");
-			PerformanceLogger.SetProperty("Start Time", DateTime.UtcNow.ToString("O"));
+			logger.SetProperty("Script Name", "MyTestScript");
+			logger.SetProperty("Start Time", DateTime.UtcNow.ToString("O"));
 
-			PerformanceLogger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
-			PerformanceLogger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoSomeStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
+			logger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
+			logger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoSomeStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
 
-			var result = PerformanceLogger.PerformCleanupAndReturn();
+			var result = logger.PerformCleanupAndReturn();
 
 			// assert
 			result.MethodInvocations.Should().HaveCount(2);
@@ -47,17 +51,17 @@
 			result.MethodInvocations[1].MethodName.Should().Be(nameof(DoSomeStuff));
 		}
 
-		public void DoStuff()
+		public void DoStuff(PerformanceLogger logger)
 		{
-			using (PerformanceLogger.Start())
+			using (logger.StartMeasurement())
 			{
-				DoSomeStuff();
+				DoSomeStuff(logger);
 			}
 		}
 
-		public void DoSomeStuff()
+		public void DoSomeStuff(PerformanceLogger logger)
 		{
-			using (PerformanceLogger.Start())
+			using (logger.StartMeasurement())
 			{
 				// do nothing
 			}
