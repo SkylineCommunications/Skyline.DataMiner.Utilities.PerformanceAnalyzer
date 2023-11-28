@@ -8,16 +8,43 @@
 
 	using Newtonsoft.Json;
 
-	public class PerformanceLogger
+	public class PerformanceLogger : IDisposable
 	{
-		const string DirectoryPath = @"C:\Skyline_Data\ScriptPerformanceLogger";
+		private static readonly string DirectoryPath = @"C:\Skyline_Data\ScriptPerformanceLogger";
 
 		private readonly Stack<MethodInvocation> _runningMethods = new Stack<MethodInvocation>();
 
+		public PerformanceLogger()
+		{
+
+		}
+
+		public PerformanceLogger(string title)
+		{
+			SetTitle(title);
+		}
+
+		public string Title { get; private set; }
+
 		public Result Result { get; private set; } = new Result();
+
+		public void SetTitle(string title)
+		{
+			if (String.IsNullOrWhiteSpace(title))
+			{
+				throw new ArgumentException($"'{nameof(title)}' cannot be null or whitespace.", nameof(title));
+			}
+
+			Title = title;
+		}
 
 		public void SetProperty(string name, string value)
 		{
+			if (String.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
+			}
+
 			Result.Properties[name] = value;
 		}
 
@@ -63,7 +90,7 @@
 		/// <param name="title">Will be used to create the file name.</param>
 		/// <exception cref="ArgumentException">When <paramref name="title"/> would violate file path constraints.</exception>
 		/// <exception cref="SystemException">When writing the file fails.</exception>
-		public void PerformCleanUpAndStoreResult(string title)
+		public void PerformCleanUpAndStoreResult()
 		{
 			var result = PerformCleanupAndReturn();
 			if (result == null)
@@ -71,7 +98,7 @@
 				return;
 			}
 
-			Store(result, title);
+			Store(result);
 		}
 
 		internal Result PerformCleanupAndReturn()
@@ -81,13 +108,13 @@
 			return result;
 		}
 
-		private void Store(Result result, string title)
+		private void Store(Result result)
 		{
 			// todo get rid of old results?
 
 			Directory.CreateDirectory(DirectoryPath);
 
-			var fileName = $"{DateTime.UtcNow:yyyy-MM-dd hh-mm-ss.fff}_{title ?? "Untitled"}.json";
+			var fileName = $"{DateTime.UtcNow:yyyy-MM-dd hh-mm-ss.fff}_{Title ?? "Untitled"}.json";
 
 			using (var fileStream = File.CreateText(Path.Combine(DirectoryPath, fileName)))
 			{
@@ -130,5 +157,20 @@
 				RegisterResult(runningMethodInvocation);
 			}
 		}
+
+		#region Disposable
+
+		public void Dispose()
+		{
+			PerformCleanUpAndStoreResult();
+			GC.SuppressFinalize(this);
+		}
+
+		~PerformanceLogger()
+		{
+			Dispose();
+		}
+
+		#endregion
 	}
 }
