@@ -2,7 +2,7 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Threading;
+	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
 
 	public class LogCreator
 	{
@@ -10,9 +10,12 @@
 
 		public Result Result { get; } = new Result();
 
+		internal HighResClock Clock { get; } = new HighResClock();
+
 		public void RegisterResult(MethodInvocation methodInvocation)
 		{
-			if (methodInvocation == null) throw new ArgumentNullException(nameof(methodInvocation));
+			if (methodInvocation == null)
+				throw new ArgumentNullException(nameof(methodInvocation));
 
 			if (_runningMethods.Count > 0)
 			{

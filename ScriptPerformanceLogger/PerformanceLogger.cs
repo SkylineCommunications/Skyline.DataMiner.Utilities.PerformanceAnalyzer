@@ -9,7 +9,7 @@
 
 	public static class PerformanceLogger
 	{
-		const string DirectoryPath = @"C:\Skyline_Data\ScriptPerformanceLogger";
+		public const string DirectoryPath = @"C:\Skyline_Data\ScriptPerformanceLogger";
 
 		[ThreadStatic]
 		private static LogCreator _logCreator;
@@ -47,7 +47,7 @@
 		}
 
 		/// <summary>
-		///	Moves results from memory to file.
+		/// Moves results from memory to file.
 		/// </summary>
 		/// <param name="title">Will be used to create the file name.</param>
 		/// <exception cref="ArgumentException">When <paramref name="title"/> would violate file path constraints.</exception>
