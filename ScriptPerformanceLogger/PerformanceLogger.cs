@@ -7,6 +7,7 @@
 	using System.Runtime.CompilerServices;
 
 	using Newtonsoft.Json;
+	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
 
 	public class PerformanceLogger : IDisposable
 	{
@@ -16,7 +17,6 @@
 
 		public PerformanceLogger()
 		{
-
 		}
 
 		public PerformanceLogger(string title)
@@ -27,6 +27,8 @@
 		public string Title { get; private set; }
 
 		public Result Result { get; private set; } = new Result();
+
+		internal HighResClock Clock { get; } = new HighResClock();
 
 		public void SetTitle(string title)
 		{
@@ -87,8 +89,6 @@
 		}
 
 		/// <summary>Moves results from memory to file.</summary>
-		/// <param name="title">Will be used to create the file name.</param>
-		/// <exception cref="ArgumentException">When <paramref name="title"/> would violate file path constraints.</exception>
 		/// <exception cref="SystemException">When writing the file fails.</exception>
 		public void PerformCleanUpAndStoreResult()
 		{

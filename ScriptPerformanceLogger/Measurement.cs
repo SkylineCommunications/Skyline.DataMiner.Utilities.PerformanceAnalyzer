@@ -1,12 +1,10 @@
 ﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger
 {
 	using System;
-	using System.Diagnostics;
 
 	public class Measurement : IDisposable
 	{
 		private readonly PerformanceLogger _logger;
-		private readonly Stopwatch _stopwatch;
 
 		internal Measurement(PerformanceLogger logger, MethodInvocation invocation)
 		{
@@ -14,20 +12,20 @@
 
 			Invocation = invocation ?? throw new ArgumentNullException(nameof(invocation));
 
-			StartTime = DateTime.UtcNow;
-			_stopwatch = Stopwatch.StartNew();
+			StartTime = logger.Clock.UtcNow;
 		}
 
 		public MethodInvocation Invocation { get; }
 
 		public DateTime StartTime { get; }
 
-		public TimeSpan Elapsed => _stopwatch.Elapsed;
+		public DateTime EndTime { get; private set; }
+
+		public TimeSpan Elapsed => EndTime - StartTime;
 
 		public void Dispose()
 		{
-			_stopwatch.Stop();
-
+			EndTime = _logger.Clock.UtcNow;
 			Invocation.SetExecutionTime(StartTime, Elapsed);
 
 			_logger.CompleteMethodCallMetric(this);
