@@ -28,7 +28,7 @@
 
 		public Result Result { get; private set; } = new Result();
 
-		internal HighResClock Clock { get; } = new HighResClock();
+		public HighResClock Clock { get; } = new HighResClock();
 
 		public void SetTitle(string title)
 		{
