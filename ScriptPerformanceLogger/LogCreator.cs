@@ -10,7 +10,7 @@
 
 		public Result Result { get; } = new Result();
 
-		internal HighResClock Clock { get; } = new HighResClock();
+		public HighResClock Clock { get; } = new HighResClock();
 
 		public void RegisterResult(MethodInvocation methodInvocation)
 		{
