@@ -7,6 +7,7 @@
 	using System.Runtime.CompilerServices;
 
 	using Newtonsoft.Json;
+
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
 
 	public class PerformanceLogger : IDisposable
@@ -83,9 +84,9 @@
 			}
 		}
 
-		public void RegisterResult(string className, string methodName, DateTime timeStamp, TimeSpan executionTime)
+		public void RegisterResult(string className, string methodName, DateTime timeStamp, TimeSpan executionTime, IDictionary<string, string> metadata = null)
 		{
-			RegisterResult(new MethodInvocation(className, methodName, timeStamp, executionTime));
+			RegisterResult(new MethodInvocation(className, methodName, timeStamp, executionTime, metadata));
 		}
 
 		/// <summary>Moves results from memory to file.</summary>

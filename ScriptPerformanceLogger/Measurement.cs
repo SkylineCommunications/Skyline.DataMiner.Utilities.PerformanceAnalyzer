@@ -1,6 +1,7 @@
 ﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger
 {
 	using System;
+	using System.Collections.Generic;
 
 	public class Measurement : IDisposable
 	{
@@ -23,10 +24,24 @@
 
 		public TimeSpan Elapsed => EndTime - StartTime;
 
+		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
+
+		public void SetMetadata(string name, string value)
+		{
+			if (String.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
+			}
+
+			Metadata[name] = value;
+		}
+
 		public void Dispose()
 		{
 			EndTime = _logger.Clock.UtcNow;
+
 			Invocation.SetExecutionTime(StartTime, Elapsed);
+			Invocation.AddMetadata(Metadata);
 
 			_logger.CompleteMethodCallMetric(this);
 		}

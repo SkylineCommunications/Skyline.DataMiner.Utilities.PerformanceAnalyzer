@@ -1,6 +1,7 @@
 ﻿namespace ScriptPerformanceLoggerTests
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 
 	using FluentAssertions;
@@ -27,8 +28,9 @@
 
 			// assert
 			result.MethodInvocations.Should().HaveCount(1);
-			result.MethodInvocations.Single().MethodName.Should().Be(nameof(DoStuff));
-			result.MethodInvocations.Single().ChildInvocations.Single().MethodName.Should().Be(nameof(DoSomeStuff));
+			result.MethodInvocations[0].MethodName.Should().Be(nameof(DoStuff));
+			result.MethodInvocations[0].Metadata.Should().Contain("metadata_test", "true");
+			result.MethodInvocations[0].ChildInvocations.Single().MethodName.Should().Be(nameof(DoSomeStuff));
 		}
 
 		[TestMethod]
@@ -40,7 +42,8 @@
 			logger.SetProperty("Script Name", "MyTestScript");
 			logger.SetProperty("Start Time", DateTime.UtcNow.ToString("O"));
 
-			logger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
+			var metadata = new Dictionary<string, string> { { "metadata_test", "true" } };
+			logger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30), metadata);
 			logger.RegisterResult("ScriptPerformanceLoggerTests.MetricCreatorTests", "DoSomeStuff", DateTime.UtcNow, TimeSpan.FromMilliseconds(30));
 
 			var result = logger.PerformCleanupAndReturn();
@@ -48,13 +51,16 @@
 			// assert
 			result.MethodInvocations.Should().HaveCount(2);
 			result.MethodInvocations[0].MethodName.Should().Be(nameof(DoStuff));
+			result.MethodInvocations[0].Metadata.Should().Contain("metadata_test", "true");
 			result.MethodInvocations[1].MethodName.Should().Be(nameof(DoSomeStuff));
 		}
 
 		public void DoStuff(PerformanceLogger logger)
 		{
-			using (logger.StartMeasurement())
+			using (var measurement = logger.StartMeasurement())
 			{
+				measurement.SetMetadata("metadata_test", "true");
+
 				DoSomeStuff(logger);
 			}
 		}
