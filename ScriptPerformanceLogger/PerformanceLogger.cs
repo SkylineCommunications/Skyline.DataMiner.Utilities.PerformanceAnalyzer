@@ -1,6 +1,7 @@
 ﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.IO;
 	using System.Runtime.CompilerServices;
@@ -41,9 +42,9 @@
 			logCreator.RegisterResult(methodInvocation);
 		}
 
-		public static void RegisterResult(string className, string methodName, DateTime timeStamp, TimeSpan executionTime)
+		public static void RegisterResult(string className, string methodName, DateTime timeStamp, TimeSpan executionTime, IDictionary<string, string> metadata = null)
 		{
-			RegisterResult(new MethodInvocation(className, methodName, timeStamp, executionTime));
+			RegisterResult(new MethodInvocation(className, methodName, timeStamp, executionTime, metadata));
 		}
 
 		/// <summary>

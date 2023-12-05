@@ -13,18 +13,21 @@
 		{
 		}
 
-		internal MethodInvocation(string className, string methodName)
+		internal MethodInvocation(string className, string methodName, IDictionary<string, string> metadata = null)
 		{
 			ClassName = className ?? throw new ArgumentNullException(nameof(className));
 			MethodName = methodName ?? throw new ArgumentNullException(nameof(methodName));
+
+			if (metadata != null)
+			{
+				AddMetadata(metadata);
+			}
 		}
 
-		public MethodInvocation(string className, string methodName, DateTime timeStamp, TimeSpan executionTime)
+		public MethodInvocation(string className, string methodName, DateTime timeStamp, TimeSpan executionTime, IDictionary<string, string> metadata = null)
+			: this (className, methodName, metadata)
 		{
-			ClassName = className ?? throw new ArgumentNullException(nameof(className));
-			MethodName = methodName ?? throw new ArgumentNullException(nameof(methodName));
-			TimeStamp = timeStamp;
-			ExecutionTime = executionTime;
+			SetExecutionTime(timeStamp, executionTime);
 		}
 
 		[JsonProperty(Order = 0)]
@@ -42,10 +45,21 @@
 		[JsonProperty(Order = 4)]
 		public List<MethodInvocation> ChildInvocations { get; private set; } = new List<MethodInvocation>();
 
+		[JsonProperty(Order = 5)]
+		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
+
 		internal void SetExecutionTime(DateTime timeStamp, TimeSpan executionTime)
 		{
 			TimeStamp = timeStamp;
 			ExecutionTime = executionTime;
+		}
+
+		internal void AddMetadata(IDictionary<string, string> metadata)
+		{
+			foreach (var item in metadata)
+			{
+				Metadata[item.Key] = item.Value;
+			}
 		}
 	}
 }
