@@ -55,6 +55,18 @@
 			result.MethodInvocations[1].MethodName.Should().Be(nameof(DoSomeStuff));
 		}
 
+		[TestMethod]
+		public void PerformanceLoggerTests_StrangeOrder()
+		{
+			var logger = new PerformanceLogger();
+
+			// m1 ends before m2 (can happen in multithreaded environment)
+			var m1 = logger.StartMeasurement();
+			var m2 = logger.StartMeasurement();
+			m1.Dispose();
+			m2.Dispose();
+		}
+
 		public void DoStuff(PerformanceLogger logger)
 		{
 			using (var measurement = logger.StartMeasurement())

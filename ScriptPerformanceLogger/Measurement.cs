@@ -6,23 +6,18 @@
 	public class Measurement : IDisposable
 	{
 		private readonly PerformanceLogger _logger;
+		private readonly DateTime _startTime;
 
 		internal Measurement(PerformanceLogger logger, MethodInvocation invocation)
 		{
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
 			Invocation = invocation ?? throw new ArgumentNullException(nameof(invocation));
 
-			StartTime = logger.Clock.UtcNow;
+			_startTime = logger.Clock.UtcNow;
+			Invocation.SetStartTime(_startTime);
 		}
 
 		public MethodInvocation Invocation { get; }
-
-		public DateTime StartTime { get; }
-
-		public DateTime EndTime { get; private set; }
-
-		public TimeSpan Elapsed => EndTime - StartTime;
 
 		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
 
@@ -38,12 +33,13 @@
 
 		public void Dispose()
 		{
-			EndTime = _logger.Clock.UtcNow;
+			var endTime = _logger.Clock.UtcNow;
+			var elapsed = endTime - _startTime;
 
-			Invocation.SetExecutionTime(StartTime, Elapsed);
+			Invocation.SetExecutionTime(elapsed);
 			Invocation.AddMetadata(Metadata);
 
-			_logger.CompleteMethodCallMetric(this);
+			_logger.EndMeasurement(this);
 		}
 	}
 }

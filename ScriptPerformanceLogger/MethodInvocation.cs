@@ -27,7 +27,8 @@
 		public MethodInvocation(string className, string methodName, DateTime timeStamp, TimeSpan executionTime, IDictionary<string, string> metadata = null)
 			: this(className, methodName, metadata)
 		{
-			SetExecutionTime(timeStamp, executionTime);
+			SetStartTime(timeStamp);
+			SetExecutionTime(executionTime);
 		}
 
 		[JsonProperty(Order = 0)]
@@ -48,9 +49,13 @@
 		[JsonProperty(Order = 5)]
 		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
 
-		internal void SetExecutionTime(DateTime timeStamp, TimeSpan executionTime)
+		internal void SetStartTime(DateTime startTime)
 		{
-			TimeStamp = timeStamp;
+			TimeStamp = startTime;
+		}
+
+		internal void SetExecutionTime(TimeSpan executionTime)
+		{
 			ExecutionTime = executionTime;
 		}
 
