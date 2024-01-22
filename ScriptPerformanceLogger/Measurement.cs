@@ -32,6 +32,14 @@
 			Metadata[name] = value;
 		}
 
+		public MethodInvocation RegisterChildInvocation(string className, string methodName, DateTime timeStamp, TimeSpan executionTime, IDictionary<string, string> metadata = null)
+		{
+			var childInvocation = new MethodInvocation(className, methodName, timeStamp, executionTime, metadata);
+			Invocation.ChildInvocations.Add(childInvocation);
+
+			return childInvocation;
+		}
+
 		public void Dispose()
 		{
 			var endTime = _logger.Clock.UtcNow;
