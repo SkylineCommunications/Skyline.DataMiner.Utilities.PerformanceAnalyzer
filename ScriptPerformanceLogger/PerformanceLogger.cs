@@ -151,7 +151,7 @@
 			{
 				var jsonSerializer = new JsonSerializer
 				{
-					NullValueHandling = NullValueHandling.Include,
+					NullValueHandling = NullValueHandling.Ignore,
 					ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
 					DateFormatHandling = DateFormatHandling.IsoDateFormat,
 				};

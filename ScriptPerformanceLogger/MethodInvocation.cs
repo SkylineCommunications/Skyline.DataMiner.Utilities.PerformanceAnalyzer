@@ -32,7 +32,7 @@
 		}
 
 		[JsonProperty(Order = 0)]
-		public string ClassName { get; private set;}
+		public string ClassName { get; private set; }
 
 		[JsonProperty(Order = 1)]
 		public string MethodName { get; private set; }
@@ -48,6 +48,18 @@
 
 		[JsonProperty(Order = 5)]
 		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
+
+		// called by NewtonSoft, must be public
+		public bool ShouldSerializeChildInvocations()
+		{
+			return ChildInvocations.Count > 0;
+		}
+
+		// called by NewtonSoft, must be public
+		public bool ShouldSerializeMetadata()
+		{
+			return Metadata.Count > 0;
+		}
 
 		internal void SetStartTime(DateTime startTime)
 		{
