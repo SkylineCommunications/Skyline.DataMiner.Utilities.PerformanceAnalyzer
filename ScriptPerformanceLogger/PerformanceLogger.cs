@@ -32,6 +32,11 @@
 
 		public HighResClock Clock { get; } = new HighResClock();
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the file should be written to disk. Useful for unit testing.
+		/// </summary>
+		public bool DisableFileWrite { get; set; } = false;
+
 		public void SetTitle(string title)
 		{
 			if (String.IsNullOrWhiteSpace(title))
@@ -141,7 +146,12 @@
 
 		private void Store(Result result)
 		{
-			// todo get rid of old results?
+			if (DisableFileWrite)
+			{
+				return;
+			}
+
+			// TODO: get rid of old results?
 
 			Directory.CreateDirectory(DirectoryPath);
 
