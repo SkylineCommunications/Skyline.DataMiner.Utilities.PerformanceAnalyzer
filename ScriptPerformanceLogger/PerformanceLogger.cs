@@ -134,7 +134,10 @@
 				return;
 			}
 
-			Store(result);
+			Retry.Execute(
+				() => Store(result),
+				TimeSpan.FromMilliseconds(100),
+				tryCount: 10);
 		}
 
 		internal Result PerformCleanupAndReturn()
@@ -176,11 +179,6 @@
 		{
 			PerformCleanUpAndStoreResult();
 			GC.SuppressFinalize(this);
-		}
-
-		~PerformanceLogger()
-		{
-			Dispose();
 		}
 
 		#endregion
