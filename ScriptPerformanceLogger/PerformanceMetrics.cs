@@ -20,6 +20,7 @@
 		private readonly bool _isMultiThreaded;
 		private readonly PerformanceCollector _collector;
 		private bool _disposed;
+		private bool _isStarted = false;
 
 		public PerformanceMetrics(bool startNow = true) : this()
 		{
@@ -60,6 +61,9 @@
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public PerformanceData Start(int stackDepth = 1)
 		{
+			if (_isStarted)
+				return MethodsStack.Peek();
+
 			MethodBase methodMemberInfo = new StackTrace().GetFrame(stackDepth).GetMethod();
 			string className = methodMemberInfo.DeclaringType.Name;
 			string methodName = methodMemberInfo.Name;
@@ -69,12 +73,18 @@
 
 		public PerformanceData Start(string className, string methodName)
 		{
+			if (_isStarted)
+				return MethodsStack.Peek();
+
 			var methodData = new PerformanceData(className, methodName) { ThreadId = Thread.CurrentThread.ManagedThreadId };
 
 			if (MethodsStack.Any())
 				MethodsStack.Peek().SubMethods.Add(methodData);
 
 			MethodsStack.Push(_collector.Start(methodData));
+
+			_isStarted = true;
+
 			return methodData;
 		}
 
