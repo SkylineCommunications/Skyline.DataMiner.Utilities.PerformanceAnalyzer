@@ -56,13 +56,8 @@
 
 					using (var writer = new StreamWriter(fileStream))
 					{
-						string prefix = string.Empty;
+						string prefix = fileStream.Position == 0 ? "[" : ",";
 						string postfix = "]";
-
-						if (fileStream.Position == 0)
-							prefix = "[";
-						else
-							prefix = ",";
 
 						writer.WriteLine(prefix + JsonConvert.SerializeObject(data, _jsonSerializerSettings) + postfix);
 					}
