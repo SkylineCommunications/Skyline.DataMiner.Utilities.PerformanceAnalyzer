@@ -38,6 +38,7 @@
 
 		public bool IncludeDate { get; set; } = false;
 
+		// ESUDBG this doesn't work
 		public bool LogPerThread { get; set; } = false;
 
 		public void Report(List<PerformanceData> data)
@@ -51,7 +52,7 @@
 			{
 				using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate))
 				{
-					fileStream.Position = FindPosition(fileStream);
+					fileStream.Position = GetStartPosition(fileStream);
 
 					using (var writer = new StreamWriter(fileStream))
 					{
@@ -63,7 +64,7 @@
 			}
 		}
 
-		private long FindPosition(FileStream fileStream)
+		private long GetStartPosition(FileStream fileStream)
 		{
 			char searchChar = '}';
 			bool charFound = false;
@@ -77,14 +78,10 @@
 				int currentByte = fileStream.ReadByte();
 
 				if (currentByte == -1)
-				{
 					return 0;
-				}
 
 				if ((char)currentByte == searchChar)
-				{
 					return position + 1;
-				}
 
 				position--;
 			}
