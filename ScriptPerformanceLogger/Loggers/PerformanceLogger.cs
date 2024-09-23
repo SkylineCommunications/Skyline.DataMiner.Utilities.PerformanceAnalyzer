@@ -49,7 +49,7 @@
 			{
 				using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate))
 				{
-					fileStream.Position = fileStream.Length != 0 ? FindEndPosition(fileStream) : 0;
+					fileStream.Position = FindPosition(fileStream);
 
 					using (var writer = new StreamWriter(fileStream))
 					{
@@ -62,7 +62,7 @@
 			}
 		}
 
-		private long FindEndPosition(FileStream fileStream)
+		private long FindPosition(FileStream fileStream)
 		{
 			char searchChar = '}';
 			bool charFound = false;
