@@ -1,7 +1,9 @@
 ﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers
 {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using System.Text;
 	using System.Threading;
 
@@ -38,7 +40,7 @@
 
 		public bool LogPerThread { get; set; } = false;
 
-		public void Report(PerformanceData data)
+		public void Report(List<PerformanceData> data)
 		{
 			Directory.CreateDirectory(FilePath);
 
@@ -54,9 +56,8 @@
 					using (var writer = new StreamWriter(fileStream))
 					{
 						string prefix = fileStream.Position == 0 ? "[" : ",";
-						string postfix = "]";
 
-						writer.WriteLine(prefix + JsonConvert.SerializeObject(data, _jsonSerializerSettings) + postfix);
+						writer.WriteLine(prefix + JsonConvert.SerializeObject(data.Where(d => d != null), _jsonSerializerSettings).TrimStart('['));
 					}
 				}
 			}

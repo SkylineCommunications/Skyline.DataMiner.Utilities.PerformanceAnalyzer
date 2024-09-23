@@ -36,12 +36,9 @@
 		public TimeSpan ExecutionTime { get; set; }
 
 		[JsonProperty(Order = 4)]
-		public int ThreadId { get; set; }
-
-		[JsonProperty(Order = 5)]
 		public List<PerformanceData> SubMethods { get; } = new List<PerformanceData>();
 
-		[JsonProperty(Order = 6)]
+		[JsonProperty(Order = 5)]
 		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
 
 		public bool ShouldSerializeSubMethods()

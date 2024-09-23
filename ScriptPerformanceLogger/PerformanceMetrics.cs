@@ -8,8 +8,6 @@
 	using System.Reflection;
 	using System.Runtime.CompilerServices;
 	using System.Threading;
-
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Interfaces;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
 
@@ -76,7 +74,7 @@
 			if (_isStarted)
 				return MethodsStack.Peek();
 
-			var methodData = new PerformanceData(className, methodName) { ThreadId = Thread.CurrentThread.ManagedThreadId };
+			var methodData = new PerformanceData(className, methodName);
 
 			if (MethodsStack.Any())
 				MethodsStack.Peek().SubMethods.Add(methodData);
@@ -107,16 +105,17 @@
 			if (!_disposed && disposing)
 			{
 				End();
+
 				if (!MethodsStack.Any())
 				{
 					if (_isMultiThreaded)
 						_threadMethodStacks.TryRemove(Thread.CurrentThread.ManagedThreadId, out _);
 
 					_collector.Dispose();
+
+					_disposed = true;
 				}
 			}
-
-			_disposed = true;
 		}
 	}
 }

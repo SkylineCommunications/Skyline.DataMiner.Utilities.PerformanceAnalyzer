@@ -1,7 +1,9 @@
-﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger.Interfaces
+﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger
 {
 	using System;
 	using System.Collections.Concurrent;
+	using System.Collections.Generic;
+	using System.Linq;
 	using System.Threading;
 
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
@@ -13,6 +15,7 @@
 		private readonly PerformanceClock _clock;
 		private readonly IPerformanceLogger _logger;
 		private readonly ConcurrentDictionary<int, PerformanceData> _threadRootMethods = new ConcurrentDictionary<int, PerformanceData>();
+		private readonly List<PerformanceData> _methodsToLog = new List<PerformanceData>();
 		private bool _disposed;
 
 		public PerformanceCollector(IPerformanceLogger logger)
@@ -28,6 +31,7 @@
 		public PerformanceData Start(PerformanceData methodData)
 		{
 			_threadRootMethods.TryAdd(Thread.CurrentThread.ManagedThreadId, methodData);
+			if (_threadRootMethods.Count == 1) _disposed = false;
 
 			methodData.StartTime = _clock.UtcNow;
 			return methodData;
@@ -50,10 +54,18 @@
 		{
 			if (!_disposed && disposing)
 			{
-				_logger.Report(RootMethod);
-			}
+				_threadRootMethods.TryRemove(Thread.CurrentThread.ManagedThreadId, out var rootMethod);
 
-			_disposed = true;
+				_methodsToLog.Add(rootMethod);
+
+				if (!_threadRootMethods.Any())
+				{
+					_logger.Report(_methodsToLog);
+					_methodsToLog.Clear();
+
+					_disposed = true;
+				}
+			}
 		}
 	}
 }
