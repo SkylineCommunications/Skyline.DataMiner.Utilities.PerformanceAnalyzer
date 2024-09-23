@@ -12,6 +12,13 @@
 	public class PerformanceLogger : IPerformanceLogger
 	{
 		private const string DirectoryPath = @"C:\Skyline_Data\PerformanceLogger";
+		private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+		{
+			NullValueHandling = NullValueHandling.Ignore,
+			ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+			DateFormatHandling = DateFormatHandling.IsoDateFormat,
+		};
+
 		private static readonly object _fileLock = new object();
 
 		public PerformanceLogger(string fileName, string filePath = DirectoryPath)
@@ -29,8 +36,6 @@
 
 		public bool IncludeDate { get; set; } = false;
 
-		public bool AllowOverwrite { get; set; } = false;
-
 		public bool LogPerThread { get; set; } = false;
 
 		public void Report(PerformanceData data)
@@ -42,18 +47,56 @@
 
 			lock (_fileLock)
 			{
-				using (var fileStream = AllowOverwrite ? File.CreateText(fullPath) : File.AppendText(fullPath))
+				using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate))
 				{
-					var jsonSerializer = new JsonSerializer
-					{
-						NullValueHandling = NullValueHandling.Ignore,
-						ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-						DateFormatHandling = DateFormatHandling.IsoDateFormat,
-					};
+					if (fileStream.Length != 0)
+						fileStream.Position = FindEndPosition(fileStream);
+					else
+						fileStream.Position = fileStream.Length;
 
-					jsonSerializer.Serialize(fileStream, data);
+					using (var writer = new StreamWriter(fileStream))
+					{
+						string prefix = string.Empty;
+						string postfix = "]";
+
+						if (fileStream.Position == 0)
+							prefix = "[";
+						else
+							prefix = ",";
+
+						writer.WriteLine(prefix + JsonConvert.SerializeObject(data, _jsonSerializerSettings) + postfix);
+					}
 				}
 			}
+		}
+
+		private long FindEndPosition(FileStream fileStream)
+		{
+			char searchChar = '}';
+			bool charFound = false;
+
+			long position = fileStream.Length - 1;
+
+			while (position >= 0 && !charFound)
+			{
+				fileStream.Seek(position, SeekOrigin.Begin);
+
+				int currentByte = fileStream.ReadByte();
+
+				if (currentByte == -1)
+				{
+					return 0;
+				}
+
+				if ((char)currentByte == searchChar)
+				{
+					return position + 1;
+				}
+
+				position--;
+			}
+
+			return 0;
 		}
 
 		private string BuildFileName()
