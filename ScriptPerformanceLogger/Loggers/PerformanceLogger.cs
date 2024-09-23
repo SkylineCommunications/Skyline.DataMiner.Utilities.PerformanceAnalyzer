@@ -49,10 +49,7 @@
 			{
 				using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate))
 				{
-					if (fileStream.Length != 0)
-						fileStream.Position = FindEndPosition(fileStream);
-					else
-						fileStream.Position = fileStream.Length;
+					fileStream.Position = fileStream.Length != 0 ? FindEndPosition(fileStream) : 0;
 
 					using (var writer = new StreamWriter(fileStream))
 					{
