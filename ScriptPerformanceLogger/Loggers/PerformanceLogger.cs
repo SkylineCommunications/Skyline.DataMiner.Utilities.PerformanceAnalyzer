@@ -9,6 +9,7 @@
 	using Newtonsoft.Json;
 
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
+	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
 
 	public class PerformanceLogger : IPerformanceLogger
 	{
@@ -38,6 +39,14 @@
 		public bool IncludeDate { get; set; } = false;
 
 		public void Report(List<PerformanceData> data)
+		{
+			Retry.Execute(
+				() => Store(data),
+				TimeSpan.FromMilliseconds(100),
+				tryCount: 10);
+		}
+
+		private void Store(List<PerformanceData> data)
 		{
 			Directory.CreateDirectory(FilePath);
 
