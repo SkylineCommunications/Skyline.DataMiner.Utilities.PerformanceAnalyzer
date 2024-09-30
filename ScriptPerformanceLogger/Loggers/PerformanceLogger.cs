@@ -5,7 +5,6 @@
 	using System.IO;
 	using System.Linq;
 	using System.Text;
-	using System.Threading;
 
 	using Newtonsoft.Json;
 
@@ -38,9 +37,6 @@
 
 		public bool IncludeDate { get; set; } = false;
 
-		// ESUDBG this doesn't work
-		public bool LogPerThread { get; set; } = false;
-
 		public void Report(List<PerformanceData> data)
 		{
 			Directory.CreateDirectory(FilePath);
@@ -58,7 +54,10 @@
 					{
 						string prefix = fileStream.Position == 0 ? "[" : ",";
 
-						writer.WriteLine(prefix + JsonConvert.SerializeObject(data.Where(d => d != null), _jsonSerializerSettings).TrimStart('['));
+						IEnumerable<PerformanceData> dataToSerialize = data.Where(d => d != null);
+
+						if (dataToSerialize.Any())
+							writer.WriteLine(prefix + JsonConvert.SerializeObject(dataToSerialize, _jsonSerializerSettings).TrimStart('['));
 					}
 				}
 			}
@@ -94,7 +93,6 @@
 			var sb = new StringBuilder();
 
 			if (IncludeDate) sb.Append($"{DateTime.UtcNow:yyyy-MM-dd hh-mm-ss.fff}_");
-			if (LogPerThread) sb.Append($"Thread_{Thread.CurrentThread.ManagedThreadId}_");
 			sb.Append($"{FileName}.json");
 
 			return sb.ToString();

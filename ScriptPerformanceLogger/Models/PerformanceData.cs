@@ -23,6 +23,9 @@
 		{
 		}
 
+		[JsonIgnore]
+		public PerformanceData Parent { get; set; }
+
 		[JsonProperty(Order = 0)]
 		public string ClassName { get; set; }
 

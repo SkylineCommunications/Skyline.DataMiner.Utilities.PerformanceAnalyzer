@@ -26,11 +26,16 @@
 
 		public TimeSpan Elapsed => _clock.Elapsed;
 
-		public PerformanceData RootMethod => _threadRootMethods[Thread.CurrentThread.ManagedThreadId];
-
 		public PerformanceData Start(PerformanceData methodData)
 		{
-			_threadRootMethods.TryAdd(Thread.CurrentThread.ManagedThreadId, methodData);
+			return Start(methodData, Thread.CurrentThread.ManagedThreadId);
+		}
+
+		public PerformanceData Start(PerformanceData methodData, int threadId)
+		{
+			if (methodData.Parent == null)
+				_threadRootMethods.TryAdd(threadId, methodData);
+
 			if (_threadRootMethods.Count == 1) _disposed = false;
 
 			methodData.StartTime = _clock.UtcNow;
