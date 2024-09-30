@@ -62,11 +62,12 @@
 					using (var writer = new StreamWriter(fileStream))
 					{
 						string prefix = fileStream.Position == 0 ? "[" : ",";
+						string postfix = "]";
 
 						IEnumerable<PerformanceData> dataToSerialize = data.Where(d => d != null);
 
 						if (dataToSerialize.Any())
-							writer.WriteLine(prefix + JsonConvert.SerializeObject(dataToSerialize, _jsonSerializerSettings).TrimStart('['));
+							writer.WriteLine(prefix + JsonConvert.SerializeObject(dataToSerialize, _jsonSerializerSettings) + postfix);
 					}
 				}
 			}
@@ -74,8 +75,9 @@
 
 		private long GetStartPosition(FileStream fileStream)
 		{
-			char searchChar = '}';
+			char searchChar = ']';
 			bool charFound = false;
+			bool charFoundOnce = false;
 
 			long position = fileStream.Length - 1;
 
@@ -89,7 +91,10 @@
 					return 0;
 
 				if ((char)currentByte == searchChar)
-					return position + 1;
+				{
+					if (!charFoundOnce) charFoundOnce = true;
+					else return position + 1;
+				}
 
 				position--;
 			}
