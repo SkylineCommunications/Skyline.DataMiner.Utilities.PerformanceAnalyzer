@@ -114,7 +114,7 @@
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private PerformanceData AutoStart()
 		{
-			MethodBase methodMemberInfo = new StackTrace().GetFrames().Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException(nameof(AutoStart));
+			MethodBase methodMemberInfo = new StackTrace().GetFrames()?.Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException(nameof(AutoStart));
 			string className = methodMemberInfo.DeclaringType.Name;
 			string methodName = methodMemberInfo.Name;
 
@@ -124,7 +124,7 @@
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private PerformanceData AutoStart(int threadId)
 		{
-			MethodBase methodMemberInfo = new StackTrace().GetFrames().Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException(nameof(AutoStart));
+			MethodBase methodMemberInfo = new StackTrace().GetFrames()?.Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException(nameof(AutoStart));
 			string className = methodMemberInfo.DeclaringType.Name;
 			string methodName = methodMemberInfo.Name;
 
