@@ -74,7 +74,9 @@
 						IEnumerable<PerformanceData> dataToSerialize = data.Where(d => d != null);
 
 						if (dataToSerialize.Any())
+						{
 							writer.WriteLine(prefix + JsonConvert.SerializeObject(dataToSerialize, _jsonSerializerSettings) + postfix);
+						}
 					}
 				}
 			}
@@ -94,7 +96,9 @@
 				int currentByte = fileStream.ReadByte();
 
 				if (currentByte == -1)
+				{
 					return 0;
+				}
 
 				if ((char)currentByte == searchChar)
 				{

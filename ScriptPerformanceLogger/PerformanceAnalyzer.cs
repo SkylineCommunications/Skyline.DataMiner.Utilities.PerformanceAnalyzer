@@ -28,7 +28,9 @@
 			_collector = new PerformanceCollector(new PerformanceLogger($"default-thread-{Thread.CurrentThread.ManagedThreadId}"));
 
 			if (startNow)
+			{
 				AutoStart();
+			}
 		}
 
 		public PerformanceAnalyzer(PerformanceCollector collector, bool startNow = true) : this()
@@ -36,7 +38,9 @@
 			_collector = collector ?? throw new ArgumentNullException(nameof(collector));
 
 			if (startNow)
+			{
 				AutoStart();
+			}
 		}
 
 		public PerformanceAnalyzer(PerformanceAnalyzer parentPerformanceAnalyzer, bool startNow = true) : this()
@@ -55,7 +59,9 @@
 		private PerformanceAnalyzer()
 		{
 			if (_threadMethodStacks.TryAdd(Thread.CurrentThread.ManagedThreadId, new Stack<PerformanceData>()))
+			{
 				_isMultiThreaded = _threadMethodStacks.Count > 1;
+			}
 		}
 
 		public PerformanceCollector Collector => _collector ?? throw new InvalidOperationException(nameof(_collector));
@@ -76,7 +82,9 @@
 		public PerformanceData Start(int threadId, int stackDepth = 1)
 		{
 			if (_isStarted)
+			{
 				return MethodsStack.Peek();
+			}
 
 			MethodBase methodMemberInfo = new StackTrace().GetFrame(stackDepth).GetMethod();
 			string className = methodMemberInfo.DeclaringType.Name;
@@ -93,7 +101,9 @@
 		public PerformanceData Start(string className, string methodName, int threadId)
 		{
 			if (_isStarted)
+			{
 				return MethodsStack.Peek();
+			}
 
 			var methodData = new PerformanceData(className, methodName);
 
@@ -131,12 +141,12 @@
 			return Start(className, methodName, threadId);
 		}
 
-		private PerformanceData End()
+		private void End()
 		{
 			if (MethodsStack.Any())
-				return _collector.Stop(MethodsStack.Pop());
-
-			return null;
+			{
+				_collector.Stop(MethodsStack.Pop());
+			}
 		}
 
 		public void Dispose()
@@ -154,7 +164,9 @@
 				if (!MethodsStack.Any())
 				{
 					if (_isMultiThreaded)
+					{
 						_threadMethodStacks.TryRemove(Thread.CurrentThread.ManagedThreadId, out _);
+					}
 
 					_collector.Dispose();
 
