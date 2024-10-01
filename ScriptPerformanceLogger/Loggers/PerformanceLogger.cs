@@ -25,8 +25,15 @@
 
 		public PerformanceLogger(string fileName, string filePath = DirectoryPath)
 		{
-			if (String.IsNullOrEmpty(fileName)) throw new ArgumentException(nameof(fileName));
-			if (String.IsNullOrEmpty(filePath)) throw new ArgumentException(nameof(filePath));
+			if (String.IsNullOrEmpty(fileName))
+			{
+				throw new ArgumentException(nameof(fileName));
+			}
+
+			if (String.IsNullOrEmpty(filePath))
+			{
+				throw new ArgumentException(nameof(filePath));
+			}
 
 			FileName = fileName;
 			FilePath = filePath;
@@ -76,12 +83,11 @@
 		private long GetStartPosition(FileStream fileStream)
 		{
 			char searchChar = ']';
-			bool charFound = false;
 			bool charFoundOnce = false;
 
 			long position = fileStream.Length - 1;
 
-			while (position >= 0 && !charFound)
+			while (position >= 0)
 			{
 				fileStream.Seek(position, SeekOrigin.Begin);
 
@@ -92,8 +98,14 @@
 
 				if ((char)currentByte == searchChar)
 				{
-					if (!charFoundOnce) charFoundOnce = true;
-					else return position + 1;
+					if (!charFoundOnce)
+					{
+						charFoundOnce = true;
+					}
+					else
+					{
+						return position + 1;
+					}
 				}
 
 				position--;
@@ -106,7 +118,11 @@
 		{
 			var sb = new StringBuilder();
 
-			if (IncludeDate) sb.Append($"{DateTime.UtcNow:yyyy-MM-dd hh-mm-ss.fff}_");
+			if (IncludeDate)
+			{
+				sb.Append($"{DateTime.UtcNow:yyyy-MM-dd hh-mm-ss.fff}_");
+			}
+
 			sb.Append($"{FileName}.json");
 
 			return sb.ToString();

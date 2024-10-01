@@ -8,10 +8,11 @@
 	using System.Reflection;
 	using System.Runtime.CompilerServices;
 	using System.Threading;
+
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
 
-	public class PerformanceAnalyzer : IDisposable
+	public sealed class PerformanceAnalyzer : IDisposable
 	{
 		private static readonly ConcurrentDictionary<int, Stack<PerformanceData>> _threadMethodStacks = new ConcurrentDictionary<int, Stack<PerformanceData>>();
 
@@ -113,7 +114,7 @@
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private PerformanceData AutoStart()
 		{
-			MethodBase methodMemberInfo = new StackTrace().GetFrames().Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault().GetMethod();
+			MethodBase methodMemberInfo = new StackTrace().GetFrames().Where(frame => frame.GetMethod().Name != ".ctor")?.Skip(1)?.FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException(nameof(AutoStart));
 			string className = methodMemberInfo.DeclaringType.Name;
 			string methodName = methodMemberInfo.Name;
 
@@ -123,7 +124,7 @@
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private PerformanceData AutoStart(int threadId)
 		{
-			MethodBase methodMemberInfo = new StackTrace().GetFrames().Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault().GetMethod();
+			MethodBase methodMemberInfo = new StackTrace().GetFrames().Where(frame => frame.GetMethod().Name != ".ctor")?.Skip(1)?.FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException(nameof(AutoStart));
 			string className = methodMemberInfo.DeclaringType.Name;
 			string methodName = methodMemberInfo.Name;
 
@@ -144,7 +145,7 @@
 			GC.SuppressFinalize(this);
 		}
 
-		protected virtual void Dispose(bool disposing)
+		private void Dispose(bool disposing)
 		{
 			if (!_disposed && disposing)
 			{

@@ -34,9 +34,14 @@
 		public PerformanceData Start(PerformanceData methodData, int threadId)
 		{
 			if (methodData.Parent == null)
+			{
 				_threadRootMethods.TryAdd(threadId, methodData);
+			}
 
-			if (_threadRootMethods.Count == 1) _disposed = false;
+			if (_threadRootMethods.Count == 1)
+			{
+				_disposed = false;
+			}
 
 			methodData.StartTime = _clock.UtcNow;
 			return methodData;
