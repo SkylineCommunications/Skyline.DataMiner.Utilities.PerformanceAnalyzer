@@ -25,12 +25,12 @@
 
 		public PerformanceLogger(string fileName, string filePath = DirectoryPath)
 		{
-			if (String.IsNullOrEmpty(fileName))
+			if (String.IsNullOrWhiteSpace(fileName))
 			{
 				throw new ArgumentException(nameof(fileName));
 			}
 
-			if (String.IsNullOrEmpty(filePath))
+			if (String.IsNullOrWhiteSpace(filePath))
 			{
 				throw new ArgumentException(nameof(filePath));
 			}
@@ -53,36 +53,7 @@
 				tryCount: 10);
 		}
 
-		private void Store(List<PerformanceData> data)
-		{
-			Directory.CreateDirectory(FilePath);
-
-			string fileName = BuildFileName();
-			string fullPath = Path.Combine(DirectoryPath, fileName);
-
-			lock (_fileLock)
-			{
-				using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate))
-				{
-					fileStream.Position = GetStartPosition(fileStream);
-
-					using (var writer = new StreamWriter(fileStream))
-					{
-						string prefix = fileStream.Position == 0 ? "[" : ",";
-						string postfix = "]";
-
-						IEnumerable<PerformanceData> dataToSerialize = data.Where(d => d != null);
-
-						if (dataToSerialize.Any())
-						{
-							writer.WriteLine(prefix + JsonConvert.SerializeObject(dataToSerialize, _jsonSerializerSettings) + postfix);
-						}
-					}
-				}
-			}
-		}
-
-		private long GetStartPosition(FileStream fileStream)
+		private static long GetStartPosition(FileStream fileStream)
 		{
 			char searchChar = ']';
 			bool charFoundOnce = false;
@@ -116,6 +87,35 @@
 			}
 
 			return 0;
+		}
+
+		private void Store(List<PerformanceData> data)
+		{
+			Directory.CreateDirectory(FilePath);
+
+			string fileName = BuildFileName();
+			string fullPath = Path.Combine(DirectoryPath, fileName);
+
+			lock (_fileLock)
+			{
+				using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate))
+				{
+					fileStream.Position = GetStartPosition(fileStream);
+
+					using (var writer = new StreamWriter(fileStream))
+					{
+						string prefix = fileStream.Position == 0 ? "[" : ",";
+						string postfix = "]";
+
+						IEnumerable<PerformanceData> dataToSerialize = data.Where(d => d != null);
+
+						if (dataToSerialize.Any())
+						{
+							writer.Write(prefix + JsonConvert.SerializeObject(dataToSerialize, _jsonSerializerSettings) + postfix);
+						}
+					}
+				}
+			}
 		}
 
 		private string BuildFileName()
