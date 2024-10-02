@@ -23,6 +23,11 @@
 
 		private static readonly object _fileLock = new object();
 
+		public PerformanceLogger()
+		{
+
+		}
+
 		public PerformanceLogger(string fileName, string filePath = DirectoryPath) : this(new LogFileInfo(fileName, filePath))
 		{
 		}
