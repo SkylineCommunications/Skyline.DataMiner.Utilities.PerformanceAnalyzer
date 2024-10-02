@@ -7,7 +7,7 @@
 	using System.Text;
 
 	using Newtonsoft.Json;
-
+	using Skyline.DataMiner.Net.Helper;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
 
@@ -23,25 +23,16 @@
 
 		private static readonly object _fileLock = new object();
 
-		public PerformanceLogger(string fileName, string filePath = DirectoryPath)
+		public PerformanceLogger(string fileName, string filePath = DirectoryPath) : this(new LogFileInfo(fileName, filePath))
 		{
-			if (String.IsNullOrWhiteSpace(fileName))
-			{
-				throw new ArgumentException(nameof(fileName));
-			}
-
-			if (String.IsNullOrWhiteSpace(filePath))
-			{
-				throw new ArgumentException(nameof(filePath));
-			}
-
-			FileName = fileName;
-			FilePath = filePath;
 		}
 
-		public string FileName { get; set; }
+		public PerformanceLogger(params LogFileInfo[] logFileInfo)
+		{
+			logFileInfo.ForEach(x => LogFiles.Add(x));
+		}
 
-		public string FilePath { get; set; }
+		public List<LogFileInfo> LogFiles { get; private set; } = new List<LogFileInfo>();
 
 		public bool IncludeDate { get; set; } = false;
 
@@ -91,10 +82,15 @@
 
 		private void Store(List<PerformanceData> data)
 		{
-			Directory.CreateDirectory(FilePath);
+			LogFiles.ForEach(logFile => Store(data, logFile));
+		}
 
-			string fileName = BuildFileName();
-			string fullPath = Path.Combine(DirectoryPath, fileName);
+		private void Store(List<PerformanceData> data, LogFileInfo logFileInfo)
+		{
+			Directory.CreateDirectory(logFileInfo.FilePath);
+
+			string fileName = BuildFileName(logFileInfo);
+			string fullPath = Path.Combine(logFileInfo.FilePath, fileName);
 
 			lock (_fileLock)
 			{
@@ -118,7 +114,7 @@
 			}
 		}
 
-		private string BuildFileName()
+		private string BuildFileName(LogFileInfo logFileInfo)
 		{
 			var sb = new StringBuilder();
 
@@ -127,9 +123,32 @@
 				sb.Append($"{DateTime.UtcNow:yyyy-MM-dd hh-mm-ss.fff}_");
 			}
 
-			sb.Append($"{FileName}.json");
+			sb.Append($"{logFileInfo.FileName}.json");
 
 			return sb.ToString();
 		}
+	}
+
+	public class LogFileInfo
+	{
+		public LogFileInfo(string fileName, string filePath)
+		{
+			if (String.IsNullOrWhiteSpace(fileName))
+			{
+				throw new ArgumentException(nameof(fileName));
+			}
+
+			if (String.IsNullOrWhiteSpace(filePath))
+			{
+				throw new ArgumentException(nameof(filePath));
+			}
+
+			FileName = fileName;
+			FilePath = filePath;
+		}
+
+		public string FileName { get; private set; }
+
+		public string FilePath { get; private set; }
 	}
 }
