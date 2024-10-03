@@ -41,6 +41,8 @@
 
 		public bool IncludeDate { get; set; } = false;
 
+		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
+
 		public void Report(List<PerformanceData> data)
 		{
 			Retry.Execute(
@@ -51,8 +53,7 @@
 
 		private static long GetStartPosition(FileStream fileStream)
 		{
-			char searchChar = ']';
-			bool charFoundOnce = false;
+			char searchChar = '}';
 
 			long position = fileStream.Length - 1;
 
@@ -69,14 +70,7 @@
 
 				if ((char)currentByte == searchChar)
 				{
-					if (!charFoundOnce)
-					{
-						charFoundOnce = true;
-					}
-					else
-					{
-						return position + 1;
-					}
+					return position + 1;
 				}
 
 				position--;
@@ -108,11 +102,15 @@
 						string prefix = fileStream.Position == 0 ? "[" : ",";
 						string postfix = "]";
 
-						IEnumerable<PerformanceData> dataToSerialize = data.Where(d => d != null);
-
-						if (dataToSerialize.Any())
+						var performanceLogging = new PerformanceLogging
 						{
-							writer.Write(prefix + JsonConvert.SerializeObject(dataToSerialize, _jsonSerializerSettings) + postfix);
+							Data = data.Where(d => d != null).ToList(),
+							Metadata = Metadata
+						};
+
+						if (performanceLogging.Any)
+						{
+							writer.Write(prefix + JsonConvert.SerializeObject(performanceLogging, _jsonSerializerSettings) + postfix);
 						}
 					}
 				}
@@ -155,5 +153,17 @@
 		public string FileName { get; private set; }
 
 		public string FilePath { get; private set; }
+	}
+
+	public class PerformanceLogging
+	{
+		[JsonProperty]
+		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+
+		[JsonProperty]
+		public IReadOnlyList<PerformanceData> Data { get; set; } = new List<PerformanceData>();
+
+		[JsonIgnore]
+		public bool Any => (Metadata?.Any() == true) || (Data?.Any() == true);
 	}
 }
