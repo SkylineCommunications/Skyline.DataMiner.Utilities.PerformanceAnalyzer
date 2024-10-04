@@ -23,6 +23,8 @@
 
 		private static readonly object _fileLock = new object();
 
+		private readonly Dictionary<string, string> metadata = new Dictionary<string, string>();
+
 		public PerformanceLogger()
 		{
 
@@ -41,14 +43,18 @@
 
 		public bool IncludeDate { get; set; } = false;
 
-		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
-
 		public void Report(List<PerformanceData> data)
 		{
 			Retry.Execute(
 				() => Store(data),
 				TimeSpan.FromMilliseconds(100),
 				tryCount: 10);
+		}
+
+		public PerformanceLogger AddMetadata(string key, string value)
+		{
+			metadata[key] = value;
+			return this;
 		}
 
 		private static long GetStartPosition(FileStream fileStream)
@@ -105,7 +111,7 @@
 						var performanceLogging = new PerformanceLogging
 						{
 							Data = data.Where(d => d != null).ToList(),
-							Metadata = Metadata
+							Metadata = metadata
 						};
 
 						if (performanceLogging.Any)

@@ -121,6 +121,12 @@
 			return methodData;
 		}
 
+		public PerformanceAnalyzer AddMetadata(string key, string value)
+		{
+			_rootMethod.Metadata[key] = value;
+			return this;
+		}
+
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private PerformanceData AutoStart()
 		{
