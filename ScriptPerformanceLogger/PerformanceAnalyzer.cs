@@ -51,8 +51,12 @@
 			if (startNow)
 			{
 				methodData = AutoStart(parentPerformanceAnalyzer._threadId);
-				parentPerformanceAnalyzer._rootMethod.SubMethods.Add(methodData);
 				methodData.Parent = parentPerformanceAnalyzer._rootMethod;
+
+				if (Thread.CurrentThread.ManagedThreadId != _threadId)
+				{
+					parentPerformanceAnalyzer._rootMethod.SubMethods.Add(methodData);
+				}
 			}
 		}
 
