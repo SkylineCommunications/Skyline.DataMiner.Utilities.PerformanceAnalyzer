@@ -7,13 +7,19 @@
 	using System.Text;
 
 	using Newtonsoft.Json;
+
 	using Skyline.DataMiner.Net.Helper;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
 
+	/// <summary>
+	/// <see cref="PerformanceLogger"/> is implementation of the <see cref="IPerformanceLogger"/> that logs to files.
+	/// </summary>
 	public class PerformanceLogger : IPerformanceLogger
 	{
 		private const string DirectoryPath = @"C:\Skyline_Data\PerformanceLogger";
+
+		private static readonly object _fileLock = new object();
 		private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
 		{
 			NullValueHandling = NullValueHandling.Ignore,
@@ -21,28 +27,48 @@
 			DateFormatHandling = DateFormatHandling.IsoDateFormat,
 		};
 
-		private static readonly object _fileLock = new object();
+		private readonly Dictionary<string, string> _metadata = new Dictionary<string, string>();
 
-		private readonly Dictionary<string, string> metadata = new Dictionary<string, string>();
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PerformanceLogger"/> class.
+		/// </summary>
 		public PerformanceLogger()
 		{
-
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PerformanceLogger"/> class.
+		/// </summary>
+		/// <param name="fileName">Name of the file to which to log.</param>
+		/// <param name="filePath">Path of the <paramref name="fileName"/>.</param>
+		/// <exception cref="ArgumentException">Throws if <paramref name="fileName"/> or <paramref name="filePath"/> are null or empty.</exception>
 		public PerformanceLogger(string fileName, string filePath = DirectoryPath) : this(new LogFileInfo(fileName, filePath))
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PerformanceLogger"/> class.
+		/// </summary>
+		/// <param name="logFileInfo">Array of files to which to log.</param>
 		public PerformanceLogger(params LogFileInfo[] logFileInfo)
 		{
 			logFileInfo.ForEach(x => LogFiles.Add(x));
 		}
 
+		/// <summary>
+		/// Gets list of all log files.
+		/// </summary>
 		public List<LogFileInfo> LogFiles { get; private set; } = new List<LogFileInfo>();
 
+		/// <summary>
+		/// Gets or sets a value indicating whether date should be included in files names.
+		/// </summary>
 		public bool IncludeDate { get; set; } = false;
 
+		/// <summary>
+		/// Logs specified data in to files.
+		/// </summary>
+		/// <param name="data">List of performance metrics to log.</param>
 		public void Report(List<PerformanceData> data)
 		{
 			Retry.Execute(
@@ -51,9 +77,15 @@
 				tryCount: 10);
 		}
 
+		/// <summary>
+		/// Adds metadata for the logs.
+		/// </summary>
+		/// <param name="key">Key of the metadata.</param>
+		/// <param name="value">Value of the metadata.</param>
+		/// <returns>Returns current instance of <see cref="PerformanceLogger"/>.</returns>
 		public PerformanceLogger AddMetadata(string key, string value)
 		{
-			metadata[key] = value;
+			_metadata[key] = value;
 			return this;
 		}
 
@@ -108,15 +140,15 @@
 						string prefix = fileStream.Position == 0 ? "[" : ",";
 						string postfix = "]";
 
-						var performanceLogging = new PerformanceLogging
+						var performanceLog = new PerformanceLog
 						{
 							Data = data.Where(d => d != null).ToList(),
-							Metadata = metadata
+							Metadata = _metadata
 						};
 
-						if (performanceLogging.Any)
+						if (performanceLog.Any)
 						{
-							writer.Write(prefix + JsonConvert.SerializeObject(performanceLogging, _jsonSerializerSettings) + postfix);
+							writer.Write(prefix + JsonConvert.SerializeObject(performanceLog, _jsonSerializerSettings) + postfix);
 						}
 					}
 				}
@@ -138,8 +170,17 @@
 		}
 	}
 
+	/// <summary>
+	/// <see cref="LogFileInfo"/> represents information about a log file, including it's name and path.
+	/// </summary>
 	public class LogFileInfo
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LogFileInfo"/> class.
+		/// </summary>
+		/// <param name="fileName">Name of the file to which to log.</param>
+		/// <param name="filePath">Path of the <paramref name="fileName"/>.</param>
+		/// <exception cref="ArgumentException">Throws if <paramref name="fileName"/> or <paramref name="filePath"/> are null or empty.</exception>
 		public LogFileInfo(string fileName, string filePath)
 		{
 			if (String.IsNullOrWhiteSpace(fileName))
@@ -156,12 +197,18 @@
 			FilePath = filePath;
 		}
 
+		/// <summary>
+		/// Gets name of the file.
+		/// </summary>
 		public string FileName { get; private set; }
 
+		/// <summary>
+		/// Gets path of the <see cref="FileName"/>.
+		/// </summary>
 		public string FilePath { get; private set; }
 	}
 
-	public class PerformanceLogging
+	internal class PerformanceLog
 	{
 		[JsonProperty]
 		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
@@ -171,5 +218,10 @@
 
 		[JsonIgnore]
 		public bool Any => (Metadata?.Any() == true) || (Data?.Any() == true);
+
+		public bool ShouldSerializeMetadata()
+		{
+			return Metadata.Count > 0;
+		}
 	}
 }

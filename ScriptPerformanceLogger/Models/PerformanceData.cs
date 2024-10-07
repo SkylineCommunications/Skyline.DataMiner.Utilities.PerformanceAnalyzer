@@ -5,6 +5,9 @@
 
 	using Newtonsoft.Json;
 
+	/// <summary>
+	/// <see cref="PerformanceData"/> is a model for method performance metrics.
+	/// </summary>
 	[Serializable]
 	public class PerformanceData
 	{
@@ -17,10 +20,6 @@
 		{
 			ClassName = className;
 			MethodName = methodName;
-		}
-
-		public PerformanceData(PerformanceData methodData) : this(methodData.ClassName, methodData.MethodName)
-		{
 		}
 
 		[JsonIgnore]
