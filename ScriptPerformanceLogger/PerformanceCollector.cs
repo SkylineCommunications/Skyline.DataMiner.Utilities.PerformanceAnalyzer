@@ -34,6 +34,18 @@
 
 		internal PerformanceClock Clock => _clock;
 
+		public PerformanceData Start(PerformanceData methodData)
+		{
+			return Start(methodData, Thread.CurrentThread.ManagedThreadId);
+		}
+
+		public PerformanceData Stop(PerformanceData methodData)
+		{
+			methodData.ExecutionTime = _clock.UtcNow - methodData.StartTime;
+
+			return methodData;
+		}
+
 		internal PerformanceData Start(PerformanceData methodData, int threadId)
 		{
 			if (methodData.Parent == null)
@@ -47,13 +59,6 @@
 			}
 
 			methodData.StartTime = _clock.UtcNow;
-			return methodData;
-		}
-
-		internal PerformanceData Stop(PerformanceData methodData)
-		{
-			methodData.ExecutionTime = _clock.UtcNow - methodData.StartTime;
-
 			return methodData;
 		}
 
