@@ -34,11 +34,21 @@
 
 		internal PerformanceClock Clock => _clock;
 
+		/// <summary>
+		/// Updates start time for the method.
+		/// </summary>
+		/// <param name="methodData"><see cref="PerformanceData"/> of the method to update.</param>
+		/// <returns>Returns updated method.</returns>
 		public PerformanceData Start(PerformanceData methodData)
 		{
 			return Start(methodData, Thread.CurrentThread.ManagedThreadId);
 		}
 
+		/// <summary>
+		/// Updates execution time of the method.
+		/// </summary>
+		/// <param name="methodData"><see cref="PerformanceData"/> of the method to update.</param>
+		/// <returns>Returns updated method.</returns>
 		public PerformanceData Stop(PerformanceData methodData)
 		{
 			methodData.ExecutionTime = _clock.UtcNow - methodData.StartTime;
