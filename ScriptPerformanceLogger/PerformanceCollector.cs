@@ -21,6 +21,8 @@
 		private readonly List<PerformanceData> _methodsToLog = new List<PerformanceData>();
 
 		private bool _disposed;
+		private bool _isStarted;
+		private bool _isStopped;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceCollector"/> class.
@@ -51,13 +53,24 @@
 		/// <returns>Returns updated method.</returns>
 		public PerformanceData Stop(PerformanceData methodData)
 		{
+			if (_isStopped)
+			{
+				return methodData;
+			}
+
 			methodData.ExecutionTime = _clock.UtcNow - methodData.StartTime;
+			_isStopped = true;
 
 			return methodData;
 		}
 
 		internal PerformanceData Start(PerformanceData methodData, int threadId)
 		{
+			if (_isStarted)
+			{
+				return methodData;
+			}
+
 			if (methodData.Parent == null)
 			{
 				_threadRootMethods.TryAdd(threadId, methodData);
@@ -69,6 +82,8 @@
 			}
 
 			methodData.StartTime = _clock.UtcNow;
+			_isStarted = true;
+
 			return methodData;
 		}
 

@@ -26,6 +26,7 @@
 		private PerformanceData _trackedMethod;
 		private bool _disposed;
 		private bool _isStarted;
+		private bool _isCompleted;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
@@ -176,9 +177,15 @@
 
 		private void End()
 		{
+			if (_isCompleted)
+			{
+				return;
+			}
+
 			if (MethodsStack.Any())
 			{
 				_collector.Stop(MethodsStack.Pop());
+				_isCompleted = true;
 			}
 		}
 
