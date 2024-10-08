@@ -1,6 +1,6 @@
 # About
 
-The **Performance Analyzer** is a library designed to track and log performance metrics for methods in single or multi-threaded environments. It provides developers with an easy way to monitor execution times and track method calls across systems by logging performance data to storage of their choice.
+The **Performance Analyzer** is a library designed to track and log performance metrics for methods in single or multi-threaded environments. It provides developers with an easy way to monitor execution times and track method calls across systems by logging performance data to the storage of their choice.
 
 ## Key Features
 
@@ -23,30 +23,30 @@ To get started, simply add **Skyline.DataMiner.Utils.ScriptPerformanceLogger** N
 ### Types
 
 The library exposes the following classes:
- - ```PerformanceTracker``` which is responsible for tracking method calls, method nesting in the logs and orchestration of collecting method performance metrics. It is heart and soul of Performance Analyzer library.
+ - ```PerformanceTracker``` which is responsible for tracking method calls, method nesting in the logs and orchestration of collecting method performance metrics. It is the heart and soul of Performance Analyzer library.
 
  - ```PerformanceCollector``` which is responsible for collecting method performance metrics.
 
- - ```PerformanceFileLogger``` which is implementation of IPerformanceLogger that logs to files.
+ - ```PerformanceFileLogger``` which is the implementation of IPerformanceLogger that logs to file system.
 
  - ```PerformanceData``` which is the model for method performance metrics.
 
- - ```LogFileInfo``` which represents information about a log file, including it's name and path.
+ - ```LogFileInfo``` which represents information about a log file, including its name and path.
 
 The library exposes the following interfaces:
  - ```IPerformanceLogger``` which contains only one method ```Report(List<PerformanceData>)```. This method will be called by ```PerformanceCollector``` when data is ready to be logged.
 
 ## Usage
 
-```PerformanceTracker``` is entry point for the library. It can be used to define start and end of the tracked method, either through ```using``` statement, or by manually calling ```Start(string, string)``` and ```End()```, note that in the manual use case the developer is responsible for calling ```Dispose()``` which will cause collected data to be passed to ```PerformanceCollector```
+```PerformanceTracker``` is the entry point for the library. It can be used to define start and end of the tracked method, either through ```using``` statement, or by manually calling ```Start(string, string)```(or ```Start()```) and ```End()```, note that in the manual use case the developer is responsible for calling ```Dispose()``` which will cause collected data to be passed to ```PerformanceCollector```
 
 ```PerformanceCollector``` collects method performance metrics to log. When ```PerformanceTracker``` is disposed of, it will pass the collected data to the underlying collector, once the collector is disposed of, it will call ```IPerformanceLogger.Report(List<PerformanceData>)``` which will handle logging of the method performance metrics.
 
-```PerformanceFileLogger``` is default implementation of the ```IPerformanceLogger``` interface which logs to file(s). By default, the file location is *C:\Skyline_Data\PerformanceLogger* but this can be overwritten in the constructor. In cases where file(s) to log to don't already exist, they will be created, otherwise new method performance metrics will be appended to the existing ones. ```PerformanceFileLogger``` defines metadata on the run level. It is also possible to include date and time in the file name by setting ```IncludeDate``` to ```true```.
+```PerformanceFileLogger``` is default implementation of the ```IPerformanceLogger``` interface which logs to file(s). By default, the file location is *C:\Skyline_Data\PerformanceLogger* but this can be overwritten in the constructor. In cases where file(s) to log to don't already exist, they will be created, otherwise, new method performance metrics will be appended to the existing ones. ```PerformanceFileLogger``` defines metadata on the run level. It is also possible to include date and time in the file name by setting ```IncludeDate``` to ```true```.
 
-```PerformanceData``` defines format of the JSON which contains information about method performance metrics.
+```PerformanceData``` defines the format of the JSON which contains information about method performance metrics.
 
-Following properties are defined for ```PerformanceData```
+The following properties are defined for ```PerformanceData```
  - ```ClassName``` - name of the class in which the method is defined
  - ```MethodName``` - name of the method
  - ```StartTime``` - start time of the method execution
@@ -56,11 +56,11 @@ Following properties are defined for ```PerformanceData```
 
  > **_NOTE:_** In case ```Metadata``` and/or ```SubMethods``` are empty they will not be included in the final JSON, respectively.
 
-```IPerformanceLogger``` is interface on which ```PerformanceCollector``` is based, implementing it provides alternative ways to log method performance metrics.
+```IPerformanceLogger``` is the interface on which ```PerformanceCollector``` is based, implementing it provides alternative ways to log method performance metrics.
 
 ### Basic example
 
-In the following examples we will use default constructor for ```PerformanceTracking``` this will result in new file creation for every ```using```, more precisely, for every call of the ```Dispose```.
+In the following examples, we will use default constructor for ```PerformanceTracking``` this will result in new file creation for every ```using```, more precisely, for every call of the ```Dispose```.
 
 #### Input
 ```csharp
@@ -76,7 +76,7 @@ void Foo()
 #### Output
 This will create(or add to existing) file named *[yyyy-MM-dd hh-mm-ss.fff]_default.json* at *C:\Skyline_Data\PerformanceLogger* with performance metrics for the containing method ```Foo()```.
 
-Log file might look something like this:
+The log file might look something like this:
 ```json
 [
   {
@@ -123,7 +123,7 @@ void Foo()
 #### Output
 This will create file named *[yyyy-MM-dd hh-mm-ss.fff]_default.json* at *C:\Skyline_Data\PerformanceLogger* containing performance metrics and defined metadata for the containing method ```Foo()```.
 
-Log file might look something like this:
+The log file might look something like this:
 ```json
 [
   {
@@ -170,9 +170,9 @@ void Bar()
 ```
 
 #### Output
-This will create file whose name and path is based on ```PerformanceFileLogger``` arguments containing performance metrics.
+This will create file(s) whose names and paths are based on ```PerformanceFileLogger``` arguments containing performance metrics.
 
-Log file might look something like this:
+The log file might look something like this:
 ```json
 [
   {
@@ -198,9 +198,9 @@ Log file might look something like this:
 
 ### Examples with nesting (multi-threaded use case)
 
-When it comes to multi-threaded use case, we have couple of options. 
+When it comes to multi-threaded use cases, we have a couple of options. 
 
- 1. We can give each thread it's own ```PerformanceCollector``` in which case we will end up with one log file per thread.
+ 1. We can give each thread its own ```PerformanceCollector``` in which case we will end up with one log file per thread.
 
 #### Input
 ```csharp
@@ -223,7 +223,7 @@ void Bar()
   } // Tracker automatically adds performance data to the collector when disposed.
 }
 ```
-Log file from collectorA might look something like this:
+The log file from collectorA might look something like this:
 ```json
 [
   {
@@ -238,7 +238,7 @@ Log file from collectorA might look something like this:
   }
 ]
 ```
-Log file from collectorB might look something like this:
+The log file from collectorB might look something like this:
 ```json
 [
   {
@@ -276,7 +276,7 @@ void Bar()
   } // Tracker automatically adds performance data to the collector when disposed.
 }
 ```
-Log file might look something like this:
+The log file might look something like this:
 ```json
 [
   {
@@ -298,7 +298,7 @@ Log file might look something like this:
 ]
 ```
 
- 3. We can pass outer ```PerformanceTracker``` instance in to the constructor of thread ```PerformanceTracker``` in which case thread method performance metrics will be nested inside ```PerformanceData``` of outer ```PerformanceTracker```.
+ 3. We can pass the outer ```PerformanceTracker``` instance into the constructor of thread ```PerformanceTracker``` in which case thread method performance metrics will be nested inside ```PerformanceData``` of outer ```PerformanceTracker```.
 
 ```csharp
 void Foo()
@@ -312,16 +312,16 @@ void Foo()
 
 void Bar()
 {
-  // Create a PerformanceTracker instance with the tracker under which to nest this method performance metrics and start tracking.
+  // Create a PerformanceTracker instance with the tracker under which to nest this method's performance metrics and start tracking.
   using (var tracker = new PerformanceTracker(outerTracker))
   {
     // Your code goes here...
   } // Tracker automatically adds performance data to the collector when disposed.
 }
 ```
-> **_NOTE:_** It is possible to achieve same results with ```using``` statement, this approach was chose for the sake of variety.
+> **_NOTE:_** It is possible to achieve the same results with ```using``` statement, this approach was chosen for the sake of variety.
 
-Log file might look something like this:
+The log file might look something like this:
 ```json
 [
   {
@@ -345,7 +345,7 @@ Log file might look something like this:
 ]
 ```
 
-> **_IMPORTANT:_** If you don't wait for all threads to finish before disposing of the outer ```PerformanceTracker``` it is possible for main thread to call ```PerformanceTracker.Dispose()``` before other threads are done, in that case, there will be data missing from the final JSON which will cause incorrect results.
+> **_IMPORTANT:_** If you don't wait for all threads to finish before disposing of the outer ```PerformanceTracker``` it is possible for the main thread to call ```PerformanceTracker.Dispose()``` before other threads are done, in that case, there will be data missing from the final JSON which will cause incorrect results.
 
 ## About DataMiner
 

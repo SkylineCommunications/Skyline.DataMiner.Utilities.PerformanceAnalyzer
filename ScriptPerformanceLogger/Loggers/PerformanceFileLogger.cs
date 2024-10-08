@@ -171,7 +171,7 @@
 	}
 
 	/// <summary>
-	/// <see cref="LogFileInfo"/> represents information about a log file, including it's name and path.
+	/// <see cref="LogFileInfo"/> represents information about a log file, including its name and path.
 	/// </summary>
 	public class LogFileInfo
 	{
