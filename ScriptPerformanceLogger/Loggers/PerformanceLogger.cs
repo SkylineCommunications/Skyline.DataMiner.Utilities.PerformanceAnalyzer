@@ -210,10 +210,10 @@
 
 	internal class PerformanceLog
 	{
-		[JsonProperty]
+		[JsonProperty(Order = 0)]
 		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
 
-		[JsonProperty]
+		[JsonProperty(Order = 1)]
 		public IReadOnlyList<PerformanceData> Data { get; set; } = new List<PerformanceData>();
 
 		[JsonIgnore]

@@ -25,22 +25,22 @@
 		[JsonIgnore]
 		public PerformanceData Parent { get; set; }
 
-		[JsonProperty]
+		[JsonProperty(Order = 0)]
 		public string ClassName { get; set; }
 
-		[JsonProperty]
+		[JsonProperty(Order = 1)]
 		public string MethodName { get; set; }
 
-		[JsonProperty]
+		[JsonProperty(Order = 2)]
 		public DateTime StartTime { get; set; }
 
-		[JsonProperty]
+		[JsonProperty(Order = 3)]
 		public TimeSpan ExecutionTime { get; set; }
 
-		[JsonProperty]
+		[JsonProperty(Order = 4)]
 		public List<PerformanceData> SubMethods { get; } = new List<PerformanceData>();
 
-		[JsonProperty]
+		[JsonProperty(Order = 5)]
 		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
 
 		public bool ShouldSerializeSubMethods()
