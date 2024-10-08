@@ -8,7 +8,6 @@
 
 	using Newtonsoft.Json;
 
-	using Skyline.DataMiner.Net.Helper;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
 
@@ -52,13 +51,15 @@
 		/// <param name="logFileInfo">Array of files to which to log.</param>
 		public PerformanceFileLogger(params LogFileInfo[] logFileInfo)
 		{
-			logFileInfo.ForEach(x => LogFiles.Add(x));
+			Array.ForEach(logFileInfo, x => LogFiles.Add(x));
 		}
 
 		/// <summary>
 		/// Gets list of all log files.
 		/// </summary>
 		public List<LogFileInfo> LogFiles { get; private set; } = new List<LogFileInfo>();
+
+		public Dictionary<string, string> Metadata => _metadata;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether date should be included in files names.

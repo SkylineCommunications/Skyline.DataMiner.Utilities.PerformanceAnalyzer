@@ -159,8 +159,14 @@
 		/// Ends tracking of the method and returns <see cref="PerformanceData"/> for it.
 		/// </summary>
 		/// <returns>Returns <see cref="PerformanceData"/> for the tracked method.</returns>
+		/// <exception cref="InvalidOperationException">Throws if tracked has not been started yet.</exception>
 		public PerformanceData End()
 		{
+			if (_trackedMethod == null)
+			{
+				throw new InvalidOperationException(nameof(_trackedMethod));
+			}
+
 			if (_isCompleted)
 			{
 				return _trackedMethod;

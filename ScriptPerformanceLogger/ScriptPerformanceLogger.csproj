@@ -32,7 +32,6 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	  <PackageReference Include="Skyline.DataMiner.Dev.Automation" Version="10.3.10" />
 	</ItemGroup>
 
 </Project>
