@@ -17,12 +17,10 @@
 	{
 		private readonly PerformanceClock _clock;
 		private readonly IPerformanceLogger _logger;
-		private readonly ConcurrentDictionary<int, PerformanceData> _threadRootMethods = new ConcurrentDictionary<int, PerformanceData>();
+		private readonly ConcurrentDictionary<int, PerformanceData> _perThreadRootMethod = new ConcurrentDictionary<int, PerformanceData>();
 		private readonly List<PerformanceData> _methodsToLog = new List<PerformanceData>();
 
 		private bool _disposed;
-		private bool _isStarted;
-		private bool _isStopped;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceCollector"/> class.
@@ -53,36 +51,36 @@
 		/// <returns>Returns updated method.</returns>
 		public PerformanceData Stop(PerformanceData methodData)
 		{
-			if (_isStopped)
+			if (methodData.IsStopped)
 			{
 				return methodData;
 			}
 
 			methodData.ExecutionTime = _clock.UtcNow - methodData.StartTime;
-			_isStopped = true;
+			methodData.IsStopped = true;
 
 			return methodData;
 		}
 
 		internal PerformanceData Start(PerformanceData methodData, int threadId)
 		{
-			if (_isStarted)
+			if (methodData.IsStarted)
 			{
 				return methodData;
 			}
 
 			if (methodData.Parent == null)
 			{
-				_threadRootMethods.TryAdd(threadId, methodData);
+				_perThreadRootMethod.TryAdd(threadId, methodData);
 			}
 
-			if (_threadRootMethods.Count == 1)
+			if (_perThreadRootMethod.Count == 1)
 			{
 				_disposed = false;
 			}
 
 			methodData.StartTime = _clock.UtcNow;
-			_isStarted = true;
+			methodData.IsStarted = true;
 
 			return methodData;
 		}
@@ -97,11 +95,11 @@
 		{
 			if (!_disposed && disposing)
 			{
-				_threadRootMethods.TryRemove(Thread.CurrentThread.ManagedThreadId, out var rootMethod);
+				_perThreadRootMethod.TryRemove(Thread.CurrentThread.ManagedThreadId, out var rootMethod);
 
 				_methodsToLog.Add(rootMethod);
 
-				if (!_threadRootMethods.Any())
+				if (!_perThreadRootMethod.Any())
 				{
 					_logger.Report(_methodsToLog);
 					_methodsToLog.Clear();

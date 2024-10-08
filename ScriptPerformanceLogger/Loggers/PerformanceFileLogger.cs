@@ -13,9 +13,9 @@
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
 
 	/// <summary>
-	/// <see cref="PerformanceLogger"/> is implementation of the <see cref="IPerformanceLogger"/> that logs to files.
+	/// <see cref="PerformanceFileLogger"/> is implementation of the <see cref="IPerformanceLogger"/> that logs to files.
 	/// </summary>
-	public class PerformanceLogger : IPerformanceLogger
+	public class PerformanceFileLogger : IPerformanceLogger
 	{
 		private const string DirectoryPath = @"C:\Skyline_Data\PerformanceLogger";
 
@@ -30,27 +30,27 @@
 		private readonly Dictionary<string, string> _metadata = new Dictionary<string, string>();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PerformanceLogger"/> class.
+		/// Initializes a new instance of the <see cref="PerformanceFileLogger"/> class.
 		/// </summary>
-		public PerformanceLogger()
+		public PerformanceFileLogger()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PerformanceLogger"/> class.
+		/// Initializes a new instance of the <see cref="PerformanceFileLogger"/> class.
 		/// </summary>
 		/// <param name="fileName">Name of the file to which to log.</param>
 		/// <param name="filePath">Path of the <paramref name="fileName"/>.</param>
 		/// <exception cref="ArgumentException">Throws if <paramref name="fileName"/> or <paramref name="filePath"/> are null or empty.</exception>
-		public PerformanceLogger(string fileName, string filePath = DirectoryPath) : this(new LogFileInfo(fileName, filePath))
+		public PerformanceFileLogger(string fileName, string filePath = DirectoryPath) : this(new LogFileInfo(fileName, filePath))
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PerformanceLogger"/> class.
+		/// Initializes a new instance of the <see cref="PerformanceFileLogger"/> class.
 		/// </summary>
 		/// <param name="logFileInfo">Array of files to which to log.</param>
-		public PerformanceLogger(params LogFileInfo[] logFileInfo)
+		public PerformanceFileLogger(params LogFileInfo[] logFileInfo)
 		{
 			logFileInfo.ForEach(x => LogFiles.Add(x));
 		}
@@ -82,8 +82,8 @@
 		/// </summary>
 		/// <param name="key">Key of the metadata.</param>
 		/// <param name="value">Value of the metadata.</param>
-		/// <returns>Returns current instance of <see cref="PerformanceLogger"/>.</returns>
-		public PerformanceLogger AddMetadata(string key, string value)
+		/// <returns>Returns current instance of <see cref="PerformanceFileLogger"/>.</returns>
+		public PerformanceFileLogger AddMetadata(string key, string value)
 		{
 			_metadata[key] = value;
 			return this;

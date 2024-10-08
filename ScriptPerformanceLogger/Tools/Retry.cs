@@ -6,7 +6,7 @@
 	/// <summary>
 	/// <see cref="Retry"/> class provides mechanism for retrying an action.
 	/// </summary>
-	public static class Retry
+	internal static class Retry
 	{
 		/// <summary>
 		/// Retries specified action for specified number of times.

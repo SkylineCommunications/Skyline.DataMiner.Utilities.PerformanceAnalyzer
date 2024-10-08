@@ -23,6 +23,12 @@
 		}
 
 		[JsonIgnore]
+		public bool IsStarted { get; internal set; }
+
+		[JsonIgnore]
+		public bool IsStopped { get; internal set; }
+
+		[JsonIgnore]
 		public PerformanceData Parent { get; set; }
 
 		[JsonProperty(Order = 0)]
@@ -42,6 +48,12 @@
 
 		[JsonProperty(Order = 5)]
 		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
+
+		public PerformanceData AddMetadata(string key, string value)
+		{
+			Metadata[key] = value;
+			return this;
+		}
 
 		public bool ShouldSerializeSubMethods()
 		{

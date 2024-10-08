@@ -17,7 +17,7 @@
 	/// </summary>
 	public sealed class PerformanceTracker : IDisposable
 	{
-		private static readonly ConcurrentDictionary<int, Stack<PerformanceData>> _threadMethodStacks = new ConcurrentDictionary<int, Stack<PerformanceData>>();
+		private static readonly ConcurrentDictionary<int, Stack<PerformanceData>> _perThreadStack = new ConcurrentDictionary<int, Stack<PerformanceData>>();
 
 		private readonly bool _isMultiThreaded;
 		private readonly PerformanceCollector _collector;
@@ -34,7 +34,7 @@
 		/// <param name="startNow">True if method tracking should start on initialization; false otherwise.</param>
 		public PerformanceTracker(bool startNow = true) : this()
 		{
-			_collector = new PerformanceCollector(new PerformanceLogger($"default-thread-{Thread.CurrentThread.ManagedThreadId}"));
+			_collector = new PerformanceCollector(new PerformanceFileLogger($"default") { IncludeDate = true });
 
 			if (startNow)
 			{
@@ -82,9 +82,9 @@
 
 		private PerformanceTracker()
 		{
-			if (_threadMethodStacks.TryAdd(Thread.CurrentThread.ManagedThreadId, new Stack<PerformanceData>()))
+			if (_perThreadStack.TryAdd(Thread.CurrentThread.ManagedThreadId, new Stack<PerformanceData>()))
 			{
-				_isMultiThreaded = _threadMethodStacks.Count > 1;
+				_isMultiThreaded = _perThreadStack.Count > 1;
 			}
 		}
 
@@ -97,7 +97,7 @@
 		/// <summary>
 		/// Gets <see cref="PerformanceData"/> of the tracked method.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">Throws if root method is not initialized yet.</exception>
+		/// <exception cref="InvalidOperationException">Throws if tracked method is not initialized yet.</exception>
 		public PerformanceData TrackedMethod => _trackedMethod ?? throw new InvalidOperationException(nameof(_trackedMethod));
 
 		/// <summary>
@@ -117,7 +117,7 @@
 			}
 		}
 
-		private Stack<PerformanceData> MethodsStack => _threadMethodStacks[_threadId];
+		private Stack<PerformanceData> Stack => _perThreadStack[_threadId];
 
 		/// <summary>
 		/// Adds metadata for the tracked method.
@@ -132,6 +132,19 @@
 		}
 
 		/// <summary>
+		/// Creates new instance of <see cref="PerformanceData"/> for containing method.
+		/// </summary>
+		/// <returns>New instance of <see cref="PerformanceData"/> for the containing method.</returns>
+		public PerformanceData Start()
+		{
+			MethodBase methodMemberInfo = new StackTrace().GetFrame(1).GetMethod();
+			string className = methodMemberInfo.DeclaringType.Name;
+			string methodName = methodMemberInfo.Name;
+
+			return Start(className, methodName, _threadId);
+		}
+
+		/// <summary>
 		/// Creates new instance of <see cref="PerformanceData"/> with specified class and method names and starts performance tracking for it.
 		/// </summary>
 		/// <param name="className">Name of the class which will be used in new instance of <see cref="PerformanceData"/>.</param>
@@ -142,22 +155,42 @@
 			return Start(className, methodName, _threadId);
 		}
 
+		/// <summary>
+		/// Ends tracking of the method and returns <see cref="PerformanceData"/> for it.
+		/// </summary>
+		/// <returns>Returns <see cref="PerformanceData"/> for the tracked method.</returns>
+		public PerformanceData End()
+		{
+			if (_isCompleted)
+			{
+				return _trackedMethod;
+			}
+
+			if (Stack.Any())
+			{
+				_collector.Stop(Stack.Pop());
+				_isCompleted = true;
+			}
+
+			return _trackedMethod;
+		}
+
 		private PerformanceData Start(string className, string methodName, int threadId)
 		{
 			if (_isStarted)
 			{
-				return MethodsStack.Peek();
+				return Stack.Peek();
 			}
 
 			var methodData = new PerformanceData(className, methodName);
 
-			if (MethodsStack.Any())
+			if (Stack.Any())
 			{
-				MethodsStack.Peek().SubMethods.Add(methodData);
-				methodData.Parent = MethodsStack.Peek();
+				Stack.Peek().SubMethods.Add(methodData);
+				methodData.Parent = Stack.Peek();
 			}
 
-			MethodsStack.Push(_collector.Start(methodData, threadId));
+			Stack.Push(_collector.Start(methodData, threadId));
 
 			_trackedMethod = methodData;
 			_isStarted = true;
@@ -175,20 +208,6 @@
 			return Start(className, methodName, parentThreadId);
 		}
 
-		private void End()
-		{
-			if (_isCompleted)
-			{
-				return;
-			}
-
-			if (MethodsStack.Any())
-			{
-				_collector.Stop(MethodsStack.Pop());
-				_isCompleted = true;
-			}
-		}
-
 		/// <summary>
 		/// Completes performance tracking of the method and adds the data to the collector for logging.
 		/// </summary>
@@ -204,11 +223,11 @@
 			{
 				End();
 
-				if (!MethodsStack.Any())
+				if (!Stack.Any())
 				{
 					if (_isMultiThreaded)
 					{
-						_threadMethodStacks.TryRemove(Thread.CurrentThread.ManagedThreadId, out _);
+						_perThreadStack.TryRemove(Thread.CurrentThread.ManagedThreadId, out _);
 					}
 
 					_collector.Dispose();
