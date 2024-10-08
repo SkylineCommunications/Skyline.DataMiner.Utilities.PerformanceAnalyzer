@@ -9,6 +9,8 @@
 	[TestClass]
 	public class RetryTests
 	{
+		private const int _retryCount = 3;
+
 		[TestMethod]
 		public void Execute_ActionSucceedsOnFirstTry_ShouldSucceed()
 		{
@@ -42,7 +44,8 @@
 							isActionExecuted = true;
 						}
 					},
-				TimeSpan.FromMilliseconds(100), 3);
+				TimeSpan.FromMilliseconds(100),
+				_retryCount);
 
 			// Assert
 			Assert.AreEqual(2, attempt);
@@ -64,7 +67,8 @@
 							attempt++;
 							throw new Exception("Always fails");
 						},
-					TimeSpan.FromMilliseconds(100), 3);
+					TimeSpan.FromMilliseconds(100),
+					_retryCount);
 			}
 			catch (Exception)
 			{
@@ -107,7 +111,8 @@
 							attempt++;
 							throw new Exception("Always fails");
 						},
-					sleepPeriod, 3);
+					sleepPeriod,
+					_retryCount);
 			}
 			catch (Exception)
 			{

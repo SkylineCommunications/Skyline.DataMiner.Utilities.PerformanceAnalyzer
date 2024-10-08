@@ -85,7 +85,12 @@
 			return methodData;
 		}
 
+		/// <summary>
+		/// Collects data to log, when all data to log is collected executes <see cref="IPerformanceLogger.Report(List{PerformanceData})"/> with the collected data.
+		/// </summary>
+#pragma warning disable SA1202 // Elements should be ordered by access
 		public void Dispose()
+#pragma warning restore SA1202 // Elements should be ordered by access
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
