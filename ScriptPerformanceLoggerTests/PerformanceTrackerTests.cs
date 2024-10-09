@@ -1,7 +1,9 @@
 ﻿namespace ScriptPerformanceLoggerTests
 {
 	using System;
+	using System.Linq;
 	using System.Threading;
+	using System.Threading.Tasks;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -77,6 +79,43 @@
 			var _ = new PerformanceTracker(parentTracker);
 
 			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldNotAddMethodToParentsSubMethodOnTheSameThread()
+		{
+			// Arrange
+			PerformanceTracker parentTracker = new PerformanceTracker();
+
+			// Act
+			PerformanceTracker tracker = new PerformanceTracker(parentTracker);
+
+			// Assert
+			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			var trackerThreadIdFieldInfo = tracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			Assert.AreEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
+			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldAddMethodToParentsSubMethodForDifferentThreads()
+		{
+			// Arrange
+			PerformanceTracker parentTracker = new PerformanceTracker();
+
+			// Act
+			PerformanceTracker tracker = new PerformanceTracker(parentTracker);
+
+			// Simulate different thread IDs
+			parentTracker.GetType()
+				.GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+				.SetValue(parentTracker, Thread.CurrentThread.ManagedThreadId + 1);
+
+			// Assert
+			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			var trackerThreadIdFieldInfo = tracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			Assert.AreNotEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
+			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
 		}
 
 		[TestMethod]

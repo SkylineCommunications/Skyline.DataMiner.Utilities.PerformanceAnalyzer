@@ -174,7 +174,99 @@
 
 			string fileName = Path.GetFileName(files.First());
 			Assert.IsTrue(fileName.Contains("test_log"));
-			Assert.IsTrue(fileName.Contains(DateTime.UtcNow.ToString("yyyy-MM-dd"))); // Confirm date is in the filename
+			Assert.IsTrue(fileName.Contains(DateTime.UtcNow.ToString("yyyy-MM-dd")));
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public void LogFileInfo_ThrowsArgumentException_WhenFileNameIsNull()
+		{
+			// Arrange
+			string fileName = null;
+			string filePath = "valid/path";
+
+			// Act
+			var _ = new LogFileInfo(fileName, filePath);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public void LogFileInfo_ThrowsArgumentException_WhenFileNameIsWhitespace()
+		{
+			// Arrange
+			string fileName = "   ";
+			string filePath = "valid/path";
+
+			// Act
+			var _ = new LogFileInfo(fileName, filePath);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public void LogFileInfo_ThrowsArgumentException_WhenFilePathIsNull()
+		{
+			// Arrange
+			string fileName = "log.txt";
+			string filePath = null;
+
+			// Act
+			var _ = new LogFileInfo(fileName, filePath);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public void LogFileInfo_ThrowsArgumentException_WhenFilePathIsWhitespace()
+		{
+			// Arrange
+			string fileName = "log.txt";
+			string filePath = "   ";
+
+			// Act
+			var _ = new LogFileInfo(fileName, filePath);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		public void PerformanceLog_Any_ReturnsTrueIfMetadataExists()
+		{
+			// Act
+			var log = new PerformanceLog()
+			{
+				Metadata = new Dictionary<string, string>() { { "key1", "value1" } },
+			};
+
+			// Assert
+			Assert.IsTrue(log.Any);
+		}
+
+		[TestMethod]
+		public void PerformanceLog_Any_ReturnsTrueIfDataExists()
+		{
+			// Act
+			var log = new PerformanceLog()
+			{
+				Data = new List<PerformanceData>() { new PerformanceData() },
+			};
+
+			// Assert
+			Assert.IsTrue(log.Any);
+		}
+
+		[TestMethod]
+		public void PerformanceLog_Any_ReturnsFalseIfNoDataOrMetadataExists()
+		{
+			// Act
+			var log = new PerformanceLog();
+
+			// Assert
+			Assert.IsFalse(log.Any);
 		}
 	}
 }
