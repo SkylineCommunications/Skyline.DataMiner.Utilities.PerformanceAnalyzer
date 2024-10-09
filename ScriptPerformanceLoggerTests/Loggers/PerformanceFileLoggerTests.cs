@@ -186,7 +186,7 @@
 			string filePath = "valid/path";
 
 			// Act
-			var _ = new LogFileInfo(fileName, filePath);
+			_ = new LogFileInfo(fileName, filePath);
 
 			// Assert is handled by ExpectedException
 		}
@@ -200,7 +200,7 @@
 			string filePath = "valid/path";
 
 			// Act
-			var _ = new LogFileInfo(fileName, filePath);
+			_ = new LogFileInfo(fileName, filePath);
 
 			// Assert is handled by ExpectedException
 		}
@@ -214,7 +214,7 @@
 			string filePath = null;
 
 			// Act
-			var _ = new LogFileInfo(fileName, filePath);
+			_ = new LogFileInfo(fileName, filePath);
 
 			// Assert is handled by ExpectedException
 		}
@@ -228,7 +228,7 @@
 			string filePath = "   ";
 
 			// Act
-			var _ = new LogFileInfo(fileName, filePath);
+			_ = new LogFileInfo(fileName, filePath);
 
 			// Assert is handled by ExpectedException
 		}

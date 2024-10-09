@@ -37,7 +37,7 @@
 			PerformanceTracker tracker = new PerformanceTracker(false);
 
 			// Act
-			var _ = tracker.TrackedMethod;
+			_ = tracker.TrackedMethod;
 
 			// Assert is handled by ExpectedException
 		}
@@ -76,7 +76,7 @@
 			PerformanceTracker parentTracker = new PerformanceTracker(false);
 
 			// Act
-			var _ = new PerformanceTracker(parentTracker);
+			_ = new PerformanceTracker(parentTracker);
 
 			// Assert is handled by ExpectedException
 		}
@@ -232,7 +232,7 @@
 
 			// Act
 			Thread.Sleep(100);
-			var _ = tracker.Elapsed;
+			_ = tracker.Elapsed;
 
 			// Assert is handled by ExpectedException
 		}
