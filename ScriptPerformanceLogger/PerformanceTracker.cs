@@ -68,7 +68,7 @@
 			_collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
 			if (parentPerformanceTracker._trackedMethod == null)
 			{
-				throw new InvalidOperationException($"Parent {nameof(PerformanceTracker)} is not started, call Start(string, string).");
+				throw new InvalidOperationException($"Parent {nameof(PerformanceTracker)} is not started, call Start.");
 			}
 
 			PerformanceData methodData = AutoStart(parentPerformanceTracker._threadId);
@@ -110,7 +110,7 @@
 			{
 				if (_trackedMethod == null)
 				{
-					throw new InvalidOperationException("Performance tracking not started, call Start(string, string)");
+					throw new InvalidOperationException("Performance tracking not started, call Start.");
 				}
 
 				return _collector.Clock.UtcNow - _trackedMethod.StartTime;
@@ -207,7 +207,7 @@
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private PerformanceData AutoStart(int parentThreadId)
 		{
-			MethodBase methodMemberInfo = new StackTrace().GetFrames()?.Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException(nameof(AutoStart));
+			MethodBase methodMemberInfo = new StackTrace().GetFrames()?.Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException("Unable to retrieve the stack information.");
 			string className = methodMemberInfo.DeclaringType.Name;
 			string methodName = methodMemberInfo.Name;
 

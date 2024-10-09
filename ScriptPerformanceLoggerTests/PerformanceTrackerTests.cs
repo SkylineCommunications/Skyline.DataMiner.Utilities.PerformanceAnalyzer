@@ -1,12 +1,12 @@
 ﻿namespace ScriptPerformanceLoggerTests
 {
 	using System;
-	using System.Collections.Generic;
+	using System.Threading;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using Moq;
 
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger;
+	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
 
 	[TestClass]
@@ -16,15 +16,15 @@
 		public void PerformanceTracker_InitializedWithStartNowTrue_ShouldAutoStart()
 		{
 			// Arrange
-			PerformanceTracker tracker = new PerformanceTracker(true);
+			PerformanceTracker tracker = new PerformanceTracker();
 
 			// Act
 			var trackedMethod = tracker.TrackedMethod;
 
 			// Assert
-			Assert.IsNotNull(trackedMethod, "Tracked method should not be null when started.");
-			Assert.AreEqual("PerformanceTrackerTests", trackedMethod.ClassName, "Class name should be correct.");
-			Assert.AreEqual("PerformanceTracker_InitializedWithStartNowTrue_ShouldAutoStart", trackedMethod.MethodName, "Method name should be correct.");
+			Assert.IsNotNull(trackedMethod);
+			Assert.AreEqual("PerformanceTrackerTests", trackedMethod.ClassName);
+			Assert.AreEqual("PerformanceTracker_InitializedWithStartNowTrue_ShouldAutoStart", trackedMethod.MethodName);
 		}
 
 		[TestMethod]
@@ -35,7 +35,46 @@
 			PerformanceTracker tracker = new PerformanceTracker(false);
 
 			// Act
-			var trackedMethod = tracker.TrackedMethod;
+			var _ = tracker.TrackedMethod;
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithCollector_ShouldAssignCollector()
+		{
+			// Arrange
+			PerformanceCollector collector = new PerformanceCollector(new PerformanceFileLogger());
+
+			// Act
+			PerformanceTracker tracker = new PerformanceTracker(collector);
+
+			// Assert
+			Assert.AreEqual(collector, tracker.Collector);
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldAssignCorrectParent()
+		{
+			// Arrange
+			PerformanceTracker parentTracker = new PerformanceTracker();
+
+			// Act
+			PerformanceTracker tracker = new PerformanceTracker(parentTracker);
+
+			// Assert
+			Assert.AreEqual(parentTracker.TrackedMethod, tracker.TrackedMethod.Parent);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldThrowIfParentIsNotStarted()
+		{
+			// Arrange
+			PerformanceTracker parentTracker = new PerformanceTracker(false);
+
+			// Act
+			var _ = new PerformanceTracker(parentTracker);
 
 			// Assert is handled by ExpectedException
 		}
@@ -54,6 +93,21 @@
 		}
 
 		[TestMethod]
+		public void PerformanceTracker_StartStringString_ShouldStartTracking()
+		{
+			// Arrange
+			PerformanceTracker tracker = new PerformanceTracker(false);
+
+			// Act
+			var performanceData = tracker.Start("PerformanceTrackerTests", "PerformanceTracker_StartStringString_ShouldStartTracking");
+
+			// Assert
+			Assert.IsNotNull(performanceData);
+			Assert.AreEqual("PerformanceTrackerTests", performanceData.ClassName);
+			Assert.AreEqual("PerformanceTracker_StartStringString_ShouldStartTracking", performanceData.MethodName);
+		}
+
+		[TestMethod]
 		public void PerformanceTracker_StartAndEnd_ShouldTrackPerformanceDataCorrectly()
 		{
 			// Arrange
@@ -64,11 +118,26 @@
 			PerformanceData performanceData = tracker.End();
 
 			// Assert
-			Assert.IsNotNull(performanceData, "PerformanceData should not be null.");
-			Assert.AreEqual("PerformanceTrackerTests", performanceData.ClassName, "Class name should match.");
-			Assert.AreEqual("PerformanceTracker_StartAndEnd_ShouldTrackPerformanceDataCorrectly", performanceData.MethodName, "Method name should match.");
+			Assert.IsNotNull(performanceData);
+			Assert.AreEqual("PerformanceTrackerTests", performanceData.ClassName);
+			Assert.AreEqual("PerformanceTracker_StartAndEnd_ShouldTrackPerformanceDataCorrectly", performanceData.MethodName);
 			Assert.AreNotEqual(default(DateTime), performanceData.StartTime);
 			Assert.AreNotEqual(default(TimeSpan), performanceData.ExecutionTime);
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_End_MultipleEndShouldNotModifyTheExecutionTime()
+		{
+			// Arrange
+			PerformanceTracker tracker = new PerformanceTracker();
+
+			// Act
+			var firstEndTime = tracker.End().ExecutionTime;
+			Thread.Sleep(100);
+			var secondEndTime = tracker.End().ExecutionTime;
+
+			// Assert
+			Assert.AreEqual(firstEndTime, secondEndTime);
 		}
 
 		[TestMethod]
@@ -92,13 +161,41 @@
 		public void PerformanceTracker_Dispose_ShouldEndTracking()
 		{
 			// Arrange
-			PerformanceTracker tracker = new PerformanceTracker(startNow: true);
+			PerformanceTracker tracker = new PerformanceTracker();
 
 			// Act
 			tracker.Dispose();
 
 			// Assert
 			Assert.AreNotEqual(default(TimeSpan), tracker.TrackedMethod.ExecutionTime);
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_Elapsed_ShouldReturnCorrectTime()
+		{
+			// Arrange
+			PerformanceTracker tracker = new PerformanceTracker();
+
+			// Act
+			Thread.Sleep(100);
+			var elapsed = tracker.Elapsed;
+
+			// Assert
+			Assert.IsTrue((DateTime.UtcNow - elapsed).Millisecond > 100);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void PerformanceTracker_Elapsed_ShouldThrowIfTrackingIsNotStarted()
+		{
+			// Arrange
+			PerformanceTracker tracker = new PerformanceTracker(false);
+
+			// Act
+			Thread.Sleep(100);
+			var _ = tracker.Elapsed;
+
+			// Assert is handled by ExpectedException
 		}
 	}
 }
