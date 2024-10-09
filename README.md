@@ -16,6 +16,14 @@ The **Performance Analyzer** is a library designed to track and log performance 
 
 ## Getting started
 
+### TLDR
+
+```PerformanceTracker``` will define the start and end of the method. Nesting ```PerformanceTracker``` instances will nest ```PerformanceData``` in the final JSON(*). When outer most ```PerformanceTracker```, on a specific thread, gets disposed of, it will call  ```PerformanceCollector.Dispose()``` for underlying collector.
+
+When disposing of the ```PerformanceCollector``` we add the current threads methods performance metrics to the list of metrics to log. When the last thread, among threads that shared the same collector, disposes of the ```PerformanceCollector```, it will call ```IPerformanceLogger.Report(List<PerformanceData>)``` for the underlying implementation of the ```IPerformanceLogger```, that was passed in the constructor.
+
+ > **_NOTE:_** (*) Nesting in multi-treaded use cases requires more setup, check [Examples with nesting (multi-threaded use case)](#examples-with-nesting-multi-threaded-use-case).
+
 ### Installation
 
 To get started, simply add **Skyline.DataMiner.Utils.ScriptPerformanceLogger** NuGet to your project.
@@ -38,7 +46,7 @@ The library exposes the following interfaces:
 
 ## Usage
 
-```PerformanceTracker``` is the entry point for the library. It can be used to define start and end of the tracked method, either through ```using``` statement, or by manually calling ```Start(string, string)```(or ```Start()```) and ```End()```, note that in the manual use case the developer is responsible for calling ```Dispose()``` which will cause collected data to be passed to ```PerformanceCollector```
+```PerformanceTracker``` is the entry point for the library. It can be used to define start and end of the tracked method, either through ```using``` statement, or by manually calling ```Start(string, string)```(or ```Start()```) and ```End()```, note that in the manual use case the developer is responsible for calling ```Dispose()```.
 
 ```PerformanceCollector``` collects method performance metrics to log. When ```PerformanceTracker``` is disposed of, it will pass the collected data to the underlying collector, once the collector is disposed of, it will call ```IPerformanceLogger.Report(List<PerformanceData>)``` which will handle logging of the method performance metrics.
 
@@ -60,7 +68,7 @@ The following properties are defined for ```PerformanceData```
 
 ### Basic example
 
-In the following examples, we will use default constructor for ```PerformanceTracking``` this will result in new file creation for every ```using```, more precisely, for every call of the ```Dispose```.
+In the following examples, we will use default constructor for ```PerformanceTracker``` this will result in new file creation for every ```using```, more precisely, for every call of the ```Dispose```.
 
 #### Input
 ```csharp
