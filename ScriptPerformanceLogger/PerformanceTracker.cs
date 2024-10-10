@@ -45,6 +45,17 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
 		/// </summary>
+		/// <param name="className">Name of the class from which a method is tracked.</param>
+		/// <param name="methodName">Name of the method that is tracked.</param>
+		public PerformanceTracker(string className, string methodName) : this()
+		{
+			_collector = new PerformanceCollector(new PerformanceFileLogger($"default") { IncludeDate = true });
+			Start(className, methodName, _threadId);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
+		/// </summary>
 		/// <param name="collector"><see cref="PerformanceCollector"/> to use.</param>
 		/// <param name="startNow">True if method tracking should start on initialization; false otherwise.</param>
 		/// <exception cref="ArgumentNullException">Throws if <paramref name="collector"/> is null.</exception>
@@ -56,6 +67,19 @@
 			{
 				AutoStart(_threadId);
 			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
+		/// </summary>
+		/// <param name="collector"><see cref="PerformanceCollector"/> to use.</param>
+		/// <param name="className">Name of the class from which a method is tracked.</param>
+		/// <param name="methodName">Name of the method that is tracked.</param>
+		/// <exception cref="ArgumentNullException">Throws if <paramref name="collector"/> is null.</exception>
+		public PerformanceTracker(PerformanceCollector collector, string className, string methodName) : this()
+		{
+			_collector = collector ?? throw new ArgumentNullException(nameof(collector));
+			Start(className, methodName, _threadId);
 		}
 
 		/// <summary>
@@ -72,6 +96,30 @@
 			}
 
 			PerformanceData methodData = AutoStart(parentPerformanceTracker._threadId);
+			methodData.Parent = parentPerformanceTracker._trackedMethod;
+
+			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId)
+			{
+				parentPerformanceTracker._trackedMethod.SubMethods.Add(methodData);
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class and starts performance tracking for the method in which it was initialized.
+		/// </summary>
+		/// <param name="parentPerformanceTracker">Parent <see cref="PerformanceTracker"/> of the new instance. This controls the nesting of the <see cref="PerformanceData"/> for methods in multithreaded use cases.</param>
+		/// <param name="className">Name of the class from which a method is tracked.</param>
+		/// <param name="methodName">Name of the method that is tracked.</param>
+		/// <exception cref="ArgumentNullException">Throws if parent <paramref name="parentPerformanceTracker"/> is null.</exception>
+		public PerformanceTracker(PerformanceTracker parentPerformanceTracker, string className, string methodName) : this()
+		{
+			_collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
+			if (parentPerformanceTracker._trackedMethod == null)
+			{
+				throw new InvalidOperationException($"Parent {nameof(PerformanceTracker)} is not started, call Start.");
+			}
+
+			PerformanceData methodData = Start(className, methodName, parentPerformanceTracker._threadId);
 			methodData.Parent = parentPerformanceTracker._trackedMethod;
 
 			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId)
