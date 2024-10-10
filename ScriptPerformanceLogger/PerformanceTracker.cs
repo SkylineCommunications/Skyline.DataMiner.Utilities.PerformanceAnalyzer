@@ -195,6 +195,20 @@
 		}
 
 		/// <summary>
+		/// Adds performance data to the tracked method.
+		/// </summary>
+		/// <param name="performanceData">Performance data to be added to the current tracked method.</param>
+		public void AddPerformanceData(IEnumerable<PerformanceData> performanceData)
+		{
+			foreach (var data in performanceData)
+			{
+				data.Parent = _trackedMethod;
+				_trackedMethod.SubMethods.Add(data);
+			}
+		}
+
+
+		/// <summary>
 		/// Creates new instance of <see cref="PerformanceData"/> for containing method.
 		/// </summary>
 		/// <returns>New instance of <see cref="PerformanceData"/> for the containing method.</returns>
