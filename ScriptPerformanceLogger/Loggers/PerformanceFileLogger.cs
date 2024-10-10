@@ -90,6 +90,21 @@
 			return this;
 		}
 
+		/// <summary>
+		/// Adds metadata for the logs.
+		/// </summary>
+		/// <param name="metadata">Metadata to add or update to the <see cref="PerformanceFileLogger"/>.</param>
+		/// <returns>Returns current instance of <see cref="PerformanceFileLogger"/>.</returns>
+		public PerformanceFileLogger AddMetadata(IReadOnlyDictionary<string, string> metadata)
+		{
+			foreach (var data in metadata)
+			{
+				_metadata.[data.Key] = data.Value;
+			}
+
+			return this;
+		}
+
 		private static long GetStartPosition(FileStream fileStream)
 		{
 			char searchChar = '}';

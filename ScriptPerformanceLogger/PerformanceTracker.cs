@@ -132,6 +132,21 @@
 		}
 
 		/// <summary>
+		/// Adds metadata for the tracked method.
+		/// </summary>
+		/// <param name="metadata">Metadata to add or update.</param>
+		/// <returns>Returns current instance of <see cref="PerformanceTracker"/>.</returns>
+		public PerformanceTracker AddMetadata(IReadOnlyDictionary<string, string> metadata)
+		{
+			foreach (var data in metadata)
+			{
+				_trackedMethod.Metadata[data.Key] = data.Value;
+			}
+
+			return this;
+		}
+
+		/// <summary>
 		/// Creates new instance of <see cref="PerformanceData"/> for containing method.
 		/// </summary>
 		/// <returns>New instance of <see cref="PerformanceData"/> for the containing method.</returns>
