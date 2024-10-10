@@ -99,7 +99,7 @@
 		{
 			foreach (var data in metadata)
 			{
-				_metadata.[data.Key] = data.Value;
+				_metadata[data.Key] = data.Value;
 			}
 
 			return this;

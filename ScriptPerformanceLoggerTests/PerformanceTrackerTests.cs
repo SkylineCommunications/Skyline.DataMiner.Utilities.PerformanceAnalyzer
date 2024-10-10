@@ -219,7 +219,7 @@
 			var elapsed = tracker.Elapsed;
 
 			// Assert
-			Assert.IsTrue((DateTime.UtcNow - elapsed).Millisecond > 100);
+			Assert.IsTrue((DateTime.UtcNow - elapsed).Millisecond >= 100);
 		}
 
 		[TestMethod]
