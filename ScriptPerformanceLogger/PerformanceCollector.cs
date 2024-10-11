@@ -39,6 +39,7 @@
 		/// </summary>
 		/// <param name="methodData"><see cref="PerformanceData"/> of the method to update.</param>
 		/// <returns>Returns updated method.</returns>
+		/// TODO: verify if this is required
 		public PerformanceData Start(PerformanceData methodData)
 		{
 			return Start(methodData, Thread.CurrentThread.ManagedThreadId);

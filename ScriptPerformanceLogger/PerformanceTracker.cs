@@ -198,6 +198,7 @@
 		/// Adds performance data to the tracked method.
 		/// </summary>
 		/// <param name="performanceData">Performance data to be added to the current tracked method.</param>
+		/// TODO: verify if this is required
 		public void AddPerformanceData(IEnumerable<PerformanceData> performanceData)
 		{
 			foreach (var data in performanceData)
@@ -206,7 +207,6 @@
 				_trackedMethod.SubMethods.Add(data);
 			}
 		}
-
 
 		/// <summary>
 		/// Creates new instance of <see cref="PerformanceData"/> for containing method.
