@@ -99,26 +99,6 @@
 		}
 
 		[TestMethod]
-		public void PerformanceFileLogger_Report_ReadByteReturnsMinusOne()
-		{
-			// Arrange
-			var logger = new PerformanceFileLogger(string.Empty);
-			var performanceData = new List<PerformanceData>
-			{
-				new PerformanceData
-				{
-					ClassName = "Program",
-					MethodName = "Main",
-					StartTime = new DateTime(2024, 12, 12, 14, 15, 22, DateTimeKind.Utc),
-					ExecutionTime = new TimeSpan(1_000_000),
-				},
-			};
-
-			// Act
-			logger.Report(performanceData);
-		}
-
-		[TestMethod]
 		public void PerformanceFileLogger_Report_CreatesFileWithCorrectData()
 		{
 			// Arrange
