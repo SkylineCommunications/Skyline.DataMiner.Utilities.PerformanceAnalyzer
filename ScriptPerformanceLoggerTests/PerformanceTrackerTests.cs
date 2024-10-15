@@ -53,6 +53,19 @@
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedCollectorWithNull_ShouldThrow()
+		{
+			// Arrange
+			PerformanceCollector collector = null;
+
+			// Act
+			_ = new PerformanceTracker(collector);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void PerformanceTracker_InitializedClassNameWithNull_ShouldThrow()
 		{
 			// Arrange & Act

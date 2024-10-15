@@ -6,6 +6,7 @@
 	using System.Linq;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
 
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
@@ -47,6 +48,74 @@
 			Assert.AreEqual(2, logger.Metadata.Count);
 			Assert.AreEqual("value1", logger.Metadata["key1"]);
 			Assert.AreEqual("value2", logger.Metadata["key2"]);
+		}
+
+		[TestMethod]
+		public void Constructor_WithFileNameOnly_ShouldUseDefaultDirectoryPath()
+		{
+			// Arrange
+			var logger = new PerformanceFileLogger("test_log");
+
+			// Act
+			var logFileInfo = logger.LogFiles.First();
+
+			// Assert
+			Assert.AreEqual("test_log", logFileInfo.FileName);
+			Assert.AreEqual(@"C:\Skyline_Data\PerformanceLogger", logFileInfo.FilePath);
+		}
+
+		[TestMethod]
+		public void Constructor_WithFileNameAndFilePath_ShouldCreateLogFileInfo()
+		{
+			// Arrange
+			var logger = new PerformanceFileLogger("test_log", @"C:\TestPath\TestLog");
+
+			// Act
+			var logFileInfo = logger.LogFiles.First();
+
+			// Assert
+			Assert.AreEqual("test_log", logFileInfo.FileName);
+			Assert.AreEqual(@"C:\TestPath\TestLog", logFileInfo.FilePath);
+		}
+
+		[TestMethod]
+		public void PerformanceFileLogger_AddMetadata_ShouldAddMetadataToDictionary()
+		{
+			// Arrange
+			var logger = new PerformanceFileLogger();
+			var metadata = new Dictionary<string, string>
+			{
+				{ "key1", "value1" },
+				{ "key2", "value2" },
+			};
+
+			// Act
+			logger.AddMetadata(metadata);
+
+			// Assert
+			Assert.AreEqual(2, logger.Metadata.Count);
+			Assert.AreEqual("value1", logger.Metadata["key1"]);
+			Assert.AreEqual("value2", logger.Metadata["key2"]);
+		}
+
+		[TestMethod]
+		public void PerformanceFileLogger_Report_ReadByteReturnsMinusOne()
+		{
+			// Arrange
+			var logger = new PerformanceFileLogger(string.Empty);
+			var performanceData = new List<PerformanceData>
+			{
+				new PerformanceData
+				{
+					ClassName = "Program",
+					MethodName = "Main",
+					StartTime = new DateTime(2024, 12, 12, 14, 15, 22, DateTimeKind.Utc),
+					ExecutionTime = new TimeSpan(1_000_000),
+				},
+			};
+
+			// Act
+			logger.Report(performanceData);
 		}
 
 		[TestMethod]
