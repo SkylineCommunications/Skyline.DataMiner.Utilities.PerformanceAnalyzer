@@ -15,12 +15,14 @@
 	{
 		private Mock<IPerformanceLogger> _mockLogger;
 		private PerformanceCollector _collector;
+		private PerformanceTracker _tracker;
 
 		[TestInitialize]
 		public void Setup()
 		{
 			_mockLogger = new Mock<IPerformanceLogger>();
 			_collector = new PerformanceCollector(_mockLogger.Object);
+			_tracker = new PerformanceTracker(_collector);
 		}
 
 		[TestMethod]
@@ -66,7 +68,7 @@
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void PerformanceTracker_InitializedClassNameWithNull_ShouldThrow()
+		public void PerformanceTracker_InitializedCollectorClassNameWithNull_ShouldThrow()
 		{
 			// Arrange & Act
 			_ = new PerformanceTracker(_collector, null, "methodName");
@@ -76,7 +78,7 @@
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void PerformanceTracker_InitializedClassNameWithEmpty_ShouldThrow()
+		public void PerformanceTracker_InitializedCollectorClassNameWithEmpty_ShouldThrow()
 		{
 			// Arrange & Act
 			_ = new PerformanceTracker(_collector, string.Empty, "methodName");
@@ -86,7 +88,7 @@
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void PerformanceTracker_InitializedClassNameWithWhitespace_ShouldThrow()
+		public void PerformanceTracker_InitializedCollectorClassNameWithWhitespace_ShouldThrow()
 		{
 			// Arrange & Act
 			_ = new PerformanceTracker(_collector, "    ", "methodName");
@@ -96,7 +98,7 @@
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void PerformanceTracker_InitializedMethodNameWithNull_ShouldThrow()
+		public void PerformanceTracker_InitializedCollectorMethodNameWithNull_ShouldThrow()
 		{
 			// Arrange & Act
 			_ = new PerformanceTracker(_collector, "className", null);
@@ -106,7 +108,7 @@
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void PerformanceTracker_InitializedMethodNameWithEmpty_ShouldThrow()
+		public void PerformanceTracker_InitializedCollectorMethodNameWithEmpty_ShouldThrow()
 		{
 			// Arrange & Act
 			_ = new PerformanceTracker(_collector, "className", string.Empty);
@@ -116,10 +118,83 @@
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void PerformanceTracker_InitializedMethodNameWithWhitespace_ShouldThrow()
+		public void PerformanceTracker_InitializedCollectorMethodNameWithWhitespace_ShouldThrow()
 		{
 			// Arrange & Act
 			_ = new PerformanceTracker(_collector, "className", "    ");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedParentTrackerWithNull_ShouldThrow()
+		{
+			// Arrange
+			PerformanceTracker tracker = null;
+
+			// Act
+			_ = new PerformanceTracker(tracker);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedParentTrackerClassNameWithNull_ShouldThrow()
+		{
+			// Arrange & Act
+			_ = new PerformanceTracker(_tracker, null, "methodName");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedParentTrackerClassNameWithEmpty_ShouldThrow()
+		{
+			// Arrange & Act
+			_ = new PerformanceTracker(_tracker, string.Empty, "methodName");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedParentTrackerClassNameWithWhitespace_ShouldThrow()
+		{
+			// Arrange & Act
+			_ = new PerformanceTracker(_tracker, "    ", "methodName");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedParentTrackerMethodNameWithNull_ShouldThrow()
+		{
+			// Arrange & Act
+			_ = new PerformanceTracker(_tracker, "className", null);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedParentTrackerMethodNameWithEmpty_ShouldThrow()
+		{
+			// Arrange & Act
+			_ = new PerformanceTracker(_tracker, "className", string.Empty);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedParentTrackerMethodNameWithWhitespace_ShouldThrow()
+		{
+			// Arrange & Act
+			_ = new PerformanceTracker(_tracker, "className", "    ");
 
 			// Assert is handled by ExpectedException
 		}
