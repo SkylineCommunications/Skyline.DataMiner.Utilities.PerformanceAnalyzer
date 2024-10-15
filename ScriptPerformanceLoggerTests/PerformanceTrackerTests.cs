@@ -53,6 +53,66 @@
 		}
 
 		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedClassNameWithNull_ShouldThrow()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_collector, null, "methodName");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedClassNameWithEmpty_ShouldThrow()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_collector, string.Empty, "methodName");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedClassNameWithWhitespace_ShouldThrow()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_collector, "    ", "methodName");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedMethodNameWithNull_ShouldThrow()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_collector, "className", null);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedMethodNameWithEmpty_ShouldThrow()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_collector, "className", string.Empty);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedMethodNameWithWhitespace_ShouldThrow()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_collector, "className", "    ");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
 		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldAssignCorrectParent()
 		{
 			// Arrange

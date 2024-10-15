@@ -85,6 +85,8 @@
 		{
 			// Arrange & Act
 			Retry.Execute(() => { }, TimeSpan.FromMilliseconds(100), 0);
+
+			// Assert is handled by ExpectedException
 		}
 
 		[TestMethod]

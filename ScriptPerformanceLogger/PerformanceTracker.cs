@@ -26,6 +26,7 @@
 		private bool _disposed;
 		private bool _isStarted;
 		private bool _isCompleted;
+		private bool _isSubMethod;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
@@ -49,6 +50,16 @@
 		public PerformanceTracker(PerformanceCollector collector, string className, string methodName) : this()
 		{
 			_collector = collector ?? throw new ArgumentNullException(nameof(collector));
+			if (string.IsNullOrWhiteSpace(className))
+			{
+				throw new ArgumentNullException(nameof(className));
+			}
+
+			if (string.IsNullOrWhiteSpace(methodName))
+			{
+				throw new ArgumentNullException(nameof(methodName));
+			}
+
 			Start(className, methodName, _threadId);
 		}
 
@@ -60,17 +71,14 @@
 		public PerformanceTracker(PerformanceTracker parentPerformanceTracker) : this()
 		{
 			_collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
-			if (parentPerformanceTracker._trackedMethod == null)
-			{
-				throw new InvalidOperationException($"Parent {nameof(PerformanceTracker)} is not started, call Start.");
-			}
 
 			PerformanceData methodData = Start(parentPerformanceTracker._threadId);
 			methodData.Parent = parentPerformanceTracker._trackedMethod;
 
-			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId)
+			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId && !_isSubMethod)
 			{
 				parentPerformanceTracker._trackedMethod.SubMethods.Add(methodData);
+				_isSubMethod = true;
 			}
 		}
 
@@ -84,17 +92,24 @@
 		public PerformanceTracker(PerformanceTracker parentPerformanceTracker, string className, string methodName) : this()
 		{
 			_collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
-			if (parentPerformanceTracker._trackedMethod == null)
+
+			if (string.IsNullOrWhiteSpace(className))
 			{
-				throw new InvalidOperationException($"Parent {nameof(PerformanceTracker)} is not started, call Start.");
+				throw new ArgumentNullException(nameof(className));
+			}
+
+			if (string.IsNullOrWhiteSpace(methodName))
+			{
+				throw new ArgumentNullException(nameof(methodName));
 			}
 
 			PerformanceData methodData = Start(className, methodName, parentPerformanceTracker._threadId);
 			methodData.Parent = parentPerformanceTracker._trackedMethod;
 
-			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId)
+			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId && !_isSubMethod)
 			{
 				parentPerformanceTracker._trackedMethod.SubMethods.Add(methodData);
+				_isSubMethod = true;
 			}
 		}
 
@@ -164,29 +179,6 @@
 			return this;
 		}
 
-		/// <summary>
-		/// Ends tracking of the method and returns <see cref="PerformanceData"/> for it.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Throws if tracked has not been started yet.</exception>
-		private void End()
-		{
-			if (_trackedMethod == null)
-			{
-				throw new InvalidOperationException(nameof(_trackedMethod));
-			}
-
-			if (_isCompleted)
-			{
-				return;
-			}
-
-			if (Stack.Any())
-			{
-				_collector.Stop(Stack.Pop());
-				_isCompleted = true;
-			}
-		}
-
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		private PerformanceData Start(int parentThreadId)
 		{
@@ -210,6 +202,7 @@
 			{
 				Stack.Peek().SubMethods.Add(methodData);
 				methodData.Parent = Stack.Peek();
+				_isSubMethod = true;
 			}
 
 			Stack.Push(_collector.Start(methodData, threadId));
@@ -218,6 +211,25 @@
 			_isStarted = true;
 
 			return methodData;
+		}
+
+		private void End()
+		{
+			if (_trackedMethod == null)
+			{
+				throw new InvalidOperationException(nameof(_trackedMethod));
+			}
+
+			if (_isCompleted)
+			{
+				return;
+			}
+
+			if (Stack.Any())
+			{
+				_collector.Stop(Stack.Pop());
+				_isCompleted = true;
+			}
 		}
 
 		/// <summary>
