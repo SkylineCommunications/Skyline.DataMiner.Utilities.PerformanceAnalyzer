@@ -59,6 +59,9 @@
 		/// </summary>
 		public List<LogFileInfo> LogFiles { get; private set; } = new List<LogFileInfo>();
 
+		/// <summary>
+		/// Gets metadata of the logs.
+		/// </summary>
 		public Dictionary<string, string> Metadata => _metadata;
 
 		/// <summary>

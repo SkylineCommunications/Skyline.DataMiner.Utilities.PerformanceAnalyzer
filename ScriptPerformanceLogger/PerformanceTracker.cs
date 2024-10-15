@@ -29,7 +29,7 @@
 		private bool _isSubMethod;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
+		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class and starts performance tracking for the method in which it was initialized.
 		/// </summary>
 		/// <param name="collector"><see cref="PerformanceCollector"/> to use.</param>
 		/// <exception cref="ArgumentNullException">Throws if <paramref name="collector"/> is null.</exception>
@@ -41,7 +41,7 @@
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
+		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class and starts performance tracking for the method <paramref name="methodName"/> of the class <paramref name="className"/>.
 		/// </summary>
 		/// <param name="collector"><see cref="PerformanceCollector"/> to use.</param>
 		/// <param name="className">Name of the class from which a method is tracked.</param>
@@ -83,7 +83,7 @@
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class and starts performance tracking for the method in which it was initialized.
+		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class and starts performance tracking for the method <paramref name="methodName"/> of the class <paramref name="className"/>.
 		/// </summary>
 		/// <param name="parentPerformanceTracker">Parent <see cref="PerformanceTracker"/> of the new instance. This controls the nesting of the <see cref="PerformanceData"/> for methods in multithreaded use cases.</param>
 		/// <param name="className">Name of the class from which a method is tracked.</param>

@@ -236,7 +236,7 @@
 		[TestMethod]
 		public void PerformanceLog_Any_ReturnsTrueIfMetadataExists()
 		{
-			// Act
+			// Arrange & Act
 			var log = new PerformanceLog()
 			{
 				Metadata = new Dictionary<string, string>() { { "key1", "value1" } },
@@ -249,7 +249,7 @@
 		[TestMethod]
 		public void PerformanceLog_Any_ReturnsTrueIfDataExists()
 		{
-			// Act
+			// Arrange & Act
 			var log = new PerformanceLog()
 			{
 				Data = new List<PerformanceData>() { new PerformanceData() },
@@ -260,10 +260,24 @@
 		}
 
 		[TestMethod]
-		public void PerformanceLog_Any_ReturnsFalseIfNoDataOrMetadataExists()
+		public void PerformanceLog_Any_ReturnsFalseIfDataAndMetadataAreEmpty()
 		{
-			// Act
+			// Arrange & Act
 			var log = new PerformanceLog();
+
+			// Assert
+			Assert.IsFalse(log.Any);
+		}
+
+		[TestMethod]
+		public void PerformanceLog_Any_ReturnsFalseIfDataAndMetadataAreNull()
+		{
+			// Arrange & Act
+			var log = new PerformanceLog()
+			{
+				Metadata = null,
+				Data = null,
+			};
 
 			// Assert
 			Assert.IsFalse(log.Any);

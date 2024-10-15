@@ -46,7 +46,7 @@ The library exposes the following interfaces:
 
 ## Usage
 
-```PerformanceTracker``` is the entry point for the library. It can be used to define start and end of the tracked method, either through ```using``` statement, or by manually calling ```Start(string, string)```(or ```Start()```) and ```End()```, note that in the manual use case the developer is responsible for calling ```Dispose()```.
+```PerformanceTracker``` is the entry point for the library. It can be used to define start and end of the tracked method through ```using``` statement. Tracking will start when ```PerformanceTracker``` is initialized and end when it is disposed of, by calling ```Dispose```.
 
 ```PerformanceCollector``` collects method performance metrics to log. When ```PerformanceTracker``` is disposed of, it will pass the collected data to the underlying collector, once the collector is disposed of, it will call ```IPerformanceLogger.Report(List<PerformanceData>)``` which will handle logging of the method performance metrics.
 
@@ -62,125 +62,71 @@ The following properties are defined for ```PerformanceData```
  - ```SubMethods``` - list of tracked methods that were invoked from this method
  - ```Metadata``` - dictionary that contains additional information about the method
 
- > **_NOTE:_** In case ```Metadata``` and/or ```SubMethods``` are empty they will not be included in the final JSON, respectively.
+ > **_NOTE:_** In case ```Metadata``` and/or ```SubMethods``` are empty they will not be included in the final JSON.
 
 ```IPerformanceLogger``` is the interface on which ```PerformanceCollector``` is based, implementing it provides alternative ways to log method performance metrics.
 
 ### Basic example
 
-In the following examples, we will use default constructor for ```PerformanceTracker``` this will result in new file creation for every ```using```, more precisely, for every call of the ```Dispose```.
+The most basic use case of the library. When dealing with single-threaded environments, the only responsibility of the developer is to provide the same collector to all instances of ```PerformanceTracker```. 
 
 #### Input
 ```csharp
+// Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummy");
+// Create a PerformanceCollector instance with PerformanceFileLogger
+PerformanceCollector collector = new PerformanceCollector(fileLogger);
+
 void Foo()
 {
   // Create a PerformanceTracker instance and start tracking.
-  using (var tracker = new PerformanceTracker())
-  {
-    // Your code goes here...
-  } // Tracker automatically adds performance data to the collector when disposed.
-}
-```
-#### Output
-This will create(or add to existing) file named *[yyyy-MM-dd hh-mm-ss.fff]_default.json* at *C:\Skyline_Data\PerformanceLogger* with performance metrics for the containing method ```Foo()```.
-
-The log file might look something like this:
-```json
-[
-  {
-    "Data": [
-      {
-        "ClassName": "Program",
-        "MethodName": "Foo",
-        "StartTime": "2024-10-08T10:35:52.6521212Z",
-        "ExecutionTime": "00:00:01.0088806",
-      }
-    ]
-  }
-]
-```
-
-### Examples with metadata
-
-#### Input
-```csharp
-void Foo()
-{
-  // Create a PerformanceTracker instance and start tracking.
-  using (var tracker = new PerformanceTracker())
-  {
-    tracker.AddMetadata("key", "value");
-    // Your code goes here...
-  } // Tracker automatically adds performance data to the collector when disposed.
-}
-```
-or
-```csharp
-void Foo()
-{
-  // Create a PerformanceTracker instance without starting it (startNow argument is false).
-  using (var tracker = new PerformanceTracker(startNow: false))
-  {
-    var performanceData = tracker.Start();
-    performanceData.AddMetadata("key", "value");
-    // Your code goes here...
-  } // Tracker automatically adds performance data to the collector when disposed.
-}
-```
-
-#### Output
-This will create file named *[yyyy-MM-dd hh-mm-ss.fff]_default.json* at *C:\Skyline_Data\PerformanceLogger* containing performance metrics and defined metadata for the containing method ```Foo()```.
-
-The log file might look something like this:
-```json
-[
-  {
-    "Data": [
-      {
-        "ClassName": "Program",
-        "MethodName": "Foo",
-        "StartTime": "2024-10-08T10:35:52.6521212Z",
-        "ExecutionTime": "00:00:01.0088806",
-        "Metadata": {
-          "key": "value"
-        }
-      }
-    ]
-  }
-]
-```
-> **_NOTE:_** Tracking does not have to be started in order to add metadata.
-
-### Example with nesting (single-threaded use case)
-
-Nesting for single-threaded use cases is supported out of the box.
-
-#### Input
-```csharp
-void Foo()
-{
-  // Create a PerformanceTracker instance with the collector and start tracking.
   using (new PerformanceTracker(collector))
   {
     // Your code goes here...
-    Foo();
+    Bar();
     // Your code goes here...
   } // Tracker automatically adds performance data to the collector when disposed.
 }
 
 void Bar()
 {
+  using (new PerformanceTracker(collector))
+  {
+    // Your code goes here...
+  }
+}
+```
+The ```PerformanceTracker``` class exposes the underlying collector via ```Collector``` property, making it possible to provide collector directly from the instance of ```PerformanceTracker```.
+```csharp
+void Foo()
+{
+  // Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+  PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummy");
+  // Create a PerformanceCollector instance with PerformanceFileLogger
+  PerformanceCollector collector = new PerformanceCollector(fileLogger);
+  
+  // Create a PerformanceTracker instance and start tracking.
   using (var tracker = new PerformanceTracker(collector))
   {
     // Your code goes here...
+    Bar(tracker);
+    // Your code goes here...
   } // Tracker automatically adds performance data to the collector when disposed.
+}
+
+void Bar(PerformanceTracker tracker)
+{
+  using (new PerformanceTracker(tracker.Collector))
+  {
+    // Your code goes here...
+  }
 }
 ```
 
 #### Output
-This will create file(s) whose names and paths are based on ```PerformanceFileLogger``` arguments containing performance metrics.
+This will create a file *dummy.json* at *C:\Skyline_Data\PerformanceLogger* containing methods performance metrics.
 
-The log file might look something like this:
+The log file might look like this:
 ```json
 [
   {
@@ -204,17 +150,82 @@ The log file might look something like this:
 ]
 ```
 
+### Examples with metadata
+
+It is possible to add metadata to tracked method's ```PerformanceData``` by calling ```PerformanceTracker.AddMetadata(string, string)```. Metadata can be used to include additional information for each method, for example thread id in multi-threaded environments. 
+
+#### Input
+```csharp
+// Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummy");
+// Create a PerformanceCollector instance with PerformanceFileLogger
+PerformanceCollector collector = new PerformanceCollector(fileLogger);
+
+void Foo()
+{
+  // Create a PerformanceTracker instance and start tracking.
+  using (var tracker = new PerformanceTracker(collector))
+  {
+    tracker.AddMetadata("key", "value");
+    // Your code goes here...
+  } // Tracker automatically adds performance data to the collector when disposed.
+}
+```
+or
+```csharp
+// Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummy");
+// Create a PerformanceCollector instance with PerformanceFileLogger
+PerformanceCollector collector = new PerformanceCollector(fileLogger);
+
+void Foo()
+{
+  // Create a PerformanceTracker instance and start tracking.
+  using (var tracker = new PerformanceTracker(collector).AddMetadata("key", "value"))
+  {
+    // Your code goes here...
+  } // Tracker automatically adds performance data to the collector when disposed.
+}
+```
+
+#### Output
+This will create a file named *dummy.json* at *C:\Skyline_Data\PerformanceLogger* containing methods performance metrics and defined metadata for the containing method ```Foo()```.
+
+The log file might look like this:
+```json
+[
+  {
+    "Data": [
+      {
+        "ClassName": "Program",
+        "MethodName": "Foo",
+        "StartTime": "2024-10-08T10:35:52.6521212Z",
+        "ExecutionTime": "00:00:01.0088806",
+        "Metadata": {
+          "key": "value"
+        }
+      }
+    ]
+  }
+]
+```
+
 ### Examples with nesting (multi-threaded use case)
 
 When it comes to multi-threaded use cases, we have a couple of options. 
 
- 1. We can give each thread its own ```PerformanceCollector``` in which case we will end up with one log file per thread.
+ 1. We can give each thread its own ```PerformanceCollector``` in which case the result will be one log file per thread.
 
 #### Input
 ```csharp
+// Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummyA");
+// Create a PerformanceCollector instance with PerformanceFileLogger
+PerformanceCollector collectorA = new PerformanceCollector(fileLogger);
+
 void Foo()
 {
-  // Create a PerformanceTracker instance with the collector and start tracking.
+  // Create a PerformanceTracker instance and start tracking.
   using (new PerformanceTracker(collectorA))
   {
     // Your code goes here...
@@ -225,13 +236,13 @@ void Foo()
 
 void Bar()
 {
-  using (var tracker = new PerformanceTracker(collectorB))
+  using (new PerformanceTracker(new PerformanceCollector(new PerformanceFileLogger("dummyB"))))
   {
     // Your code goes here...
-  } // Tracker automatically adds performance data to the collector when disposed.
+  }
 }
 ```
-The log file from collectorA might look something like this:
+The log file *dummyA.json* might look like this:
 ```json
 [
   {
@@ -246,7 +257,7 @@ The log file from collectorA might look something like this:
   }
 ]
 ```
-The log file from collectorB might look something like this:
+The log file *dummyB.json* might look like this:
 ```json
 [
   {
@@ -261,13 +272,17 @@ The log file from collectorB might look something like this:
   }
 ]
 ```
-
  2. We can share one ```PerformanceCollector``` instance between threads in which case we will end up with one log file, but without nesting.
 
 ```csharp
+// Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummy");
+// Create a PerformanceCollector instance with PerformanceFileLogger
+PerformanceCollector collector = new PerformanceCollector(fileLogger);
+
 void Foo()
 {
-  // Create a PerformanceTracker instance with the collector and start tracking.
+  // Create a PerformanceTracker instance and start tracking.
   using (new PerformanceTracker(collector))
   {
     // Your code goes here...
@@ -278,13 +293,13 @@ void Foo()
 
 void Bar()
 {
-  using (var tracker = new PerformanceTracker(collector))
+  using (new PerformanceTracker(collector))
   {
     // Your code goes here...
-  } // Tracker automatically adds performance data to the collector when disposed.
+  }
 }
 ```
-The log file might look something like this:
+The log file might look like this:
 ```json
 [
   {
@@ -305,31 +320,36 @@ The log file might look something like this:
   }
 ]
 ```
+> **_NOTE:_** Notice that order of entries is not the same as the order of methods.
 
- 3. We can pass the outer ```PerformanceTracker``` instance into the constructor of thread ```PerformanceTracker``` in which case thread method performance metrics will be nested inside ```PerformanceData``` of outer ```PerformanceTracker```.
+ 3. We can pass the ```PerformanceTracker``` instance, under which we want to nest methods performance metrics of the thread, in the constructor of the threads ```PerformanceTracker```. This is the way to achieve expected nesting when dealing with threads in most cases.
 
 ```csharp
+// Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummy");
+// Create a PerformanceCollector instance with PerformanceFileLogger
+PerformanceCollector collector = new PerformanceCollector(fileLogger);
+
 void Foo()
 {
-  outerTracker.Start();
-  // Your code goes here...
-  var task = Task.Run(() => Bar());
-  // Your code goes here...
-  outerTracker.Dispose();
-}
-
-void Bar()
-{
-  // Create a PerformanceTracker instance with the tracker under which to nest this method's performance metrics and start tracking.
-  using (var tracker = new PerformanceTracker(outerTracker))
+  using (var parentTracker = new PerformanceTracker(collector))
   {
+    // Your code goes here...
+    var task = Task.Run(() => Bar(parentTracker));
     // Your code goes here...
   } // Tracker automatically adds performance data to the collector when disposed.
 }
-```
-> **_NOTE:_** It is possible to achieve the same results with ```using``` statement, this approach was chosen for the sake of variety.
 
-The log file might look something like this:
+void Bar(PerformanceTracker parentTracker)
+{
+  // Create a PerformanceTracker instance with the tracker under which to nest this method's performance metrics and start tracking.
+  using (new PerformanceTracker(parentTracker))
+  {
+    // Your code goes here...
+  }
+}
+```
+The log file might look like this:
 ```json
 [
   {
@@ -353,7 +373,47 @@ The log file might look something like this:
 ]
 ```
 
-> **_IMPORTANT:_** If you don't wait for all threads to finish before disposing of the outer ```PerformanceTracker``` it is possible for the main thread to call ```PerformanceTracker.Dispose()``` before other threads are done, in that case, there will be data missing from the final JSON which will cause incorrect results.
+### Manually providing class and method names
+
+In the previous examples the names of the class and method that are seen in the logs are decided automatically base on where the ```PerformanceTracker``` is initialized, by default it will take the name of containing method and it's class. However, in certain cases this is not desired and for those situations it is possible to manually provide class name and method name for the resulting ```PerformanceData``` object. It is also possible to define different path for the log files by providing second argument to the constructor of ```PerformanceFileLogger```.
+
+#### Input
+```csharp
+// Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummy", @"C:\Desktop\Logs");
+// Create a PerformanceCollector instance with PerformanceFileLogger
+PerformanceCollector collector = new PerformanceCollector(fileLogger);
+
+void Foo()
+{
+  // Create a PerformanceTracker instance and start tracking.
+  using (new PerformanceTracker(collector, "Random Class", "Random Method"))
+  {
+    // Your code goes here...
+  } // Tracker automatically adds performance data to the collector when disposed.
+}
+```
+
+#### Output
+This will create a file named *dummy.json* at *C:\Desktop\Logs* containing methods performance metrics.
+
+The log file might look like this:
+```json
+[
+  {
+    "Data": [
+      {
+        "ClassName": "Random Class",
+        "MethodName": "Random Method",
+        "StartTime": "2024-10-08T10:35:52.6521212Z",
+        "ExecutionTime": "00:00:01.0088806",
+      }
+    ]
+  }
+]
+```
+
+> **_IMPORTANT:_** If you don't wait for all threads to finish before disposing of the outer most ```PerformanceTracker``` it is possible for the main thread to call ```PerformanceTracker.Dispose()``` for it before other threads have time to finish, in that case, the resulting data will be incomplete or even incorrect.
 
 ## About DataMiner
 
