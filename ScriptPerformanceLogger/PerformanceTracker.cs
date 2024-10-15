@@ -31,42 +31,13 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
 		/// </summary>
-		/// <param name="startNow">True if method tracking should start on initialization; false otherwise.</param>
-		public PerformanceTracker(bool startNow = true) : this()
-		{
-			_collector = new PerformanceCollector(new PerformanceFileLogger($"default") { IncludeDate = true });
-
-			if (startNow)
-			{
-				AutoStart(_threadId);
-			}
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
-		/// </summary>
-		/// <param name="className">Name of the class from which a method is tracked.</param>
-		/// <param name="methodName">Name of the method that is tracked.</param>
-		public PerformanceTracker(string className, string methodName) : this()
-		{
-			_collector = new PerformanceCollector(new PerformanceFileLogger($"default") { IncludeDate = true });
-			Start(className, methodName, _threadId);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class.
-		/// </summary>
 		/// <param name="collector"><see cref="PerformanceCollector"/> to use.</param>
-		/// <param name="startNow">True if method tracking should start on initialization; false otherwise.</param>
 		/// <exception cref="ArgumentNullException">Throws if <paramref name="collector"/> is null.</exception>
-		public PerformanceTracker(PerformanceCollector collector, bool startNow = true) : this()
+		public PerformanceTracker(PerformanceCollector collector) : this()
 		{
 			_collector = collector ?? throw new ArgumentNullException(nameof(collector));
 
-			if (startNow)
-			{
-				AutoStart(_threadId);
-			}
+			Start(_threadId);
 		}
 
 		/// <summary>
@@ -95,7 +66,7 @@
 				throw new InvalidOperationException($"Parent {nameof(PerformanceTracker)} is not started, call Start.");
 			}
 
-			PerformanceData methodData = AutoStart(parentPerformanceTracker._threadId);
+			PerformanceData methodData = Start(parentPerformanceTracker._threadId);
 			methodData.Parent = parentPerformanceTracker._trackedMethod;
 
 			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId)
@@ -209,35 +180,10 @@
 		}
 
 		/// <summary>
-		/// Creates new instance of <see cref="PerformanceData"/> for containing method.
-		/// </summary>
-		/// <returns>New instance of <see cref="PerformanceData"/> for the containing method.</returns>
-		public PerformanceData Start()
-		{
-			MethodBase methodMemberInfo = new StackTrace().GetFrame(1).GetMethod();
-			string className = methodMemberInfo.DeclaringType.Name;
-			string methodName = methodMemberInfo.Name;
-
-			return Start(className, methodName, _threadId);
-		}
-
-		/// <summary>
-		/// Creates new instance of <see cref="PerformanceData"/> with specified class and method names and starts performance tracking for it.
-		/// </summary>
-		/// <param name="className">Name of the class which will be used in new instance of <see cref="PerformanceData"/>.</param>
-		/// <param name="methodName">Name of the method which will be used in new instance of <see cref="PerformanceData"/>.</param>
-		/// <returns>New instance of <see cref="PerformanceData"/> for the tracked method.</returns>
-		public PerformanceData Start(string className, string methodName)
-		{
-			return Start(className, methodName, _threadId);
-		}
-
-		/// <summary>
 		/// Ends tracking of the method and returns <see cref="PerformanceData"/> for it.
 		/// </summary>
-		/// <returns>Returns <see cref="PerformanceData"/> for the tracked method.</returns>
 		/// <exception cref="InvalidOperationException">Throws if tracked has not been started yet.</exception>
-		public PerformanceData End()
+		private void End()
 		{
 			if (_trackedMethod == null)
 			{
@@ -246,7 +192,7 @@
 
 			if (_isCompleted)
 			{
-				return _trackedMethod;
+				return;
 			}
 
 			if (Stack.Any())
@@ -254,8 +200,6 @@
 				_collector.Stop(Stack.Pop());
 				_isCompleted = true;
 			}
-
-			return _trackedMethod;
 		}
 
 		private PerformanceData Start(string className, string methodName, int threadId)
@@ -282,7 +226,7 @@
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		private PerformanceData AutoStart(int parentThreadId)
+		private PerformanceData Start(int parentThreadId)
 		{
 			MethodBase methodMemberInfo = new StackTrace().GetFrames()?.Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException("Unable to retrieve the stack information.");
 			string className = methodMemberInfo.DeclaringType.Name;
