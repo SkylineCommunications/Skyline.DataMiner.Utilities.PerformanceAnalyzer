@@ -131,7 +131,7 @@
 		/// Gets <see cref="PerformanceData"/> of the tracked method.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Throws if tracked method is not initialized yet.</exception>
-		public PerformanceData TrackedMethod => _trackedMethod ?? throw new InvalidOperationException(nameof(_trackedMethod));
+		public PerformanceData TrackedMethod => _trackedMethod;
 
 		/// <summary>
 		/// Gets elapsed time since the initialization of the underlying <see cref="PerformanceCollector"/>.
@@ -204,11 +204,6 @@
 
 		private void End()
 		{
-			if (_trackedMethod == null)
-			{
-				throw new InvalidOperationException(nameof(_trackedMethod));
-			}
-
 			if (_isCompleted)
 			{
 				return;
