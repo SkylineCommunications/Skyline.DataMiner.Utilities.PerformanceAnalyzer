@@ -137,18 +137,7 @@
 		/// Gets elapsed time since the initialization of the underlying <see cref="PerformanceCollector"/>.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Throws if collector is not initialized yet.</exception>
-		public TimeSpan Elapsed
-		{
-			get
-			{
-				if (_trackedMethod == null)
-				{
-					throw new InvalidOperationException("Performance tracking not started, call Start.");
-				}
-
-				return _collector.Clock.UtcNow - _trackedMethod.StartTime;
-			}
-		}
+		public TimeSpan Elapsed => _collector.Clock.UtcNow - _trackedMethod.StartTime;
 
 		private Stack<PerformanceData> Stack => _perThreadStack[_threadId];
 
