@@ -32,7 +32,7 @@
 			var methodData = new PerformanceData();
 
 			// Act
-			var result = _collector.Start(methodData);
+			var result = _collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			// Assert
 			Assert.IsTrue(result.IsStarted);
@@ -46,7 +46,7 @@
 			var methodData = new PerformanceData();
 
 			// Act
-			var result = _collector.Start(methodData);
+			var result = _collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			// Assert
 			Assert.IsTrue(result.IsStarted);
@@ -59,7 +59,7 @@
 			var methodData = new PerformanceData { IsStarted = true, StartTime = DateTime.UtcNow.AddSeconds(-10) };
 
 			// Act
-			var result = _collector.Start(methodData);
+			var result = _collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			// Assert
 			Assert.AreEqual(methodData.StartTime, result.StartTime);
@@ -109,7 +109,7 @@
 		{
 			// Arrange
 			var methodData = new PerformanceData();
-			_collector.Start(methodData);
+			_collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			// Act
 			_collector.Dispose();
@@ -123,11 +123,11 @@
 		{
 			// Arrange
 			var methodData = new PerformanceData();
-			_collector.Start(methodData);
+			_collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			Task.Run(() =>
 			{
-				_collector.Start(new PerformanceData());
+				_collector.Start(new PerformanceData(), Thread.CurrentThread.ManagedThreadId);
 
 				Thread.Sleep(200);
 			});

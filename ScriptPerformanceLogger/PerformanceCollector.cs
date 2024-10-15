@@ -34,24 +34,6 @@
 
 		internal PerformanceClock Clock => _clock;
 
-		/// <summary>
-		/// Updates execution time of the method.
-		/// </summary>
-		/// <param name="methodData"><see cref="PerformanceData"/> of the method to update.</param>
-		/// <returns>Returns updated method.</returns>
-		internal PerformanceData Stop(PerformanceData methodData)
-		{
-			if (methodData.IsStopped)
-			{
-				return methodData;
-			}
-
-			methodData.ExecutionTime = _clock.UtcNow - methodData.StartTime;
-			methodData.IsStopped = true;
-
-			return methodData;
-		}
-
 		internal PerformanceData Start(PerformanceData methodData, int threadId)
 		{
 			if (methodData.IsStarted)
@@ -71,6 +53,19 @@
 
 			methodData.StartTime = _clock.UtcNow;
 			methodData.IsStarted = true;
+
+			return methodData;
+		}
+
+		internal PerformanceData Stop(PerformanceData methodData)
+		{
+			if (methodData.IsStopped)
+			{
+				return methodData;
+			}
+
+			methodData.ExecutionTime = _clock.UtcNow - methodData.StartTime;
+			methodData.IsStopped = true;
 
 			return methodData;
 		}

@@ -9,7 +9,6 @@
 	using System.Runtime.CompilerServices;
 	using System.Threading;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
 
 	/// <summary>
@@ -166,20 +165,6 @@
 		}
 
 		/// <summary>
-		/// Adds performance data to the tracked method.
-		/// </summary>
-		/// <param name="performanceData">Performance data to be added to the current tracked method.</param>
-		/// TODO: verify if this is required
-		public void AddPerformanceData(IEnumerable<PerformanceData> performanceData)
-		{
-			foreach (var data in performanceData)
-			{
-				data.Parent = _trackedMethod;
-				_trackedMethod.SubMethods.Add(data);
-			}
-		}
-
-		/// <summary>
 		/// Ends tracking of the method and returns <see cref="PerformanceData"/> for it.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Throws if tracked has not been started yet.</exception>
@@ -200,6 +185,16 @@
 				_collector.Stop(Stack.Pop());
 				_isCompleted = true;
 			}
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private PerformanceData Start(int parentThreadId)
+		{
+			MethodBase methodMemberInfo = new StackTrace().GetFrames()?.Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException("Unable to retrieve the stack information.");
+			string className = methodMemberInfo.DeclaringType.Name;
+			string methodName = methodMemberInfo.Name;
+
+			return Start(className, methodName, parentThreadId);
 		}
 
 		private PerformanceData Start(string className, string methodName, int threadId)
@@ -223,16 +218,6 @@
 			_isStarted = true;
 
 			return methodData;
-		}
-
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		private PerformanceData Start(int parentThreadId)
-		{
-			MethodBase methodMemberInfo = new StackTrace().GetFrames()?.Where(frame => frame.GetMethod().Name != ".ctor").Skip(1).FirstOrDefault()?.GetMethod() ?? throw new InvalidOperationException("Unable to retrieve the stack information.");
-			string className = methodMemberInfo.DeclaringType.Name;
-			string methodName = methodMemberInfo.Name;
-
-			return Start(className, methodName, parentThreadId);
 		}
 
 		/// <summary>
