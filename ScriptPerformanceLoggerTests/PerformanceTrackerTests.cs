@@ -1,6 +1,7 @@
 ﻿namespace ScriptPerformanceLoggerTests
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading;
 
@@ -54,6 +55,30 @@
 		}
 
 		[TestMethod]
+		public void PerformanceTracker_InitializedWithCollectorAndNames_ShouldAssignCollectorAndNames()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_collector, "className", "methodName");
+
+			// Assert
+			Assert.AreEqual(_collector, tracker.Collector);
+			Assert.AreEqual("className", tracker.TrackedMethod.ClassName);
+			Assert.AreEqual("methodName", tracker.TrackedMethod.MethodName);
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithTrackerAndNames_ShouldAssignCollectorAndNames()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_tracker, "className", "methodName");
+
+			// Assert
+			Assert.AreEqual(_collector, tracker.Collector);
+			Assert.AreEqual("className", tracker.TrackedMethod.ClassName);
+			Assert.AreEqual("methodName", tracker.TrackedMethod.MethodName);
+		}
+
+		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void PerformanceTracker_InitializedCollectorWithNull_ShouldThrow()
 		{
@@ -62,6 +87,19 @@
 
 			// Act
 			_ = new PerformanceTracker(collector);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedCollectorWithNull2_ShouldThrow()
+		{
+			// Arrange
+			PerformanceCollector collector = null;
+
+			// Act
+			_ = new PerformanceTracker(collector, "className", "methodName");
 
 			// Assert is handled by ExpectedException
 		}
@@ -141,6 +179,19 @@
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
+		public void PerformanceTracker_InitializedParentTrackerWithNull2_ShouldThrow()
+		{
+			// Arrange
+			PerformanceTracker tracker = null;
+
+			// Act
+			_ = new PerformanceTracker(tracker, "className", "methodName");
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
 		public void PerformanceTracker_InitializedParentTrackerClassNameWithNull_ShouldThrow()
 		{
 			// Arrange & Act
@@ -213,6 +264,16 @@
 		}
 
 		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTrackerWithNames_ShouldAssignCorrectParent()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(_tracker, "className", "methodName");
+
+			// Assert
+			Assert.AreEqual(_tracker.TrackedMethod, tracker.TrackedMethod.Parent);
+		}
+
+		[TestMethod]
 		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldNotAddMethodToParentsSubMethodOnTheSameThread()
 		{
 			// Arrange
@@ -220,6 +281,22 @@
 
 			// Act
 			PerformanceTracker tracker = new PerformanceTracker(parentTracker);
+
+			// Assert
+			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			var trackerThreadIdFieldInfo = tracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			Assert.AreEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
+			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldNotAddMethodToParentsSubMethodOnTheSameThread()
+		{
+			// Arrange
+			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+
+			// Act
+			PerformanceTracker tracker = new PerformanceTracker(parentTracker, "className", "methodName");
 
 			// Assert
 			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -250,19 +327,60 @@
 		}
 
 		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldAddMethodToParentsSubMethodForDifferentThreads()
+		{
+			// Arrange
+			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+
+			// Act
+			PerformanceTracker tracker = new PerformanceTracker(parentTracker, "className", "methodName");
+
+			// Simulate different thread IDs
+			parentTracker.GetType()
+				.GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+				.SetValue(parentTracker, Thread.CurrentThread.ManagedThreadId + 1);
+
+			// Assert
+			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			var trackerThreadIdFieldInfo = tracker.GetType().GetField("_threadId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			Assert.AreNotEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
+			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
+		}
+
+		[TestMethod]
 		public void PerformanceTracker_AddMetadata_ShouldIncludeMetadataInTrackedMethod()
 		{
 			// Arrange
 			PerformanceTracker tracker = new PerformanceTracker(_collector);
 
 			// Act
-			tracker.AddMetadata("Key1", "Value1");
-			tracker.AddMetadata("Key2", "Value2");
-			tracker.Dispose();
+			tracker.AddMetadata("Key1", "Value1")
+				.AddMetadata("Key2", "Value2")
+				.Dispose();
 
 			// Assert
 			Assert.AreEqual("Value1", tracker.TrackedMethod.Metadata["Key1"]);
 			Assert.AreEqual("Value2", tracker.TrackedMethod.Metadata["Key2"]);
+		}
+
+		[TestMethod]
+		public void PerformanceFileLogger_AddMetadata_ShouldAddMetadataToDictionary()
+		{
+			// Arrange
+			PerformanceTracker tracker = new PerformanceTracker(_collector);
+			var metadata = new Dictionary<string, string>
+			{
+				{ "key1", "value1" },
+				{ "key2", "value2" },
+			};
+
+			// Act
+			tracker.AddMetadata(metadata);
+
+			// Assert
+			Assert.AreEqual(2, tracker.TrackedMethod.Metadata.Count);
+			Assert.AreEqual("value1", tracker.TrackedMethod.Metadata["key1"]);
+			Assert.AreEqual("value2", tracker.TrackedMethod.Metadata["key2"]);
 		}
 
 		[TestMethod]
