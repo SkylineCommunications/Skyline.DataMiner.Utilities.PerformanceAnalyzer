@@ -24,8 +24,6 @@
 
 		private PerformanceData _trackedMethod;
 		private bool _disposed;
-		private bool _isStarted;
-		private bool _isCompleted;
 		private bool _isSubMethod;
 
 		/// <summary>
@@ -115,7 +113,7 @@
 
 		private PerformanceTracker()
 		{
-			if (_perThreadStack.TryAdd(Thread.CurrentThread.ManagedThreadId, new Stack<PerformanceData>()))
+			if (_perThreadStack.TryAdd(_threadId, new Stack<PerformanceData>()))
 			{
 				_isMultiThreaded = _perThreadStack.Count > 1;
 			}
@@ -180,11 +178,6 @@
 
 		private PerformanceData Start(string className, string methodName, int threadId)
 		{
-			if (_isStarted)
-			{
-				return Stack.Peek();
-			}
-
 			var methodData = new PerformanceData(className, methodName);
 
 			if (Stack.Any())
@@ -197,22 +190,15 @@
 			Stack.Push(_collector.Start(methodData, threadId));
 
 			_trackedMethod = methodData;
-			_isStarted = true;
 
 			return methodData;
 		}
 
 		private void End()
 		{
-			if (_isCompleted)
-			{
-				return;
-			}
-
 			if (Stack.Any())
 			{
 				_collector.Stop(Stack.Pop());
-				_isCompleted = true;
 			}
 		}
 
@@ -237,7 +223,7 @@
 				{
 					if (_isMultiThreaded)
 					{
-						_perThreadStack.TryRemove(Thread.CurrentThread.ManagedThreadId, out _);
+						_perThreadStack.TryRemove(_threadId, out _);
 					}
 
 					_collector.Dispose();
