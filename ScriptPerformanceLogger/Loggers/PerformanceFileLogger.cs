@@ -82,7 +82,7 @@
 		}
 
 		/// <summary>
-		/// Adds metadata for the logs.
+		/// Adds metadata for the run.
 		/// </summary>
 		/// <param name="key">Key of the metadata.</param>
 		/// <param name="value">Value of the metadata.</param>
@@ -94,7 +94,7 @@
 		}
 
 		/// <summary>
-		/// Adds metadata for the logs.
+		/// Adds metadata for the run.
 		/// </summary>
 		/// <param name="metadata">Metadata to add or update to the <see cref="PerformanceFileLogger"/>.</param>
 		/// <returns>Returns current instance of <see cref="PerformanceFileLogger"/>.</returns>

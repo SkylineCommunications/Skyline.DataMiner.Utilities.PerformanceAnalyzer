@@ -373,6 +373,68 @@ The log file might look like this:
 ]
 ```
 
+### Adding metadata on the run level
+
+In some cases it is necessary to add additional information for each run. In those situation it is possible to add metadata on the run level by calling ```PerformanceFileLogger.AddMetadata(string, string)``` or ```PerformanceFileLogger.AddMetadata(IReadOnlyDictionary<string, string>)```.
+
+#### Input
+```csharp
+// Create a PerformanceFileLogger instance that will log to file 'dummy.json'
+PerformanceFileLogger fileLogger = new PerformanceFileLogger("dummy");
+// Create a PerformanceCollector instance with PerformanceFileLogger
+PerformanceCollector collector = new PerformanceCollector(fileLogger);
+
+void Foo()
+{
+  fileLogger.AddMetadata("key1", "value1")
+  // Create a PerformanceTracker instance and start tracking.
+  using (new PerformanceTracker(collector))
+  {
+    // Your code goes here...
+    Bar();
+    // Your code goes here...
+  } // Tracker automatically adds performance data to the collector when disposed.
+}
+
+void Bar()
+{
+  using (new PerformanceTracker(collector))
+  {
+    // Your code goes here...
+  }
+}
+```
+
+#### Output
+This will create a file named *dummy.json* at *C:\Skyline_Data\PerformanceLogger* containing methods performance metrics and run metadata.
+
+The log file might look like this:
+```json
+[
+  {
+    "Metadata": {
+      "key1": "value1"
+    },
+    "Data": [
+      {
+        "ClassName": "Program",
+        "MethodName": "Foo",
+        "StartTime": "2024-10-17T05:48:38.5899954Z",
+        "ExecutionTime": "00:00:00.7159599",
+        "SubMethods": [
+          {
+            "ClassName": "Program",
+            "MethodName": "Bar",
+            "StartTime": "2024-10-17T05:48:38.5901597Z",
+            "ExecutionTime": "00:00:00.4009077"
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+
 ### Manually providing class and method names
 
 In the previous examples the names of the class and method that are seen in the logs are decided automatically base on where the ```PerformanceTracker``` is initialized, by default it will take the name of containing method and it's class. However, in certain cases this is not desired and for those situations it is possible to manually provide class name and method name for the resulting ```PerformanceData``` object. It is also possible to define different path for the log files by providing second argument to the constructor of ```PerformanceFileLogger```.
