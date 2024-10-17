@@ -358,6 +358,48 @@
 			PerformanceTracker middleTracker;
 			PerformanceTracker childTracker;
 
+			// Act
+			using (middleTracker = new PerformanceTracker(parentTracker))
+			{
+				using (childTracker = new PerformanceTracker(parentTracker))
+				{
+				}
+			}
+
+			// Assert
+			Assert.IsFalse(parentTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
+			Assert.IsTrue(middleTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldNotAddMethodToMutipleSubmethods()
+		{
+			// Arrange
+			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker middleTracker;
+			PerformanceTracker childTracker;
+
+			// Act
+			using (middleTracker = new PerformanceTracker(parentTracker, "className", "methodName"))
+			{
+				using (childTracker = new PerformanceTracker(parentTracker))
+				{
+				}
+			}
+
+			// Assert
+			Assert.IsFalse(parentTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
+			Assert.IsTrue(middleTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldNotAddMethodToMutipleSubmethodsMultithread()
+		{
+			// Arrange
+			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker middleTracker;
+			PerformanceTracker childTracker;
+
 			// Simulate different thread IDs
 			parentTracker.GetType()
 				.GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance)
@@ -377,7 +419,7 @@
 		}
 
 		[TestMethod]
-		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldNotAddMethodToMutipleSubmethods()
+		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldNotAddMethodToMutipleSubmethodsMultithread()
 		{
 			// Arrange
 			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
