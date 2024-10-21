@@ -6,18 +6,28 @@
 		<IsPackable>True</IsPackable>
 		<RootNamespace>Skyline.DataMiner.Utils.ScriptPerformanceLogger</RootNamespace>
 		<AssemblyName>Skyline.DataMiner.Utils.ScriptPerformanceLogger</AssemblyName>
+		<PackageVersion>3.0.1</PackageVersion>
+		<Version>3.0.1</Version>
+		<PackageTags>Skyline;DataMiner</PackageTags>
+		<PackageProjectUrl>https://skyline.be</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Description>This is used to log the performance of DataMiner automation scripts.</Description>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>SkylineCommunications</Authors>
 		<Company>Skyline Communications</Company>
-		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>Icon.png</PackageIcon>
-		<PackageVersion>2.0.0</PackageVersion>
-		<PackageProjectUrl>https://github.com/SkylineCommunications/Skyline.DataMiner.Utils.ScriptPerformanceLogger</PackageProjectUrl>
 		<PackageTags>Skyline;DataMiner</PackageTags>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/SkylineCommunications/Skyline.DataMiner.Utils.ScriptPerformanceLogger</RepositoryUrl>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Skyline.DataMiner.Utils.ScriptPerformanceLogger</RootNamespace>
+		<LangVersion></LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,7 +41,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 </Project>
