@@ -32,6 +32,7 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(MSBuildProjectName)Tests" />
+		<InternalsVisibleTo Include="$(MSBuildProjectName)GQI" />
 	</ItemGroup>
 
 	<ItemGroup>
