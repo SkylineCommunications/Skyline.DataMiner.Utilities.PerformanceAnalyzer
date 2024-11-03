@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptPerformanceLoggerGQI"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{AF19F09C-5FAB-4B1D-A41B-533A4E8B3328}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLoggerGQI", "ScriptPerformanceLoggerGQI_1\ScriptPerformanceLoggerGQI.csproj", "{16D22A43-5B00-45E6-8D30-6D88551F3649}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLoggerGQI", "ScriptPerformanceLoggerGQI\ScriptPerformanceLoggerGQI.csproj", "{16D22A43-5B00-45E6-8D30-6D88551F3649}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
