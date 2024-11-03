@@ -1,5 +1,6 @@
 ﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerGQI
 {
+	using System;
 	using System.Collections.Generic;
 	using System.IO;
 
@@ -9,7 +10,7 @@
 	[GQIMetaData(Name = "Get Performance Metrics Files")]
 	public class GetPerformanceMetricsFiles : IGQIDataSource, IGQIInputArguments
 	{
-		private readonly GQIStringArgument _folderPathArgument = new GQIStringArgument("Folder Path") { IsRequired = true };
+		private readonly GQIStringArgument _folderPathArgument = new GQIStringArgument("Folder Path") { IsRequired = false };
 		private readonly List<FileMetadata> _filesMetadata = new List<FileMetadata>();
 
 		public GQIArgument[] GetInputArguments()
@@ -19,7 +20,7 @@
 
 		public OnArgumentsProcessedOutputArgs OnArgumentsProcessed(OnArgumentsProcessedInputArgs args)
 		{
-			var folderPath = args.GetArgumentValue(_folderPathArgument);
+			var folderPath = String.IsNullOrWhiteSpace(args.GetArgumentValue(_folderPathArgument)) ? @"C:\Skyline_Data\PerformanceLogger" : args.GetArgumentValue(_folderPathArgument);
 
 			DirectoryInfo directoryInfo = new DirectoryInfo(folderPath);
 			FileInfo[] files = directoryInfo.GetFiles();

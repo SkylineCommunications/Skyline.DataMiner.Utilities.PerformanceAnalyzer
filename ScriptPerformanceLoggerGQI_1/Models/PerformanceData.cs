@@ -1,6 +1,6 @@
 ﻿//------------------------------------------------------------------------------
 // This code was copied from ScriptPerformanceLogger/Models/PerformanceData.
-// Changes to this can result in errors.
+// Changes to this will result in errors.
 //------------------------------------------------------------------------------
 namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerGQI.Models
 {
