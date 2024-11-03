@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <DMSScript options="272" xmlns="http://www.skyline.be/automation">
-	<Name>Performance Logger GQI DS</Name>
+	<Name>Performance Logger Cleanup</Name>
 	<Description></Description>
 	<Type>Automation</Type>
 	<Author>Skyline Communications</Author>
@@ -14,13 +14,17 @@
 	</Memory>
 
 	<Parameters>
+		<ScriptParameter id="2" type="string" values="">
+			<Description>Days of oldest performance info</Description>
+		</ScriptParameter>
+		<ScriptParameter id="3" type="string" values="">
+			<Description>Folder path to performance info</Description>
+		</ScriptParameter>
 	</Parameters>
 
 	<Script>
 		<Exe id="1" type="csharp">
-			<Value><![CDATA[[Project:ScriptPerformanceLoggerGQI]]]></Value>
-			<Param type="preCompile">true</Param>
-			<Param type="libraryName">Script Performance Logger GQI</Param>
+			<Value><![CDATA[[Project:ScriptPerformanceLoggerCleanup]]]></Value>
 		</Exe>
 	</Script>
 </DMSScript>
