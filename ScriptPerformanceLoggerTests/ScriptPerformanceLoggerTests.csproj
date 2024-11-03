@@ -17,9 +17,11 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Skyline.DataMiner.Dev.Automation" Version="10.2.4" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ScriptPerformanceLoggerCleanup\ScriptPerformanceLoggerCleanup.csproj" />
 		<ProjectReference Include="..\ScriptPerformanceLogger\ScriptPerformanceLogger.csproj" />
 	</ItemGroup>
 
