@@ -36,13 +36,14 @@ namespace ScriptPerformanceLoggerGQI
 
         public GQIColumn[] GetColumns()
         {
-            return new GQIColumn[5]
+            return new GQIColumn[6]
             {
                 new GQIStringColumn("Class"),
                 new GQIStringColumn("Method"),
                 new GQIDateTimeColumn("Start Time"),
                 new GQIDateTimeColumn("End Time"),
                 new GQIIntColumn("Execution Time"),
+                new GQIIntColumn("Method Level"),
             };
         }
 
@@ -54,7 +55,7 @@ namespace ScriptPerformanceLoggerGQI
             {
                 foreach (var performanceData in performanceMetric.Data)
                 {
-                    ProcessSubMethods(performanceData, rows);
+                    ProcessSubMethods(performanceData, rows, 0);
                 }
             }
 
@@ -72,25 +73,25 @@ namespace ScriptPerformanceLoggerGQI
             return executionTimeDisplayValue;
         }
 
-        private void ProcessSubMethods(PerformanceData data, List<GQIRow> rows)
+        private void ProcessSubMethods(PerformanceData data, List<GQIRow> rows, int level)
         {
             if (data == null)
             {
                 return;
             }
 
-            CreateRow(data, rows);
+            CreateRow(data, rows, level);
 
             if (data.SubMethods != null && data.SubMethods.Any())
             {
                 foreach (var subMethod in data.SubMethods)
                 {
-                    ProcessSubMethods(subMethod, rows);
+                    ProcessSubMethods(subMethod, rows, level + 1);
                 }
             }
         }
 
-        private void CreateRow(PerformanceData performanceData, List<GQIRow> rows)
+        private void CreateRow(PerformanceData performanceData, List<GQIRow> rows, int level)
         {
             rows.Add(new GQIRow(
                 new GQICell[]
@@ -115,6 +116,10 @@ namespace ScriptPerformanceLoggerGQI
                     {
                         Value = (int)performanceData.ExecutionTime.TotalMilliseconds,
                         DisplayValue = GetExecutionTimeDisplayValue(performanceData.ExecutionTime),
+                    },
+                    new GQICell()
+                    {
+                        Value = level,
                     },
                 }));
         }
