@@ -22,6 +22,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\ScriptPerformanceLoggerCleanup\ScriptPerformanceLoggerCleanup.csproj" />
+		<ProjectReference Include="..\ScriptPerformanceLoggerGQI\ScriptPerformanceLoggerGQI.csproj" />
 		<ProjectReference Include="..\ScriptPerformanceLogger\ScriptPerformanceLogger.csproj" />
 	</ItemGroup>
 

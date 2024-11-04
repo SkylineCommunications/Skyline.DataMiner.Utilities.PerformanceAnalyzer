@@ -331,5 +331,41 @@
 			// Assert
 			Assert.IsFalse(log.Any);
 		}
+
+		[TestMethod]
+		public void PerformanceLog_CompareCopies()
+		{
+			// Arrange
+			var performanceLogNuGet = new Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers.PerformanceLog();
+			var performanceLogGQI = new Skyline.DataMiner.Utils.ScriptPerformanceLoggerGQI.Models.PerformanceLog();
+
+			// Act
+			var propertiesNuGet = performanceLogNuGet.GetType().GetProperties();
+			var propertiesGQI = performanceLogGQI.GetType().GetProperties();
+
+			bool isCopied = true;
+			for (int i = 0; i < propertiesNuGet.Length; i++)
+			{
+				if (propertiesNuGet[i].Name == "Data")
+				{
+					if (propertiesNuGet[i].Name != propertiesGQI[i].Name)
+					{
+						isCopied = false;
+						break;
+					}
+
+					continue;
+				}
+
+				if (propertiesNuGet[i].Name != propertiesGQI[i].Name || propertiesNuGet[i].PropertyType != propertiesGQI[i].PropertyType)
+				{
+					isCopied = false;
+					break;
+				}
+			}
+
+			// Assert
+			Assert.IsTrue(isCopied);
+		}
 	}
 }
