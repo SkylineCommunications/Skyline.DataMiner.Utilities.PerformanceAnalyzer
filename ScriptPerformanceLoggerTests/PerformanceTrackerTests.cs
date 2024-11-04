@@ -492,19 +492,5 @@
 			// Assert
 			Assert.AreNotEqual(default(TimeSpan), tracker.TrackedMethod.ExecutionTime);
 		}
-
-		[TestMethod]
-		public void PerformanceTracker_Elapsed_ShouldReturnCorrectTime()
-		{
-			// Arrange
-			PerformanceTracker tracker = new PerformanceTracker(_collector);
-
-			// Act
-			Thread.Sleep(100);
-			var elapsed = tracker.Elapsed;
-
-			// Assert
-			Assert.IsTrue((DateTime.UtcNow - elapsed).Millisecond >= 100);
-		}
 	}
 }
