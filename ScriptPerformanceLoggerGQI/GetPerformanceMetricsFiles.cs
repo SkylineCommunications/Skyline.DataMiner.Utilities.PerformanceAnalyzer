@@ -40,7 +40,7 @@
 				new GQIStringColumn("Name"),
 				new GQIDateTimeColumn("Created"),
 				new GQIDateTimeColumn("Last Modified"),
-				new GQIDoubleColumn("Size"),
+				new GQIStringColumn("Size"),
 			};
 		}
 
