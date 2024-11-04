@@ -86,7 +86,7 @@ namespace ScriptPerformanceLoggerGQI
             {
                 foreach (var subMethod in data.SubMethods)
                 {
-                    ProcessSubMethods(subMethod, rows, ++level);
+                    ProcessSubMethods(subMethod, rows, level + 1);
                 }
             }
         }
