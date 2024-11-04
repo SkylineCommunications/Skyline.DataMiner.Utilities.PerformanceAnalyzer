@@ -1,4 +1,4 @@
-﻿namespace PerformanceLoggerCleanupScript_1.Tests
+﻿namespace PerformanceLoggerCleanupScript.Tests
 {
 	using System;
 	using System.IO;
