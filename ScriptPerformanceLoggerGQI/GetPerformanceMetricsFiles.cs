@@ -67,12 +67,26 @@
 							},
 							new GQICell()
 							{
-								Value = (double)fileMetadata.Size,
+								Value = ConvertBytesToReadableSize(fileMetadata.Size),
 							},
 						}));
 			}
 
 			return new GQIPage(rows.ToArray());
 		}
-	}
+
+		private static string ConvertBytesToReadableSize(long bytes)
+        {
+            if (bytes < 1024 * 1024)
+            {
+                double kilobytes = bytes / 1024.0;
+                return $"{Math.Ceiling(kilobytes)} KB";
+            }
+            else
+            {
+                double megabytes = bytes / (1024.0 * 1024.0);
+                return $"{Math.Ceiling(megabytes)} MB";
+            }
+        }
+    }
 }
