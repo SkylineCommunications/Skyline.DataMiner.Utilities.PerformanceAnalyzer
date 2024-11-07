@@ -47,7 +47,6 @@
 		/// <exception cref="ArgumentNullException">Throws if <paramref name="collector"/> is null.</exception>
 		public PerformanceTracker(PerformanceCollector collector, string className, string methodName) : this()
 		{
-			_collector = collector ?? throw new ArgumentNullException(nameof(collector));
 			if (string.IsNullOrWhiteSpace(className))
 			{
 				throw new ArgumentNullException(nameof(className));
@@ -57,6 +56,8 @@
 			{
 				throw new ArgumentNullException(nameof(methodName));
 			}
+
+			_collector = collector ?? throw new ArgumentNullException(nameof(collector));
 
 			Start(className, methodName, _threadId);
 		}
@@ -89,8 +90,6 @@
 		/// <exception cref="ArgumentNullException">Throws if parent <paramref name="parentPerformanceTracker"/> is null.</exception>
 		public PerformanceTracker(PerformanceTracker parentPerformanceTracker, string className, string methodName) : this()
 		{
-			_collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
-
 			if (string.IsNullOrWhiteSpace(className))
 			{
 				throw new ArgumentNullException(nameof(className));
@@ -100,6 +99,8 @@
 			{
 				throw new ArgumentNullException(nameof(methodName));
 			}
+
+			_collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
 
 			PerformanceData methodData = Start(className, methodName, parentPerformanceTracker._threadId);
 			methodData.Parent = parentPerformanceTracker._trackedMethod;
