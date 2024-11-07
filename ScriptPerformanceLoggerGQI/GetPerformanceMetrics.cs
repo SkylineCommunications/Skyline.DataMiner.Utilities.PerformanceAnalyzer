@@ -15,7 +15,8 @@ namespace ScriptPerformanceLoggerGQI
     {
         private readonly GQIStringArgument _folderPathArgument = new GQIStringArgument("Folder Path") { IsRequired = false };
         private readonly GQIStringArgument _fileNameArgument = new GQIStringArgument("File Name") { IsRequired = true };
-        private List<PerformanceLog> _performanceMetrics;
+
+        internal static List<PerformanceLog> PerformanceMetrics { get; set; }
 
         public GQIArgument[] GetInputArguments()
         {
@@ -29,14 +30,14 @@ namespace ScriptPerformanceLoggerGQI
 
             var rawJson = File.ReadAllText(Path.Combine(folderPath, fileName));
 
-            _performanceMetrics = JsonConvert.DeserializeObject<List<PerformanceLog>>(rawJson);
+            PerformanceMetrics = JsonConvert.DeserializeObject<List<PerformanceLog>>(rawJson);
 
             return default;
         }
 
         public GQIColumn[] GetColumns()
         {
-            return new GQIColumn[6]
+            return new GQIColumn[]
             {
                 new GQIStringColumn("Class"),
                 new GQIStringColumn("Method"),
@@ -44,6 +45,8 @@ namespace ScriptPerformanceLoggerGQI
                 new GQIDateTimeColumn("End Time"),
                 new GQIIntColumn("Execution Time"),
                 new GQIIntColumn("Method Level"),
+                new GQIStringColumn("Metadata"),
+                new GQIStringColumn("ID"),
             };
         }
 
@@ -51,7 +54,7 @@ namespace ScriptPerformanceLoggerGQI
         {
             var rows = new List<GQIRow>();
 
-            foreach (var performanceMetric in _performanceMetrics)
+            foreach (var performanceMetric in PerformanceMetrics)
             {
                 foreach (var performanceData in performanceMetric.Data)
                 {
@@ -80,6 +83,7 @@ namespace ScriptPerformanceLoggerGQI
                 return;
             }
 
+            data.Id = Guid.NewGuid();
             CreateRow(data, rows, level);
 
             if (data.SubMethods != null && data.SubMethods.Any())
@@ -94,34 +98,42 @@ namespace ScriptPerformanceLoggerGQI
         private void CreateRow(PerformanceData performanceData, List<GQIRow> rows, int level)
         {
             rows.Add(new GQIRow(
-                new GQICell[]
+                new[]
                 {
-                    new GQICell()
+                    new GQICell
                     {
                         Value = performanceData.ClassName,
                     },
-                    new GQICell()
+                    new GQICell
                     {
                         Value = performanceData.MethodName,
                     },
-                    new GQICell()
+                    new GQICell
                     {
                         Value = performanceData.StartTime,
                         DisplayValue = performanceData.StartTime.ToString("dd/MM/yyyy HH:mm:ss.fff"),
                     },
-                    new GQICell()
+                    new GQICell
                     {
                         Value = performanceData.StartTime + performanceData.ExecutionTime,
                         DisplayValue = (performanceData.StartTime + performanceData.ExecutionTime).ToString("dd/MM/yyyy HH:mm:ss.fff"),
                     },
-                    new GQICell()
+                    new GQICell
                     {
                         Value = (int)performanceData.ExecutionTime.TotalMilliseconds,
                         DisplayValue = GetExecutionTimeDisplayValue(performanceData.ExecutionTime),
                     },
-                    new GQICell()
+                    new GQICell
                     {
                         Value = level,
+                    },
+                    new GQICell
+                    {
+                        Value = performanceData.ShouldSerializeMetadata() ? JsonConvert.SerializeObject(performanceData.Metadata) : string.Empty,
+                    },
+                    new GQICell
+                    {
+                        Value = performanceData.Id.ToString(),
                     },
                 }));
         }

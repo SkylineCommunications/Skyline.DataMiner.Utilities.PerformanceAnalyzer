@@ -4,69 +4,72 @@
 //------------------------------------------------------------------------------
 namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerGQI.Models
 {
-	using System;
-	using System.Collections.Generic;
+    using System;
+    using System.Collections.Generic;
 
-	using Newtonsoft.Json;
+    using Newtonsoft.Json;
 
-	/// <summary>
-	/// <see cref="PerformanceData"/> is a model for method performance metrics.
-	/// </summary>
-	[Serializable]
-	public class PerformanceData
-	{
-		[JsonConstructor]
-		public PerformanceData()
-		{
-		}
+    /// <summary>
+    /// <see cref="PerformanceData"/> is a model for method performance metrics.
+    /// </summary>
+    [Serializable]
+    public class PerformanceData
+    {
+        [JsonConstructor]
+        public PerformanceData()
+        {
+        }
 
-		public PerformanceData(string className, string methodName)
-		{
-			ClassName = className;
-			MethodName = methodName;
-		}
+        public PerformanceData(string className, string methodName)
+        {
+            ClassName = className;
+            MethodName = methodName;
+        }
 
-		[JsonIgnore]
-		public bool IsStarted { get; internal set; }
+        [JsonIgnore]
+        public bool IsStarted { get; internal set; }
 
-		[JsonIgnore]
-		public bool IsStopped { get; internal set; }
+        [JsonIgnore]
+        public bool IsStopped { get; internal set; }
 
-		[JsonIgnore]
-		public PerformanceData Parent { get; set; }
+        [JsonIgnore]
+        public PerformanceData Parent { get; set; }
 
-		[JsonProperty(Order = 0)]
-		public string ClassName { get; set; }
+        [JsonIgnore]
+        public Guid Id { get; set; }
 
-		[JsonProperty(Order = 1)]
-		public string MethodName { get; set; }
+        [JsonProperty(Order = 0)]
+        public string ClassName { get; set; }
 
-		[JsonProperty(Order = 2)]
-		public DateTime StartTime { get; set; }
+        [JsonProperty(Order = 1)]
+        public string MethodName { get; set; }
 
-		[JsonProperty(Order = 3)]
-		public TimeSpan ExecutionTime { get; set; }
+        [JsonProperty(Order = 2)]
+        public DateTime StartTime { get; set; }
 
-		[JsonProperty(Order = 4)]
-		public List<PerformanceData> SubMethods { get; } = new List<PerformanceData>();
+        [JsonProperty(Order = 3)]
+        public TimeSpan ExecutionTime { get; set; }
 
-		[JsonProperty(Order = 5)]
-		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
+        [JsonProperty(Order = 4)]
+        public List<PerformanceData> SubMethods { get; } = new List<PerformanceData>();
 
-		public PerformanceData AddMetadata(string key, string value)
-		{
-			Metadata[key] = value;
-			return this;
-		}
+        [JsonProperty(Order = 5)]
+        public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
 
-		public bool ShouldSerializeSubMethods()
-		{
-			return SubMethods.Count > 0;
-		}
+        public PerformanceData AddMetadata(string key, string value)
+        {
+            Metadata[key] = value;
+            return this;
+        }
 
-		public bool ShouldSerializeMetadata()
-		{
-			return Metadata.Count > 0;
-		}
-	}
+        public bool ShouldSerializeSubMethods()
+        {
+            return SubMethods.Count > 0;
+        }
+
+        public bool ShouldSerializeMetadata()
+        {
+            return Metadata.Count > 0;
+        }
+    }
 }
