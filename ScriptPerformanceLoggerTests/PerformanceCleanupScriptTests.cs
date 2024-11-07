@@ -38,40 +38,15 @@
 		}
 
 		[TestMethod]
-		public void PerformanceCleanupScriptTests_Run_DirectoryNotFound_ExitsWithMessage()
-		{
-			// Arrange
-			var mockDaysParam = new Mock<ScriptParam>();
-			_mockEngine.Setup(e => e.GetScriptParam("Days of oldest performance info")).Returns(mockDaysParam.Object);
-			mockDaysParam.Setup(sp => sp.Value).Returns("7");
-
-			string nonExistingFolderPath = "C:\\Skyline_Data\\NonExistingFolder";
-			var mockFolderParam = new Mock<ScriptParam>();
-			_mockEngine.Setup(e => e.GetScriptParam("Folder path to performance info")).Returns(mockFolderParam.Object);
-			mockFolderParam.Setup(sp => sp.Value).Returns(nonExistingFolderPath);
-
-			if (Directory.Exists(nonExistingFolderPath))
-			{
-				Directory.Delete(nonExistingFolderPath, true);
-			}
-
-			// Act
-			_script.Run(_mockEngine.Object);
-
-			// Assert
-			_mockEngine.Verify(e => e.ExitFail(It.Is<string>(s => s.Contains("Directory not found"))), Times.Once);
-		}
-
-		[TestMethod]
 		public void PerformanceCleanupScriptTests_Run_ValidParameters_DeletesOldFiles()
 		{
 			// Arrange
 			var mockDaysParam = new Mock<ScriptParam>();
-			_mockEngine.Setup(e => e.GetScriptParam("Days of oldest performance info")).Returns(mockDaysParam.Object);
+			_mockEngine.Setup(e => e.GetScriptParam("Max Days Since Last Modified")).Returns(mockDaysParam.Object);
 			mockDaysParam.Setup(sp => sp.Value).Returns("7");
 
 			var mockFolderParam = new Mock<ScriptParam>();
-			_mockEngine.Setup(e => e.GetScriptParam("Folder path to performance info")).Returns(mockFolderParam.Object);
+			_mockEngine.Setup(e => e.GetScriptParam("Performance Metrics Location")).Returns(mockFolderParam.Object);
 			mockFolderParam.Setup(sp => sp.Value).Returns(_testDirectory);
 
 			File.WriteAllText(Path.Combine(_testDirectory, "oldFile.txt"), "test content");

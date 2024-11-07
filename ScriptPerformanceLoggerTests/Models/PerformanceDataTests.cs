@@ -1,5 +1,7 @@
 ﻿namespace ScriptPerformanceLoggerTests.Models
 {
+	using System;
+	using System.Linq;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
@@ -31,7 +33,7 @@
 
 			// Act
 			var propertiesNuGet = performanceDataNuGet.GetType().GetProperties();
-			var propertiesGQI = performanceDataGQI.GetType().GetProperties();
+			var propertiesGQI = performanceDataGQI.GetType().GetProperties().Where(p => !string.Equals(p.Name, "ID", StringComparison.OrdinalIgnoreCase)).ToArray();
 
 			bool isCopied = true;
 			for (int i = 0; i < propertiesNuGet.Length; i++)
