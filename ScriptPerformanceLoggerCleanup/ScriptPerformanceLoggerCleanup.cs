@@ -53,7 +53,7 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
             return inputOfFolderPath.Trim();
         }
 
-        private void DeleteFiles(IEngine engine)
+        private void DeleteFiles()
         {
             foreach (string fileName in fileNamesToDelete)
             {
@@ -71,7 +71,7 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
             }
 
             DetermineFilesToDelete();
-            DeleteFiles(engine);
+            DeleteFiles();
         }
 
         private void DetermineFilesToDelete()
