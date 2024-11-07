@@ -17,14 +17,6 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
             try
             {
                 RunSafe(engine);
-            } // REMARK: Why bother catching these specific exceptions?
-            catch (DirectoryNotFoundException ex)
-            {
-                engine.ExitFail("Directory not found: " + ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                engine.ExitFail("Access denied: " + ex.Message);
             }
             catch (Exception ex)
             {
@@ -41,7 +33,7 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
 
         private static DateTime GetOldestPerformanceDate(IEngine engine)
         {
-            var inputOfDays = engine.GetScriptParam("Days of oldest performance info")?.Value;
+            var inputOfDays = engine.GetScriptParam("Max Days Since Last Modified")?.Value;
             if (string.IsNullOrEmpty(inputOfDays) || !int.TryParse(inputOfDays, out int days))
             {
                 throw new ArgumentException("Invalid or missing value for Days of oldest performance info. It must be a valid integer.");
@@ -52,7 +44,7 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
 
         private static string GetFolderPath(IEngine engine)
         {
-            var inputOfFolderPath = Convert.ToString(engine.GetScriptParam("Folder path to performance info")?.Value);
+            var inputOfFolderPath = Convert.ToString(engine.GetScriptParam("Performance Metrics Location")?.Value);
             if (string.IsNullOrEmpty(inputOfFolderPath))
             {
                 throw new ArgumentException("Missing value for Folder path to performance info.");
@@ -61,33 +53,11 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
             return inputOfFolderPath.Trim();
         }
 
-        private static void TryDeleteFile(IEngine engine, string fileName)
-        {
-            // REMARK: Does it make sense to stop the cleanup as soon as any of the files cannot be removed?
-            try
-            {
-                File.Delete(fileName);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                // REMARK: calling engine.ExitFail causes an exception to be thrown, which you will then catch in the Run method and wrap the message
-                engine.ExitFail($"Unauthorized Access | Failed to delete file: {fileName} - {ex.Message}");
-            }
-            catch (IOException ex)
-            {
-                engine.ExitFail($"IO Exception | Failed to delete file: {fileName} - {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                engine.ExitFail($"Exception | Failed to delete file: {fileName} - {ex.Message}");
-            }
-        }
-
         private void DeleteFiles(IEngine engine)
         {
             foreach (string fileName in fileNamesToDelete)
             {
-                TryDeleteFile(engine, fileName);
+                File.Delete(fileName);
             }
         }
 
