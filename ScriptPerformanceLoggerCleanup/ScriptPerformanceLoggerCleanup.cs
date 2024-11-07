@@ -8,64 +8,33 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
 
     public class Script
     {
-        private string folderPath;
-        private DateTime oldestPerformanceInfoDateTime;
-        private HashSet<string> fileNamesToDelete;
+        private string _performanceMetricsLocation;
+        private DateTime _maxDaysSinceLastModified;
+        private HashSet<string> _fileNamesToDelete;
+        private bool _hasFailures;
+        private IEngine _engine;
 
         public void Run(IEngine engine)
         {
             try
             {
-                RunSafe(engine);
+                _engine = engine;
+                RunSafe();
             }
             catch (Exception ex)
             {
                 engine.ExitFail("Something went wrong: " + ex.Message);
             }
+
+            if (_hasFailures)
+                engine.GenerateInformation("Failed to delete some files. Check SLAutomation logging.");
         }
 
-        public void Initialize(IEngine engine)
+        private void RunSafe()
         {
-            oldestPerformanceInfoDateTime = GetOldestPerformanceDate(engine);
-            folderPath = GetFolderPath(engine);
-            fileNamesToDelete = new HashSet<string>();
-        }
+            Initialize();
 
-        private static DateTime GetOldestPerformanceDate(IEngine engine)
-        {
-            var inputOfDays = engine.GetScriptParam("Max Days Since Last Modified")?.Value;
-            if (string.IsNullOrEmpty(inputOfDays) || !int.TryParse(inputOfDays, out int days))
-            {
-                throw new ArgumentException("Invalid or missing value for Days of oldest performance info. It must be a valid integer.");
-            }
-
-            return DateTime.Now.AddDays(-days);
-        }
-
-        private static string GetFolderPath(IEngine engine)
-        {
-            var inputOfFolderPath = Convert.ToString(engine.GetScriptParam("Performance Metrics Location")?.Value);
-            if (string.IsNullOrEmpty(inputOfFolderPath))
-            {
-                throw new ArgumentException("Missing value for Folder path to performance info.");
-            }
-
-            return inputOfFolderPath.Trim();
-        }
-
-        private void DeleteFiles()
-        {
-            foreach (string fileName in fileNamesToDelete)
-            {
-                File.Delete(fileName);
-            }
-        }
-
-        private void RunSafe(IEngine engine)
-        {
-            Initialize(engine);
-
-            if (!Directory.Exists(folderPath))
+            if (!Directory.Exists(_performanceMetricsLocation))
             {
                 throw new DirectoryNotFoundException("The directory does not exist.");
             }
@@ -74,17 +43,62 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
             DeleteFiles();
         }
 
+        private void Initialize()
+        {
+            _maxDaysSinceLastModified = GetOldestPerformanceDate();
+            _performanceMetricsLocation = GetFolderPath();
+            _fileNamesToDelete = new HashSet<string>();
+        }
+
         private void DetermineFilesToDelete()
         {
-            string[] files = Directory.GetFiles(folderPath);
+            string[] files = Directory.GetFiles(_performanceMetricsLocation);
 
             foreach (string file in files)
             {
-                if (File.GetLastWriteTime(file) < oldestPerformanceInfoDateTime)
+                if (File.GetLastWriteTime(file) < _maxDaysSinceLastModified)
                 {
-                    fileNamesToDelete.Add(file);
+                    _fileNamesToDelete.Add(file);
                 }
             }
+        }
+
+        private void DeleteFiles()
+        {
+            foreach (string fileName in _fileNamesToDelete)
+            {
+                try
+                {
+                    File.Delete(fileName);
+                }
+                catch (Exception ex)
+                {
+                    _hasFailures = true;
+                    _engine.Log($"Failed to delete file: {fileName} - {ex.Message}");
+                }
+            }
+        }
+
+        private DateTime GetOldestPerformanceDate()
+        {
+            var inputOfDays = _engine.GetScriptParam("Max Days Since Last Modified")?.Value;
+            if (string.IsNullOrEmpty(inputOfDays) || !int.TryParse(inputOfDays, out int days))
+            {
+                throw new ArgumentException("Invalid or missing value for Days of oldest performance info. It must be a valid integer.");
+            }
+
+            return DateTime.Now.AddDays(-days);
+        }
+
+        private string GetFolderPath()
+        {
+            var inputOfFolderPath = Convert.ToString(_engine.GetScriptParam("Performance Metrics Location")?.Value);
+            if (string.IsNullOrEmpty(inputOfFolderPath))
+            {
+                throw new ArgumentException("Missing value for Folder path to performance info.");
+            }
+
+            return inputOfFolderPath.Trim();
         }
     }
 }

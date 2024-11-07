@@ -61,20 +61,5 @@
 			Assert.IsFalse(File.Exists(Path.Combine(_testDirectory, "oldFile.txt")), "Old file should be deleted.");
 			Assert.IsTrue(File.Exists(Path.Combine(_testDirectory, "newFile.txt")), "New file should still exist.");
 		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentException))]
-		public void PerformanceCleanupScriptTests_Initialize_InvalidDaysParameter_ThrowsArgumentException()
-		{
-			// Arrange
-			var mockScriptParam = new Mock<ScriptParam>();
-			_mockEngine.Setup(e => e.GetScriptParam("Days of oldest performance info")).Returns(mockScriptParam.Object);
-			mockScriptParam.Setup(sp => sp.Value).Returns("invalid");
-
-			// Act
-			_script.Initialize(_mockEngine.Object);
-
-			// Assert is handled by ExpectedException
-		}
 	}
 }
