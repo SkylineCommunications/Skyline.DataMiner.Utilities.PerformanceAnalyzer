@@ -48,7 +48,7 @@
 		public void PerformanceTracker_InitializedWithCollector_ShouldAssignCollector()
 		{
 			// Arrange
-			PerformanceCollector collector = new PerformanceCollector(new PerformanceFileLogger());
+			PerformanceCollector collector = new PerformanceCollector(new PerformanceFileLogger("Collection1"));
 
 			// Act
 			PerformanceTracker tracker = new PerformanceTracker(collector);

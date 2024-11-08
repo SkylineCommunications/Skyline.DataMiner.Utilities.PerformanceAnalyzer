@@ -38,7 +38,7 @@
 		public void PerformanceFileLogger_AddMetadata_ShouldAddCorrectly()
 		{
 			// Arrange
-			var logger = new PerformanceFileLogger();
+			var logger = new PerformanceFileLogger("Collection1");
 
 			// Act
 			logger.AddMetadata("key1", "value1")
@@ -82,7 +82,7 @@
 		public void PerformanceFileLogger_AddMetadata_ShouldAddMetadataToDictionary()
 		{
 			// Arrange
-			var logger = new PerformanceFileLogger();
+			var logger = new PerformanceFileLogger("Collection1");
 			var metadata = new Dictionary<string, string>
 			{
 				{ "key1", "value1" },
@@ -104,7 +104,7 @@
 			// Arrange
 			var expectedFileContent = @"[{""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
 			var logFileInfo = new LogFileInfo("test_log", _testDirectory);
-			var logger = new PerformanceFileLogger(logFileInfo);
+			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
 			var performanceData = new List<PerformanceData>
 			{
@@ -135,7 +135,7 @@
 		{
 			// Arrange
 			var logFileInfo = new LogFileInfo("test_log", _testDirectory);
-			var logger = new PerformanceFileLogger(logFileInfo);
+			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
 			var performanceData = new List<PerformanceData>
 			{
@@ -172,7 +172,7 @@
 			File.WriteAllText(expectedFilePath, existingDataInFile);
 
 			var logFileInfo = new LogFileInfo("test_log", _testDirectory);
-			var logger = new PerformanceFileLogger(logFileInfo);
+			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
 			var performanceData = new List<PerformanceData>
 			{
@@ -201,7 +201,7 @@
 		public void PerformanceFileLogger_IncludeDateInFileName()
 		{
 			// Arrange
-			var logger = new PerformanceFileLogger(new LogFileInfo("test_log", _testDirectory)) { IncludeDate = true };
+			var logger = new PerformanceFileLogger("Collection1", new LogFileInfo("test_log", _testDirectory)) { IncludeDate = true };
 
 			var performanceData = new List<PerformanceData>
 			{
