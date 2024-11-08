@@ -27,30 +27,38 @@
 		};
 
 		private readonly Dictionary<string, string> _metadata = new Dictionary<string, string>();
+		private readonly string _name;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceFileLogger"/> class.
 		/// </summary>
-		public PerformanceFileLogger()
+		/// <param name="name">Name of the log collection. Used to make distinction between different metrics collection instances.</param>
+		public PerformanceFileLogger(string name)
 		{
+			if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"Name cannot be null or whitespace");
+			_name = name;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceFileLogger"/> class.
 		/// </summary>
+		/// <param name="name">Name of the log collection. Used to make distinction between different metrics collection instances.</param>
 		/// <param name="fileName">Name of the file to which to log.</param>
 		/// <param name="filePath">Path of the <paramref name="fileName"/>.</param>
 		/// <exception cref="ArgumentException">Throws if <paramref name="fileName"/> or <paramref name="filePath"/> are null or empty.</exception>
-		public PerformanceFileLogger(string fileName, string filePath = DirectoryPath) : this(new LogFileInfo(fileName, filePath))
+		public PerformanceFileLogger(string name, string fileName, string filePath = DirectoryPath) : this(name, new LogFileInfo(fileName, filePath))
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceFileLogger"/> class.
 		/// </summary>
+		/// <param name="name">Name of the log collection. Used to make distinction between different metrics collection instances.</param>
 		/// <param name="logFileInfo">Array of files to which to log.</param>
-		public PerformanceFileLogger(params LogFileInfo[] logFileInfo)
+		public PerformanceFileLogger(string name, params LogFileInfo[] logFileInfo)
 		{
+			if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"Name cannot be null or whitespace");
+			_name = name;
 			Array.ForEach(logFileInfo, x => LogFiles.Add(x));
 		}
 
@@ -58,6 +66,12 @@
 		/// Gets list of all log files.
 		/// </summary>
 		public List<LogFileInfo> LogFiles { get; private set; } = new List<LogFileInfo>();
+
+		/// <summary>
+		/// Gets the name of the log collection.
+		/// Used to make distinction between different metrics collection instances.
+		/// </summary>
+		public string Name => _name;
 
 		/// <summary>
 		/// Gets metadata of the logs.
@@ -161,6 +175,7 @@
 
 						var performanceLog = new PerformanceLog
 						{
+							Name = _name,
 							Data = data.Where(d => d != null).ToList(),
 							Metadata = _metadata
 						};
@@ -230,9 +245,12 @@
 	internal class PerformanceLog
 	{
 		[JsonProperty(Order = 0)]
-		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+		public string Name { get; set; }
 
 		[JsonProperty(Order = 1)]
+		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+
+		[JsonProperty(Order = 2)]
 		public IReadOnlyList<PerformanceData> Data { get; set; } = new List<PerformanceData>();
 
 		[JsonIgnore]
