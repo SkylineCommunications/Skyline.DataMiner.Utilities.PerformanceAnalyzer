@@ -20,12 +20,13 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerCleanup
             {
                 _engine = engine;
                 RunSafe();
-                if (_hasFailures) engine.ExitFail("Failed to delete some files. Check SLAutomation logging.");
             }
             catch (Exception ex)
             {
                 engine.ExitFail("Something went wrong: " + ex.Message);
             }
+
+            if (_hasFailures) engine.ExitFail("Failed to delete some files. Check SLAutomation logging.");
         }
 
         private void RunSafe()
