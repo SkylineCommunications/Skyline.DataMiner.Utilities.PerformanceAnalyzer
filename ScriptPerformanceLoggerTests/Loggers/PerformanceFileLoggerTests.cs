@@ -54,7 +54,7 @@
 		public void Constructor_WithFileNameOnly_ShouldUseDefaultDirectoryPath()
 		{
 			// Arrange
-			var logger = new PerformanceFileLogger("test_log");
+			var logger = new PerformanceFileLogger("Collection1", "test_log");
 
 			// Act
 			var logFileInfo = logger.LogFiles.First();
@@ -68,7 +68,7 @@
 		public void Constructor_WithFileNameAndFilePath_ShouldCreateLogFileInfo()
 		{
 			// Arrange
-			var logger = new PerformanceFileLogger("test_log", @"C:\TestPath\TestLog");
+			var logger = new PerformanceFileLogger("Collection1", "test_log", @"C:\TestPath\TestLog");
 
 			// Act
 			var logFileInfo = logger.LogFiles.First();
@@ -102,7 +102,7 @@
 		public void PerformanceFileLogger_Report_CreatesFileWithCorrectData()
 		{
 			// Arrange
-			var expectedFileContent = @"[{""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
+			var expectedFileContent = @"[{""Name"":""Collection1"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
 			var logFileInfo = new LogFileInfo("test_log", _testDirectory);
 			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
@@ -165,8 +165,8 @@
 			// Arrange
 			string expectedFilePath = Path.Combine(_testDirectory, "test_log.json");
 
-			var existingDataInFile = @"[{""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
-			var expectedFileContent = @"[{""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]},{""Metadata"":{""key2"":""value2""},""Data"":[{""ClassName"":""NotProgram"",""MethodName"":""Foo"",""StartTime"":""2023-11-10T09:08:07Z"",""ExecutionTime"":""00:00:00.2000000""}]}]";
+			var existingDataInFile = @"[{""Name"":""Collection1"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
+			var expectedFileContent = @"[{""Name"":""Collection1"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]},{""Name"":""Collection1"",""Metadata"":{""key2"":""value2""},""Data"":[{""ClassName"":""NotProgram"",""MethodName"":""Foo"",""StartTime"":""2023-11-10T09:08:07Z"",""ExecutionTime"":""00:00:00.2000000""}]}]";
 
 			File.Create(expectedFilePath).Close();
 			File.WriteAllText(expectedFilePath, existingDataInFile);
