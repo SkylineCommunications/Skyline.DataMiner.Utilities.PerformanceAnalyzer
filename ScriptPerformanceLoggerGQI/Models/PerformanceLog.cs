@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------------
 namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerGQI.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -15,9 +16,12 @@ namespace Skyline.DataMiner.Utils.ScriptPerformanceLoggerGQI.Models
         public string Name { get; set; }
 
         [JsonProperty(Order = 1)]
-        public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+        public DateTime StartTime { get; set; }
 
         [JsonProperty(Order = 2)]
+        public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+
+        [JsonProperty(Order = 3)]
         public IReadOnlyList<PerformanceData> Data { get; set; } = new List<PerformanceData>();
 
         [JsonIgnore]

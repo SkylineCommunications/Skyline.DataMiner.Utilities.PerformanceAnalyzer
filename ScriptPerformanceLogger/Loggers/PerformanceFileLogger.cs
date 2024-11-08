@@ -28,6 +28,7 @@
 
 		private readonly Dictionary<string, string> _metadata = new Dictionary<string, string>();
 		private readonly string _name;
+		private readonly DateTime _startTime = DateTime.Now;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceFileLogger"/> class.
@@ -72,6 +73,11 @@
 		/// Used to make distinction between different metrics collection instances.
 		/// </summary>
 		public string Name => _name;
+
+		/// <summary>
+		/// Gets the time at which the performance file logger was initialized.
+		/// </summary>
+		public DateTime StartTime => _startTime;
 
 		/// <summary>
 		/// Gets metadata of the logs.
@@ -176,6 +182,7 @@
 						var performanceLog = new PerformanceLog
 						{
 							Name = _name,
+							StartTime = _startTime,
 							Data = data.Where(d => d != null).ToList(),
 							Metadata = _metadata
 						};
@@ -248,9 +255,12 @@
 		public string Name { get; set; }
 
 		[JsonProperty(Order = 1)]
-		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+		public DateTime StartTime { get; set; }
 
 		[JsonProperty(Order = 2)]
+		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+
+		[JsonProperty(Order = 3)]
 		public IReadOnlyList<PerformanceData> Data { get; set; } = new List<PerformanceData>();
 
 		[JsonIgnore]
