@@ -267,6 +267,16 @@
 		}
 
 		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldAssignCorrectSubMethod()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(this.tracker);
+
+			// Assert
+			Assert.IsTrue(this.tracker.TrackedMethod.SubMethods.Contains(tracker.TrackedMethod));
+		}
+
+		[TestMethod]
 		public void PerformanceTracker_InitializedWithPerformanceTrackerWithNames_ShouldAssignCorrectParent()
 		{
 			// Arrange & Act
@@ -274,6 +284,16 @@
 
 			// Assert
 			Assert.AreEqual(this.tracker.TrackedMethod, tracker.TrackedMethod.Parent);
+		}
+
+		[TestMethod]
+		public void PerformanceTracker_InitializedWithPerformanceTrackerWithNames_ShouldAssignCorrectSubMethod()
+		{
+			// Arrange & Act
+			PerformanceTracker tracker = new PerformanceTracker(this.tracker, "className", "methodName");
+
+			// Assert
+			Assert.IsTrue(this.tracker.TrackedMethod.SubMethods.Contains(tracker.TrackedMethod));
 		}
 
 		[TestMethod]
