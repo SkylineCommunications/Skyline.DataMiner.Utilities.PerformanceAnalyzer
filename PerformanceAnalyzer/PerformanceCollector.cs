@@ -25,7 +25,7 @@
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceCollector"/> class.
 		/// </summary>
-		/// <param name="logger">Implementation of <see cref="IPerformanceLogger"/>.</param>
+		/// <param name="logger">Implementation of the <see cref="IPerformanceLogger"/>.</param>
 		public PerformanceCollector(IPerformanceLogger logger)
 		{
 			this.logger = logger;
