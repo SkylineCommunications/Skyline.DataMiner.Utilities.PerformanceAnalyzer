@@ -26,7 +26,7 @@ When disposing of the ```PerformanceCollector``` we add the current threads meth
 
 ### Installation
 
-To get started, simply add **Skyline.DataMiner.Utils.ScriptPerformanceLogger** NuGet to your project.
+To get started, simply add **Skyline.DataMiner.Utilities.PerformanceAnalyzer** NuGet to your project.
 
 ### Types
 

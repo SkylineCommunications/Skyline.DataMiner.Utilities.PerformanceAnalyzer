@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net48</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<CodeAnalysisRuleSet>style.ruleset</CodeAnalysisRuleSet>
-		<RootNamespace>ScriptPerformanceLoggerTests</RootNamespace>
+		<RootNamespace>Skyline.DataMiner.Utilities.PerformanceAnalyzerTests</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ScriptPerformanceLogger\ScriptPerformanceLogger.csproj" />
+	  <ProjectReference Include="..\PerformanceAnalyzer\PerformanceAnalyzer.csproj" />
 	</ItemGroup>
 
 </Project>

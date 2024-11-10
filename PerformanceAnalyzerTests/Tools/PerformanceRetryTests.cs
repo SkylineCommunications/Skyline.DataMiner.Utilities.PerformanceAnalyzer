@@ -1,15 +1,15 @@
-﻿namespace ScriptPerformanceLoggerTests.Tools
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests.Tools
 {
 	using System;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools;
 
 	[TestClass]
-	public class RetryTests
+	public class PerformanceRetryTests
 	{
-		private const int _retryCount = 3;
+		private const int RetryCount = 3;
 
 		[TestMethod]
 		public void Execute_ActionSucceedsOnFirstTry_ShouldSucceed()
@@ -18,7 +18,7 @@
 			bool isActionExecuted = false;
 
 			// Act
-			Retry.Execute(() => isActionExecuted = true, TimeSpan.FromMilliseconds(100), 3);
+			PerformanceRetry.Execute(() => isActionExecuted = true, TimeSpan.FromMilliseconds(100), 3);
 
 			// Assert
 			Assert.IsTrue(isActionExecuted);
@@ -32,7 +32,7 @@
 			int attempt = 0;
 
 			// Act
-			Retry.Execute(
+			PerformanceRetry.Execute(
 				() =>
 					{
 						if (++attempt < 2)
@@ -45,7 +45,7 @@
 						}
 					},
 				TimeSpan.FromMilliseconds(100),
-				_retryCount);
+				RetryCount);
 
 			// Assert
 			Assert.AreEqual(2, attempt);
@@ -61,14 +61,14 @@
 			// Act
 			try
 			{
-				Retry.Execute(
+				PerformanceRetry.Execute(
 					() =>
 						{
 							attempt++;
 							throw new Exception("Always fails");
 						},
 					TimeSpan.FromMilliseconds(100),
-					_retryCount);
+					RetryCount);
 			}
 			catch (Exception)
 			{
@@ -84,7 +84,7 @@
 		public void Execute_InvalidTryCount_ShouldThrowArgumentOutOfRangeException()
 		{
 			// Arrange & Act
-			Retry.Execute(() => { }, TimeSpan.FromMilliseconds(100), 0);
+			PerformanceRetry.Execute(() => { }, TimeSpan.FromMilliseconds(100), 0);
 
 			// Assert is handled by ExpectedException
 		}
@@ -100,7 +100,7 @@
 			// Act
 			try
 			{
-				Retry.Execute(
+				PerformanceRetry.Execute(
 					() =>
 						{
 							if (attempt > 0)
@@ -114,7 +114,7 @@
 							throw new Exception("Always fails");
 						},
 					sleepPeriod,
-					_retryCount);
+					RetryCount);
 			}
 			catch (Exception)
 			{

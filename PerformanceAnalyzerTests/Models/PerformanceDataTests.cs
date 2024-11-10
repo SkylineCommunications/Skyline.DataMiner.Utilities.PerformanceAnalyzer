@@ -1,8 +1,8 @@
-﻿namespace ScriptPerformanceLoggerTests.Models
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests.Models
 {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
 
 	[TestClass]
 	public class PerformanceDataTests

@@ -1,4 +1,4 @@
-﻿namespace ScriptPerformanceLoggerTests.Loggers
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests.Loggers
 {
 	using System;
 	using System.Collections.Generic;
@@ -6,31 +6,30 @@
 	using System.Linq;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using Moq;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
 
 	[TestClass]
 	public class PerformanceFileLoggerTests
 	{
-		private string _testDirectory;
+		private string testDirectory;
 
 		[TestInitialize]
 		public void Setup()
 		{
 			// Set up a temporary directory for file tests
-			_testDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-			Directory.CreateDirectory(_testDirectory);
+			testDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+			Directory.CreateDirectory(testDirectory);
 		}
 
 		[TestCleanup]
 		public void Cleanup()
 		{
 			// Clean up temporary directory
-			if (Directory.Exists(_testDirectory))
+			if (Directory.Exists(testDirectory))
 			{
-				Directory.Delete(_testDirectory, true);
+				Directory.Delete(testDirectory, true);
 			}
 		}
 
@@ -103,7 +102,7 @@
 		{
 			// Arrange
 			var expectedFileContent = @"[{""Name"":""Collection1"",""StartTime"":""[STARTTIME]"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
-			var logFileInfo = new LogFileInfo("test_log", _testDirectory);
+			var logFileInfo = new LogFileInfo("test_log", testDirectory);
 			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
 			expectedFileContent = expectedFileContent.Replace("[STARTTIME]", logger.StartTime.ToString("O"));
@@ -125,7 +124,7 @@
 			logger.Report(performanceData);
 
 			// Assert
-			string expectedFilePath = Path.Combine(_testDirectory, "test_log.json");
+			string expectedFilePath = Path.Combine(testDirectory, "test_log.json");
 			Assert.IsTrue(File.Exists(expectedFilePath));
 
 			string fileContent = File.ReadAllText(expectedFilePath);
@@ -136,7 +135,7 @@
 		public void PerformanceFileLogger_Report_DoesNotContainMetadataFieldIfMetadataIsEmpty()
 		{
 			// Arrange
-			var logFileInfo = new LogFileInfo("test_log", _testDirectory);
+			var logFileInfo = new LogFileInfo("test_log", testDirectory);
 			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
 			var performanceData = new List<PerformanceData>
@@ -154,7 +153,7 @@
 			logger.Report(performanceData);
 
 			// Assert
-			string expectedFilePath = Path.Combine(_testDirectory, "test_log.json");
+			string expectedFilePath = Path.Combine(testDirectory, "test_log.json");
 			Assert.IsTrue(File.Exists(expectedFilePath));
 
 			string fileContent = File.ReadAllText(expectedFilePath);
@@ -165,7 +164,7 @@
 		public void PerformanceFileLogger_Report_AppendsDataIfFileAlreadyExists()
 		{
 			// Arrange
-			string expectedFilePath = Path.Combine(_testDirectory, "test_log.json");
+			string expectedFilePath = Path.Combine(testDirectory, "test_log.json");
 
 			var existingDataInFile = @"[{""Name"":""Collection1"",""StartTime"":""2024-12-12T14:15:22Z"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
 			var expectedFileContent = @"[{""Name"":""Collection1"",""StartTime"":""2024-12-12T14:15:22Z"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]},{""Name"":""Collection1"",""StartTime"":""[STARTTIME]"",""Metadata"":{""key2"":""value2""},""Data"":[{""ClassName"":""NotProgram"",""MethodName"":""Foo"",""StartTime"":""2023-11-10T09:08:07Z"",""ExecutionTime"":""00:00:00.2000000""}]}]";
@@ -173,7 +172,7 @@
 			File.Create(expectedFilePath).Close();
 			File.WriteAllText(expectedFilePath, existingDataInFile);
 
-			var logFileInfo = new LogFileInfo("test_log", _testDirectory);
+			var logFileInfo = new LogFileInfo("test_log", testDirectory);
 			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
 			expectedFileContent = expectedFileContent.Replace("[STARTTIME]", logger.StartTime.ToString("O"));
@@ -205,7 +204,7 @@
 		public void PerformanceFileLogger_IncludeDateInFileName()
 		{
 			// Arrange
-			var logger = new PerformanceFileLogger("Collection1", new LogFileInfo("test_log", _testDirectory)) { IncludeDate = true };
+			var logger = new PerformanceFileLogger("Collection1", new LogFileInfo("test_log", testDirectory)) { IncludeDate = true };
 
 			var performanceData = new List<PerformanceData>
 			{
@@ -222,7 +221,7 @@
 			logger.Report(performanceData);
 
 			// Assert
-			var files = Directory.GetFiles(_testDirectory);
+			var files = Directory.GetFiles(testDirectory);
 			Assert.AreEqual(1, files.Length);
 
 			string fileName = Path.GetFileName(files.First());

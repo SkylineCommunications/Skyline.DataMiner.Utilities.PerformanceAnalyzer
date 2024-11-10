@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools
 {
 	using System;
 	using System.Diagnostics;
@@ -8,21 +8,21 @@
 	/// </summary>
 	internal class PerformanceClock
 	{
-		private readonly DateTime _startTime;
-		private readonly Stopwatch _stopwatch;
+		private readonly DateTime startTime;
+		private readonly Stopwatch stopwatch;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceClock"/> class.
 		/// </summary>
 		public PerformanceClock()
 		{
-			_startTime = DateTime.UtcNow;
-			_stopwatch = Stopwatch.StartNew();
+			startTime = DateTime.UtcNow;
+			stopwatch = Stopwatch.StartNew();
 		}
 
 		/// <summary>
 		/// Gets high precision UtcNow time.
 		/// </summary>
-		public DateTime UtcNow => _startTime + _stopwatch.Elapsed;
+		public DateTime UtcNow => startTime + stopwatch.Elapsed;
 	}
 }

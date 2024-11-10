@@ -1,4 +1,4 @@
-﻿namespace ScriptPerformanceLoggerTests
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests
 {
 	using System;
 	using System.Collections.Generic;
@@ -8,21 +8,21 @@
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using Moq;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger;
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
 
 	[TestClass]
 	public class PerformanceCollectorTests
 	{
-		private Mock<IPerformanceLogger> _mockLogger;
-		private PerformanceCollector _collector;
+		private Mock<IPerformanceLogger> mockLogger;
+		private PerformanceCollector collector;
 
 		[TestInitialize]
 		public void Setup()
 		{
-			_mockLogger = new Mock<IPerformanceLogger>();
-			_collector = new PerformanceCollector(_mockLogger.Object);
+			mockLogger = new Mock<IPerformanceLogger>();
+			collector = new PerformanceCollector(mockLogger.Object);
 		}
 
 		[TestMethod]
@@ -32,7 +32,7 @@
 			var methodData = new PerformanceData();
 
 			// Act
-			var result = _collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
+			var result = collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			// Assert
 			Assert.IsTrue(result.IsStarted);
@@ -46,7 +46,7 @@
 			var methodData = new PerformanceData();
 
 			// Act
-			var result = _collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
+			var result = collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			// Assert
 			Assert.IsTrue(result.IsStarted);
@@ -59,7 +59,7 @@
 			var methodData = new PerformanceData { IsStarted = true, StartTime = DateTime.UtcNow.AddSeconds(-10) };
 
 			// Act
-			var result = _collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
+			var result = collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			// Assert
 			Assert.AreEqual(methodData.StartTime, result.StartTime);
@@ -72,7 +72,7 @@
 			var methodData = new PerformanceData { StartTime = DateTime.UtcNow };
 
 			// Act
-			var result = _collector.Stop(methodData);
+			var result = collector.Stop(methodData);
 
 			// Assert
 			Assert.AreNotEqual(default(TimeSpan), result.ExecutionTime);
@@ -85,7 +85,7 @@
 			var methodData = new PerformanceData { StartTime = DateTime.UtcNow };
 
 			// Act
-			var result = _collector.Stop(methodData);
+			var result = collector.Stop(methodData);
 
 			// Assert
 			Assert.IsTrue(result.IsStopped);
@@ -98,7 +98,7 @@
 			var methodData = new PerformanceData { IsStopped = true, StartTime = DateTime.UtcNow.AddSeconds(-10) };
 
 			// Act
-			var result = _collector.Stop(methodData);
+			var result = collector.Stop(methodData);
 
 			// Assert
 			Assert.AreEqual(methodData.ExecutionTime, result.ExecutionTime);
@@ -109,13 +109,13 @@
 		{
 			// Arrange
 			var methodData = new PerformanceData();
-			_collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
+			collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			// Act
-			_collector.Dispose();
+			collector.Dispose();
 
 			// Assert
-			_mockLogger.Verify(l => l.Report(It.IsAny<List<PerformanceData>>()), Times.Once);
+			mockLogger.Verify(l => l.Report(It.IsAny<List<PerformanceData>>()), Times.Once);
 		}
 
 		[TestMethod]
@@ -123,21 +123,21 @@
 		{
 			// Arrange
 			var methodData = new PerformanceData();
-			_collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
+			collector.Start(methodData, Thread.CurrentThread.ManagedThreadId);
 
 			Task.Run(() =>
 			{
-				_collector.Start(new PerformanceData(), Thread.CurrentThread.ManagedThreadId);
+				collector.Start(new PerformanceData(), Thread.CurrentThread.ManagedThreadId);
 
 				Thread.Sleep(200);
 			});
 
 			// Act
 			Thread.Sleep(100);
-			_collector.Dispose();
+			collector.Dispose();
 
 			// Assert
-			_mockLogger.Verify(l => l.Report(It.IsAny<List<PerformanceData>>()), Times.Never);
+			mockLogger.Verify(l => l.Report(It.IsAny<List<PerformanceData>>()), Times.Never);
 		}
 	}
 }

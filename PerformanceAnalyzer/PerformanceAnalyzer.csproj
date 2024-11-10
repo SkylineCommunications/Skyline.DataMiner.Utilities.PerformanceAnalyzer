@@ -4,8 +4,8 @@
 		<PlatformTarget>anycpu</PlatformTarget>
 		<CodeAnalysisRuleSet>..\Internal\Code Analysis\debug.ruleset</CodeAnalysisRuleSet>
 		<IsPackable>True</IsPackable>
-		<RootNamespace>Skyline.DataMiner.Utils.ScriptPerformanceLogger</RootNamespace>
-		<AssemblyName>Skyline.DataMiner.Utils.ScriptPerformanceLogger</AssemblyName>
+		<RootNamespace>Skyline.DataMiner.Utilities.PerformanceAnalyzer</RootNamespace>
+		<AssemblyName>Skyline.DataMiner.Utilities.PerformanceAnalyzer</AssemblyName>
 		<PackageVersion>3.0.1</PackageVersion>
 		<Version>3.0.1</Version>
 		<PackageTags>Skyline;DataMiner</PackageTags>
@@ -21,18 +21,17 @@
 		<PackageIcon>Icon.png</PackageIcon>
 		<PackageTags>Skyline;DataMiner</PackageTags>
 		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/SkylineCommunications/Skyline.DataMiner.Utils.ScriptPerformanceLogger</RepositoryUrl>
+		<RepositoryUrl>https://github.com/SkylineCommunications/Skyline.DataMiner.Utilities.PerformanceAnalyzer</RepositoryUrl>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
-		<RootNamespace>Skyline.DataMiner.Utils.ScriptPerformanceLogger</RootNamespace>
+		<RootNamespace>Skyline.DataMiner.Utilities.PerformanceAnalyzer</RootNamespace>
 		<LangVersion></LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="$(MSBuildProjectName)Tests" />
-		<InternalsVisibleTo Include="$(MSBuildProjectName)GQI" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,11 +1,11 @@
-﻿namespace ScriptPerformanceLoggerTests.Tools
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests.Tools
 {
 	using System;
 	using System.Threading;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools;
 
 	[TestClass]
 	public class PerformanceClockTests

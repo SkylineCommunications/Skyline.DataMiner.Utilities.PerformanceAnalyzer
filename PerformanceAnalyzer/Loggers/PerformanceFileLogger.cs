@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers
 {
 	using System;
 	using System.Collections.Generic;
@@ -8,8 +8,8 @@
 
 	using Newtonsoft.Json;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools;
 
 	/// <summary>
 	/// <see cref="PerformanceFileLogger"/> is implementation of the <see cref="IPerformanceLogger"/> that logs to files.
@@ -18,17 +18,17 @@
 	{
 		private const string DirectoryPath = @"C:\Skyline_Data\PerformanceLogger";
 
-		private static readonly object _fileLock = new object();
-		private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+		private static readonly object FileLock = new object();
+		private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
 		{
 			NullValueHandling = NullValueHandling.Ignore,
 			ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
 			DateFormatHandling = DateFormatHandling.IsoDateFormat,
 		};
 
-		private readonly Dictionary<string, string> _metadata = new Dictionary<string, string>();
-		private readonly string _name;
-		private readonly DateTime _startTime = DateTime.Now;
+		private readonly Dictionary<string, string> metadata = new Dictionary<string, string>();
+		private readonly string name;
+		private readonly DateTime startTime = DateTime.Now;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceFileLogger"/> class.
@@ -36,8 +36,12 @@
 		/// <param name="name">Name of the log collection. Used to make distinction between different metrics collection instances.</param>
 		public PerformanceFileLogger(string name)
 		{
-			if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"Name cannot be null or whitespace");
-			_name = name;
+			if (String.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException($"Name cannot be null or whitespace");
+			}
+
+			this.name = name;
 		}
 
 		/// <summary>
@@ -58,8 +62,12 @@
 		/// <param name="logFileInfo">Array of files to which to log.</param>
 		public PerformanceFileLogger(string name, params LogFileInfo[] logFileInfo)
 		{
-			if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"Name cannot be null or whitespace");
-			_name = name;
+			if (String.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException($"Name cannot be null or whitespace");
+			}
+
+			this.name = name;
 			Array.ForEach(logFileInfo, x => LogFiles.Add(x));
 		}
 
@@ -72,17 +80,17 @@
 		/// Gets the name of the log collection.
 		/// Used to make distinction between different metrics collection instances.
 		/// </summary>
-		public string Name => _name;
+		public string Name => name;
 
 		/// <summary>
 		/// Gets the time at which the performance file logger was initialized.
 		/// </summary>
-		public DateTime StartTime => _startTime;
+		public DateTime StartTime => startTime;
 
 		/// <summary>
 		/// Gets metadata of the logs.
 		/// </summary>
-		public Dictionary<string, string> Metadata => _metadata;
+		public Dictionary<string, string> Metadata => metadata;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether date should be included in files names.
@@ -95,7 +103,7 @@
 		/// <param name="data">List of performance metrics to log.</param>
 		public void Report(List<PerformanceData> data)
 		{
-			Retry.Execute(
+			PerformanceRetry.Execute(
 				() => Store(data),
 				TimeSpan.FromMilliseconds(100),
 				tryCount: 10);
@@ -109,7 +117,7 @@
 		/// <returns>Returns current instance of <see cref="PerformanceFileLogger"/>.</returns>
 		public PerformanceFileLogger AddMetadata(string key, string value)
 		{
-			_metadata[key] = value;
+			metadata[key] = value;
 			return this;
 		}
 
@@ -122,7 +130,7 @@
 		{
 			foreach (var data in metadata)
 			{
-				_metadata[data.Key] = data.Value;
+				this.metadata[data.Key] = data.Value;
 			}
 
 			return this;
@@ -168,7 +176,7 @@
 			string fileName = BuildFileName(logFileInfo);
 			string fullPath = Path.Combine(logFileInfo.FilePath, fileName);
 
-			lock (_fileLock)
+			lock (FileLock)
 			{
 				using (var fileStream = new FileStream(fullPath, FileMode.OpenOrCreate))
 				{
@@ -181,15 +189,15 @@
 
 						var performanceLog = new PerformanceLog
 						{
-							Name = _name,
-							StartTime = _startTime,
+							Name = name,
+							StartTime = startTime,
 							Data = data.Where(d => d != null).ToList(),
-							Metadata = _metadata
+							Metadata = metadata
 						};
 
 						if (performanceLog.Any)
 						{
-							writer.Write(prefix + JsonConvert.SerializeObject(performanceLog, _jsonSerializerSettings) + postfix);
+							writer.Write(prefix + JsonConvert.SerializeObject(performanceLog, JsonSerializerSettings) + postfix);
 						}
 					}
 				}

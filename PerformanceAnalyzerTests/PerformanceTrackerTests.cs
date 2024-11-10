@@ -1,4 +1,4 @@
-﻿namespace ScriptPerformanceLoggerTests
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests
 {
 	using System;
 	using System.Collections.Generic;
@@ -11,29 +11,29 @@
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using Moq;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger;
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers;
 
 	[TestClass]
 	public class PerformanceTrackerTests
 	{
-		private Mock<IPerformanceLogger> _mockLogger;
-		private PerformanceCollector _collector;
-		private PerformanceTracker _tracker;
+		private Mock<IPerformanceLogger> mockLogger;
+		private PerformanceCollector collector;
+		private PerformanceTracker tracker;
 
 		[TestInitialize]
 		public void Setup()
 		{
-			_mockLogger = new Mock<IPerformanceLogger>();
-			_collector = new PerformanceCollector(_mockLogger.Object);
-			_tracker = new PerformanceTracker(_collector);
+			mockLogger = new Mock<IPerformanceLogger>();
+			collector = new PerformanceCollector(mockLogger.Object);
+			tracker = new PerformanceTracker(collector);
 		}
 
 		[TestMethod]
 		public void PerformanceTracker_Initialize_ShouldTrackMethod()
 		{
 			// Arrange
-			PerformanceTracker tracker = new PerformanceTracker(_collector);
+			PerformanceTracker tracker = new PerformanceTracker(collector);
 
 			// Act
 			var trackedMethod = tracker.TrackedMethod;
@@ -61,10 +61,10 @@
 		public void PerformanceTracker_InitializedWithCollectorAndNames_ShouldAssignCollectorAndNames()
 		{
 			// Arrange & Act
-			PerformanceTracker tracker = new PerformanceTracker(_collector, "className", "methodName");
+			PerformanceTracker tracker = new PerformanceTracker(collector, "className", "methodName");
 
 			// Assert
-			Assert.AreEqual(_collector, tracker.Collector);
+			Assert.AreEqual(collector, tracker.Collector);
 			Assert.AreEqual("className", tracker.TrackedMethod.ClassName);
 			Assert.AreEqual("methodName", tracker.TrackedMethod.MethodName);
 		}
@@ -73,10 +73,10 @@
 		public void PerformanceTracker_InitializedWithTrackerAndNames_ShouldAssignCollectorAndNames()
 		{
 			// Arrange & Act
-			PerformanceTracker tracker = new PerformanceTracker(_tracker, "className", "methodName");
+			PerformanceTracker tracker = new PerformanceTracker(this.tracker, "className", "methodName");
 
 			// Assert
-			Assert.AreEqual(_collector, tracker.Collector);
+			Assert.AreEqual(collector, tracker.Collector);
 			Assert.AreEqual("className", tracker.TrackedMethod.ClassName);
 			Assert.AreEqual("methodName", tracker.TrackedMethod.MethodName);
 		}
@@ -112,7 +112,7 @@
 		public void PerformanceTracker_InitializedCollectorClassNameWithNull_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_collector, null, "methodName");
+			_ = new PerformanceTracker(collector, null, "methodName");
 
 			// Assert is handled by ExpectedException
 		}
@@ -122,7 +122,7 @@
 		public void PerformanceTracker_InitializedCollectorClassNameWithEmpty_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_collector, string.Empty, "methodName");
+			_ = new PerformanceTracker(collector, string.Empty, "methodName");
 
 			// Assert is handled by ExpectedException
 		}
@@ -132,7 +132,7 @@
 		public void PerformanceTracker_InitializedCollectorClassNameWithWhitespace_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_collector, "    ", "methodName");
+			_ = new PerformanceTracker(collector, "    ", "methodName");
 
 			// Assert is handled by ExpectedException
 		}
@@ -142,7 +142,7 @@
 		public void PerformanceTracker_InitializedCollectorMethodNameWithNull_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_collector, "className", null);
+			_ = new PerformanceTracker(collector, "className", null);
 
 			// Assert is handled by ExpectedException
 		}
@@ -152,7 +152,7 @@
 		public void PerformanceTracker_InitializedCollectorMethodNameWithEmpty_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_collector, "className", string.Empty);
+			_ = new PerformanceTracker(collector, "className", string.Empty);
 
 			// Assert is handled by ExpectedException
 		}
@@ -162,7 +162,7 @@
 		public void PerformanceTracker_InitializedCollectorMethodNameWithWhitespace_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_collector, "className", "    ");
+			_ = new PerformanceTracker(collector, "className", "    ");
 
 			// Assert is handled by ExpectedException
 		}
@@ -198,7 +198,7 @@
 		public void PerformanceTracker_InitializedParentTrackerClassNameWithNull_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_tracker, null, "methodName");
+			_ = new PerformanceTracker(tracker, null, "methodName");
 
 			// Assert is handled by ExpectedException
 		}
@@ -208,7 +208,7 @@
 		public void PerformanceTracker_InitializedParentTrackerClassNameWithEmpty_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_tracker, string.Empty, "methodName");
+			_ = new PerformanceTracker(tracker, string.Empty, "methodName");
 
 			// Assert is handled by ExpectedException
 		}
@@ -218,7 +218,7 @@
 		public void PerformanceTracker_InitializedParentTrackerClassNameWithWhitespace_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_tracker, "    ", "methodName");
+			_ = new PerformanceTracker(tracker, "    ", "methodName");
 
 			// Assert is handled by ExpectedException
 		}
@@ -228,7 +228,7 @@
 		public void PerformanceTracker_InitializedParentTrackerMethodNameWithNull_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_tracker, "className", null);
+			_ = new PerformanceTracker(tracker, "className", null);
 
 			// Assert is handled by ExpectedException
 		}
@@ -238,7 +238,7 @@
 		public void PerformanceTracker_InitializedParentTrackerMethodNameWithEmpty_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_tracker, "className", string.Empty);
+			_ = new PerformanceTracker(tracker, "className", string.Empty);
 
 			// Assert is handled by ExpectedException
 		}
@@ -248,7 +248,7 @@
 		public void PerformanceTracker_InitializedParentTrackerMethodNameWithWhitespace_ShouldThrow()
 		{
 			// Arrange & Act
-			_ = new PerformanceTracker(_tracker, "className", "    ");
+			_ = new PerformanceTracker(tracker, "className", "    ");
 
 			// Assert is handled by ExpectedException
 		}
@@ -257,7 +257,7 @@
 		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldAssignCorrectParent()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 
 			// Act
 			PerformanceTracker tracker = new PerformanceTracker(parentTracker);
@@ -270,24 +270,24 @@
 		public void PerformanceTracker_InitializedWithPerformanceTrackerWithNames_ShouldAssignCorrectParent()
 		{
 			// Arrange & Act
-			PerformanceTracker tracker = new PerformanceTracker(_tracker, "className", "methodName");
+			PerformanceTracker tracker = new PerformanceTracker(this.tracker, "className", "methodName");
 
 			// Assert
-			Assert.AreEqual(_tracker.TrackedMethod, tracker.TrackedMethod.Parent);
+			Assert.AreEqual(this.tracker.TrackedMethod, tracker.TrackedMethod.Parent);
 		}
 
 		[TestMethod]
 		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldNotAddMethodToParentsSubMethodOnTheSameThread()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 
 			// Act
 			PerformanceTracker tracker = new PerformanceTracker(parentTracker);
 
 			// Assert
-			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance);
-			var trackerThreadIdFieldInfo = tracker.GetType().GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance);
+			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
+			var trackerThreadIdFieldInfo = tracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.AreEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
 			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
 		}
@@ -296,14 +296,14 @@
 		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldNotAddMethodToParentsSubMethodOnTheSameThread()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 
 			// Act
 			PerformanceTracker tracker = new PerformanceTracker(parentTracker, "className", "methodName");
 
 			// Assert
-			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance);
-			var trackerThreadIdFieldInfo = tracker.GetType().GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance);
+			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
+			var trackerThreadIdFieldInfo = tracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.AreEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
 			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
 		}
@@ -312,19 +312,19 @@
 		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldAddMethodToParentsSubMethodForDifferentThreads()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 
 			// Act
 			PerformanceTracker tracker = new PerformanceTracker(parentTracker);
 
 			// Simulate different thread IDs
 			parentTracker.GetType()
-				.GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance)
+				.GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance)
 				.SetValue(parentTracker, Thread.CurrentThread.ManagedThreadId + 1);
 
 			// Assert
-			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance);
-			var trackerThreadIdFieldInfo = tracker.GetType().GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance);
+			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
+			var trackerThreadIdFieldInfo = tracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.AreNotEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
 			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
 		}
@@ -333,19 +333,19 @@
 		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldAddMethodToParentsSubMethodForDifferentThreads()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 
 			// Act
 			PerformanceTracker tracker = new PerformanceTracker(parentTracker, "className", "methodName");
 
 			// Simulate different thread IDs
 			parentTracker.GetType()
-				.GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance)
+				.GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance)
 				.SetValue(parentTracker, Thread.CurrentThread.ManagedThreadId + 1);
 
 			// Assert
-			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance);
-			var trackerThreadIdFieldInfo = tracker.GetType().GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance);
+			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
+			var trackerThreadIdFieldInfo = tracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.AreNotEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
 			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
 		}
@@ -354,7 +354,7 @@
 		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldNotAddMethodToMutipleSubmethods()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 			PerformanceTracker middleTracker;
 			PerformanceTracker childTracker;
 
@@ -375,7 +375,7 @@
 		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldNotAddMethodToMutipleSubmethods()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 			PerformanceTracker middleTracker;
 			PerformanceTracker childTracker;
 
@@ -396,13 +396,13 @@
 		public void PerformanceTracker_InitializedWithPerformanceTracker_ShouldNotAddMethodToMutipleSubmethodsMultithread()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 			PerformanceTracker middleTracker;
 			PerformanceTracker childTracker;
 
 			// Simulate different thread IDs
 			parentTracker.GetType()
-				.GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance)
+				.GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance)
 				.SetValue(parentTracker, Thread.CurrentThread.ManagedThreadId + 1);
 
 			// Act
@@ -422,13 +422,13 @@
 		public void PerformanceTracker_InitializedWithPerformanceTrackerAndNames_ShouldNotAddMethodToMutipleSubmethodsMultithread()
 		{
 			// Arrange
-			PerformanceTracker parentTracker = new PerformanceTracker(_collector);
+			PerformanceTracker parentTracker = new PerformanceTracker(collector);
 			PerformanceTracker middleTracker;
 			PerformanceTracker childTracker;
 
 			// Simulate different thread IDs
 			parentTracker.GetType()
-				.GetField("_threadId", BindingFlags.NonPublic | BindingFlags.Instance)
+				.GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance)
 				.SetValue(parentTracker, Thread.CurrentThread.ManagedThreadId + 1);
 
 			// Act
@@ -448,7 +448,7 @@
 		public void PerformanceTracker_AddMetadata_ShouldIncludeMetadataInTrackedMethod()
 		{
 			// Arrange
-			PerformanceTracker tracker = new PerformanceTracker(_collector);
+			PerformanceTracker tracker = new PerformanceTracker(collector);
 
 			// Act
 			tracker.AddMetadata("Key1", "Value1")
@@ -464,7 +464,7 @@
 		public void PerformanceFileLogger_AddMetadata_ShouldAddMetadataToDictionary()
 		{
 			// Arrange
-			PerformanceTracker tracker = new PerformanceTracker(_collector);
+			PerformanceTracker tracker = new PerformanceTracker(collector);
 			var metadata = new Dictionary<string, string>
 			{
 				{ "key1", "value1" },
@@ -484,7 +484,7 @@
 		public void PerformanceTracker_Dispose_ShouldEndTracking()
 		{
 			// Arrange
-			PerformanceTracker tracker = new PerformanceTracker(_collector);
+			PerformanceTracker tracker = new PerformanceTracker(collector);
 
 			// Act
 			tracker.Dispose();

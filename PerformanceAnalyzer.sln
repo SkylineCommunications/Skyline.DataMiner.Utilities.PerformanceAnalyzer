@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLogger", "ScriptPerformanceLogger\ScriptPerformanceLogger.csproj", "{67E87C89-E2BB-4F9D-9304-E3498EE07420}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerformanceAnalyzer", "PerformanceAnalyzer\PerformanceAnalyzer.csproj", "{67E87C89-E2BB-4F9D-9304-E3498EE07420}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLoggerTests", "ScriptPerformanceLoggerTests\ScriptPerformanceLoggerTests.csproj", "{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerformanceAnalyzerTests", "PerformanceAnalyzerTests\PerformanceAnalyzerTests.csproj", "{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,9 +24,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1FB951D6-0D2C-4B15-9F0E-46C75CA3C23E} = {0D0F83C5-842A-404C-98BC-6A472DC55435}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3456BB63-B601-4DAB-95AD-6DD96866820C}

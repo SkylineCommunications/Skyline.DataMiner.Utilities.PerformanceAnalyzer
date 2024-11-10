@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer
 {
 	using System;
 	using System.Collections.Concurrent;
@@ -6,21 +6,21 @@
 	using System.Linq;
 	using System.Threading;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Loggers;
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools;
 
 	/// <summary>
 	/// <see cref="PerformanceCollector"/> collects performance metrics for methods in single or multi threaded environments.
 	/// </summary>
 	public sealed class PerformanceCollector : IDisposable
 	{
-		private readonly PerformanceClock _clock;
-		private readonly IPerformanceLogger _logger;
-		private readonly ConcurrentDictionary<int, PerformanceData> _perThreadRootMethod = new ConcurrentDictionary<int, PerformanceData>();
-		private readonly List<PerformanceData> _methodsToLog = new List<PerformanceData>();
+		private readonly PerformanceClock clock;
+		private readonly IPerformanceLogger logger;
+		private readonly ConcurrentDictionary<int, PerformanceData> perThreadRootMethod = new ConcurrentDictionary<int, PerformanceData>();
+		private readonly List<PerformanceData> methodsToLog = new List<PerformanceData>();
 
-		private bool _disposed;
+		private bool disposed;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceCollector"/> class.
@@ -28,11 +28,11 @@
 		/// <param name="logger">Implementation of <see cref="IPerformanceLogger"/>.</param>
 		public PerformanceCollector(IPerformanceLogger logger)
 		{
-			_logger = logger;
-			_clock = new PerformanceClock();
+			this.logger = logger;
+			clock = new PerformanceClock();
 		}
 
-		internal PerformanceClock Clock => _clock;
+		internal PerformanceClock Clock => clock;
 
 		internal PerformanceData Start(PerformanceData methodData, int threadId)
 		{
@@ -43,15 +43,15 @@
 
 			if (methodData.Parent == null)
 			{
-				_perThreadRootMethod.TryAdd(threadId, methodData);
+				perThreadRootMethod.TryAdd(threadId, methodData);
 			}
 
-			if (_perThreadRootMethod.Count == 1)
+			if (perThreadRootMethod.Count == 1)
 			{
-				_disposed = false;
+				disposed = false;
 			}
 
-			methodData.StartTime = _clock.UtcNow;
+			methodData.StartTime = clock.UtcNow;
 			methodData.IsStarted = true;
 
 			return methodData;
@@ -64,7 +64,7 @@
 				return methodData;
 			}
 
-			methodData.ExecutionTime = _clock.UtcNow - methodData.StartTime;
+			methodData.ExecutionTime = clock.UtcNow - methodData.StartTime;
 			methodData.IsStopped = true;
 
 			return methodData;
@@ -83,18 +83,18 @@
 
 		private void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
+			if (!disposed && disposing)
 			{
-				_perThreadRootMethod.TryRemove(Thread.CurrentThread.ManagedThreadId, out var rootMethod);
+				perThreadRootMethod.TryRemove(Thread.CurrentThread.ManagedThreadId, out var rootMethod);
 
-				_methodsToLog.Add(rootMethod);
+				methodsToLog.Add(rootMethod);
 
-				if (!_perThreadRootMethod.Any())
+				if (!perThreadRootMethod.Any())
 				{
-					_logger.Report(_methodsToLog);
-					_methodsToLog.Clear();
+					logger.Report(methodsToLog);
+					methodsToLog.Clear();
 
-					_disposed = true;
+					disposed = true;
 				}
 			}
 		}

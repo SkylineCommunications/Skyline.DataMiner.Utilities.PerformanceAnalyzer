@@ -1,12 +1,12 @@
-﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger.Tools
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools
 {
 	using System;
 	using System.Threading;
 
 	/// <summary>
-	/// <see cref="Retry"/> class provides mechanism for retrying an action.
+	/// <see cref="PerformanceRetry"/> class provides mechanism for retrying an action.
 	/// </summary>
-	internal static class Retry
+	internal static class PerformanceRetry
 	{
 		/// <summary>
 		/// Retries specified action for specified number of times.

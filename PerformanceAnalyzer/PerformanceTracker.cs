@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utils.ScriptPerformanceLogger
+﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer
 {
 	using System;
 	using System.Collections.Concurrent;
@@ -9,22 +9,22 @@
 	using System.Runtime.CompilerServices;
 	using System.Threading;
 
-	using Skyline.DataMiner.Utils.ScriptPerformanceLogger.Models;
+	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
 
 	/// <summary>
 	/// <see cref="PerformanceTracker"/> tracks method calls in single or multi threaded environments.
 	/// </summary>
 	public sealed class PerformanceTracker : IDisposable
 	{
-		private static readonly ConcurrentDictionary<int, Stack<PerformanceData>> _perThreadStack = new ConcurrentDictionary<int, Stack<PerformanceData>>();
+		private static readonly ConcurrentDictionary<int, Stack<PerformanceData>> PerThreadStack = new ConcurrentDictionary<int, Stack<PerformanceData>>();
 
-		private readonly bool _isMultiThreaded;
-		private readonly PerformanceCollector _collector;
-		private readonly int _threadId = Thread.CurrentThread.ManagedThreadId;
+		private readonly bool isMultiThreaded;
+		private readonly PerformanceCollector collector;
+		private readonly int threadId = Thread.CurrentThread.ManagedThreadId;
 
-		private PerformanceData _trackedMethod;
-		private bool _disposed;
-		private bool _isSubMethod;
+		private PerformanceData trackedMethod;
+		private bool disposed;
+		private bool isSubMethod;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PerformanceTracker"/> class and starts performance tracking for the method in which it was initialized.
@@ -33,9 +33,9 @@
 		/// <exception cref="ArgumentNullException">Throws if <paramref name="collector"/> is null.</exception>
 		public PerformanceTracker(PerformanceCollector collector) : this()
 		{
-			_collector = collector ?? throw new ArgumentNullException(nameof(collector));
+			this.collector = collector ?? throw new ArgumentNullException(nameof(collector));
 
-			Start(_threadId);
+			Start(threadId);
 		}
 
 		/// <summary>
@@ -47,19 +47,19 @@
 		/// <exception cref="ArgumentNullException">Throws if <paramref name="collector"/> is null.</exception>
 		public PerformanceTracker(PerformanceCollector collector, string className, string methodName) : this()
 		{
-			if (string.IsNullOrWhiteSpace(className))
+			if (String.IsNullOrWhiteSpace(className))
 			{
 				throw new ArgumentNullException(nameof(className));
 			}
 
-			if (string.IsNullOrWhiteSpace(methodName))
+			if (String.IsNullOrWhiteSpace(methodName))
 			{
 				throw new ArgumentNullException(nameof(methodName));
 			}
 
-			_collector = collector ?? throw new ArgumentNullException(nameof(collector));
+			this.collector = collector ?? throw new ArgumentNullException(nameof(collector));
 
-			Start(className, methodName, _threadId);
+			Start(className, methodName, threadId);
 		}
 
 		/// <summary>
@@ -69,15 +69,15 @@
 		/// <exception cref="ArgumentNullException">Throws if parent <paramref name="parentPerformanceTracker"/> is null.</exception>
 		public PerformanceTracker(PerformanceTracker parentPerformanceTracker) : this()
 		{
-			_collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
+			collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
 
-			PerformanceData methodData = Start(parentPerformanceTracker._threadId);
-			methodData.Parent = parentPerformanceTracker._trackedMethod;
+			PerformanceData methodData = Start(parentPerformanceTracker.threadId);
+			methodData.Parent = parentPerformanceTracker.trackedMethod;
 
-			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId && !_isSubMethod)
+			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker.threadId && !isSubMethod)
 			{
-				parentPerformanceTracker._trackedMethod.SubMethods.Add(methodData);
-				_isSubMethod = true;
+				parentPerformanceTracker.trackedMethod.SubMethods.Add(methodData);
+				isSubMethod = true;
 			}
 		}
 
@@ -90,33 +90,33 @@
 		/// <exception cref="ArgumentNullException">Throws if parent <paramref name="parentPerformanceTracker"/> is null.</exception>
 		public PerformanceTracker(PerformanceTracker parentPerformanceTracker, string className, string methodName) : this()
 		{
-			if (string.IsNullOrWhiteSpace(className))
+			if (String.IsNullOrWhiteSpace(className))
 			{
 				throw new ArgumentNullException(nameof(className));
 			}
 
-			if (string.IsNullOrWhiteSpace(methodName))
+			if (String.IsNullOrWhiteSpace(methodName))
 			{
 				throw new ArgumentNullException(nameof(methodName));
 			}
 
-			_collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
+			collector = parentPerformanceTracker?.Collector ?? throw new ArgumentNullException(nameof(parentPerformanceTracker));
 
-			PerformanceData methodData = Start(className, methodName, parentPerformanceTracker._threadId);
-			methodData.Parent = parentPerformanceTracker._trackedMethod;
+			PerformanceData methodData = Start(className, methodName, parentPerformanceTracker.threadId);
+			methodData.Parent = parentPerformanceTracker.trackedMethod;
 
-			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker._threadId && !_isSubMethod)
+			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker.threadId && !isSubMethod)
 			{
-				parentPerformanceTracker._trackedMethod.SubMethods.Add(methodData);
-				_isSubMethod = true;
+				parentPerformanceTracker.trackedMethod.SubMethods.Add(methodData);
+				isSubMethod = true;
 			}
 		}
 
 		private PerformanceTracker()
 		{
-			if (_perThreadStack.TryAdd(_threadId, new Stack<PerformanceData>()))
+			if (PerThreadStack.TryAdd(threadId, new Stack<PerformanceData>()))
 			{
-				_isMultiThreaded = _perThreadStack.Count > 1;
+				isMultiThreaded = PerThreadStack.Count > 1;
 			}
 		}
 
@@ -124,21 +124,21 @@
 		/// Gets underlying <see cref="PerformanceCollector"/>.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Throws if collector is not initialized yet.</exception>
-		public PerformanceCollector Collector => _collector;
+		public PerformanceCollector Collector => collector;
 
 		/// <summary>
 		/// Gets <see cref="PerformanceData"/> of the tracked method.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Throws if tracked method is not initialized yet.</exception>
-		public PerformanceData TrackedMethod => _trackedMethod;
+		public PerformanceData TrackedMethod => trackedMethod;
 
 		/// <summary>
 		/// Gets elapsed time since the initialization of the underlying <see cref="PerformanceCollector"/>.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Throws if collector is not initialized yet.</exception>
-		public TimeSpan Elapsed => _collector.Clock.UtcNow - _trackedMethod.StartTime;
+		public TimeSpan Elapsed => collector.Clock.UtcNow - trackedMethod.StartTime;
 
-		private Stack<PerformanceData> Stack => _perThreadStack[_threadId];
+		private Stack<PerformanceData> Stack => PerThreadStack[threadId];
 
 		/// <summary>
 		/// Adds metadata for the tracked method.
@@ -148,7 +148,7 @@
 		/// <returns>Returns current instance of <see cref="PerformanceTracker"/>.</returns>
 		public PerformanceTracker AddMetadata(string key, string value)
 		{
-			_trackedMethod.Metadata[key] = value;
+			trackedMethod.Metadata[key] = value;
 			return this;
 		}
 
@@ -161,7 +161,7 @@
 		{
 			foreach (var data in metadata)
 			{
-				_trackedMethod.Metadata[data.Key] = data.Value;
+				trackedMethod.Metadata[data.Key] = data.Value;
 			}
 
 			return this;
@@ -185,12 +185,12 @@
 			{
 				Stack.Peek().SubMethods.Add(methodData);
 				methodData.Parent = Stack.Peek();
-				_isSubMethod = true;
+				isSubMethod = true;
 			}
 
-			Stack.Push(_collector.Start(methodData, threadId));
+			Stack.Push(collector.Start(methodData, threadId));
 
-			_trackedMethod = methodData;
+			trackedMethod = methodData;
 
 			return methodData;
 		}
@@ -199,7 +199,7 @@
 		{
 			if (Stack.Any())
 			{
-				_collector.Stop(Stack.Pop());
+				collector.Stop(Stack.Pop());
 			}
 		}
 
@@ -216,20 +216,20 @@
 
 		private void Dispose(bool disposing)
 		{
-			if (!_disposed && disposing)
+			if (!disposed && disposing)
 			{
 				End();
 
 				if (!Stack.Any())
 				{
-					if (_isMultiThreaded)
+					if (isMultiThreaded)
 					{
-						_perThreadStack.TryRemove(_threadId, out _);
+						PerThreadStack.TryRemove(threadId, out _);
 					}
 
-					_collector.Dispose();
+					collector.Dispose();
 
-					_disposed = true;
+					disposed = true;
 				}
 			}
 		}
