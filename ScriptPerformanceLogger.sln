@@ -7,30 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLogger", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLoggerTests", "ScriptPerformanceLoggerTests\ScriptPerformanceLoggerTests.csproj", "{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{1A3A9C78-E53B-4939-BE1E-E9A3E7AA1DA9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Internal", "Internal", "{0D0F83C5-842A-404C-98BC-6A472DC55435}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code Analysis", "Code Analysis", "{1FB951D6-0D2C-4B15-9F0E-46C75CA3C23E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptPerformanceLoggerGQI", "ScriptPerformanceLoggerGQI", "{BCBD4FE6-BE80-4B0D-B20A-9CEE6190FB83}"
-	ProjectSection(SolutionItems) = preProject
-		ScriptPerformanceLoggerGQI.xml = ScriptPerformanceLoggerGQI.xml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{AF19F09C-5FAB-4B1D-A41B-533A4E8B3328}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLoggerGQI", "ScriptPerformanceLoggerGQI\ScriptPerformanceLoggerGQI.csproj", "{16D22A43-5B00-45E6-8D30-6D88551F3649}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptPerformanceLoggerCleanup", "ScriptPerformanceLoggerCleanup", "{DCA7E968-F336-435B-900F-F62AE9246D94}"
-	ProjectSection(SolutionItems) = preProject
-		ScriptPerformanceLoggerCleanup.xml = ScriptPerformanceLoggerCleanup.xml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{D975A280-5EBA-4E54-8839-123B60BD0ED5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptPerformanceLoggerCleanup", "ScriptPerformanceLoggerCleanup\ScriptPerformanceLoggerCleanup.csproj", "{05CB0336-DB51-4AC7-BEEB-BCE561211999}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,26 +21,12 @@ Global
 		{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28498A02-9001-4756-A1C4-BDF9DE7ADAA5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16D22A43-5B00-45E6-8D30-6D88551F3649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16D22A43-5B00-45E6-8D30-6D88551F3649}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16D22A43-5B00-45E6-8D30-6D88551F3649}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16D22A43-5B00-45E6-8D30-6D88551F3649}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05CB0336-DB51-4AC7-BEEB-BCE561211999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05CB0336-DB51-4AC7-BEEB-BCE561211999}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05CB0336-DB51-4AC7-BEEB-BCE561211999}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05CB0336-DB51-4AC7-BEEB-BCE561211999}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1FB951D6-0D2C-4B15-9F0E-46C75CA3C23E} = {0D0F83C5-842A-404C-98BC-6A472DC55435}
-		{BCBD4FE6-BE80-4B0D-B20A-9CEE6190FB83} = {1A3A9C78-E53B-4939-BE1E-E9A3E7AA1DA9}
-		{AF19F09C-5FAB-4B1D-A41B-533A4E8B3328} = {BCBD4FE6-BE80-4B0D-B20A-9CEE6190FB83}
-		{16D22A43-5B00-45E6-8D30-6D88551F3649} = {AF19F09C-5FAB-4B1D-A41B-533A4E8B3328}
-		{DCA7E968-F336-435B-900F-F62AE9246D94} = {1A3A9C78-E53B-4939-BE1E-E9A3E7AA1DA9}
-		{D975A280-5EBA-4E54-8839-123B60BD0ED5} = {DCA7E968-F336-435B-900F-F62AE9246D94}
-		{05CB0336-DB51-4AC7-BEEB-BCE561211999} = {D975A280-5EBA-4E54-8839-123B60BD0ED5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3456BB63-B601-4DAB-95AD-6DD96866820C}
