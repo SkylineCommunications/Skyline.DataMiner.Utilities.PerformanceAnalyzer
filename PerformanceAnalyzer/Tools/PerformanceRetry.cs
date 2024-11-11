@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzer.Tools
 {
 	using System;
 	using System.Threading;

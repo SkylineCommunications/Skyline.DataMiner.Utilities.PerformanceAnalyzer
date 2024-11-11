@@ -1,10 +1,10 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests.Tools
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzerTests.Tools
 {
 	using System;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Tools;
 
 	[TestClass]
 	public class PerformanceRetryTests

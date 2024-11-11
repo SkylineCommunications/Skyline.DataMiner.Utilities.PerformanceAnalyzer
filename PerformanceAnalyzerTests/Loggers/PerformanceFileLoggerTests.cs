@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests.Loggers
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzerTests.Loggers
 {
 	using System;
 	using System.Collections.Generic;
@@ -7,8 +7,8 @@
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers;
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Loggers;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Models;
 
 	[TestClass]
 	public class PerformanceFileLoggerTests

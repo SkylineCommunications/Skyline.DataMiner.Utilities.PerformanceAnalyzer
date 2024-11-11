@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzer
 {
 	using System;
 	using System.Collections.Concurrent;
@@ -6,9 +6,9 @@
 	using System.Linq;
 	using System.Threading;
 
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers;
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Loggers;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Tools;
 
 	/// <summary>
 	/// <see cref="PerformanceCollector"/> collects performance metrics for methods in single or multi threaded environments.

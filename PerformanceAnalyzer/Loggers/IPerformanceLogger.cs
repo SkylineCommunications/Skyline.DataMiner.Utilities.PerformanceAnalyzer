@@ -1,8 +1,8 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzer.Loggers
 {
 	using System.Collections.Generic;
 
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Models;
 
 	/// <summary>
 	/// Interface for reporting performance metrics.

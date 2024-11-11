@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzer.Loggers
 {
 	using System;
 	using System.Collections.Generic;
@@ -8,8 +8,8 @@
 
 	using Newtonsoft.Json;
 
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Tools;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Tools;
 
 	/// <summary>
 	/// <see cref="PerformanceFileLogger"/> is implementation of the <see cref="IPerformanceLogger"/> that logs to files.

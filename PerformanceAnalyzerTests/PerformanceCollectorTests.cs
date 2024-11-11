@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzerTests
 {
 	using System;
 	using System.Collections.Generic;
@@ -8,9 +8,9 @@
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using Moq;
 
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer;
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Loggers;
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Loggers;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Models;
 
 	[TestClass]
 	public class PerformanceCollectorTests

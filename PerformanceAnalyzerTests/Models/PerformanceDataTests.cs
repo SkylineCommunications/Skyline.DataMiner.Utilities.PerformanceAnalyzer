@@ -1,8 +1,8 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzerTests.Models
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzerTests.Models
 {
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Models;
 
 	[TestClass]
 	public class PerformanceDataTests

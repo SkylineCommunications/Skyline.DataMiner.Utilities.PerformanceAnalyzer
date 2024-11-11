@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzer.Models
 {
 	using System;
 	using System.Collections.Generic;

@@ -4,7 +4,7 @@
 		<TargetFramework>net48</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<CodeAnalysisRuleSet>style.ruleset</CodeAnalysisRuleSet>
-		<RootNamespace>Skyline.DataMiner.Utilities.PerformanceAnalyzerTests</RootNamespace>
+		<RootNamespace>Skyline.DataMiner.Utils.PerformanceAnalyzerTests</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

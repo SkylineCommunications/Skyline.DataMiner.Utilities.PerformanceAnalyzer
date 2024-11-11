@@ -1,4 +1,4 @@
-﻿namespace Skyline.DataMiner.Utilities.PerformanceAnalyzer
+﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzer
 {
 	using System;
 	using System.Collections.Concurrent;
@@ -9,7 +9,7 @@
 	using System.Runtime.CompilerServices;
 	using System.Threading;
 
-	using Skyline.DataMiner.Utilities.PerformanceAnalyzer.Models;
+	using Skyline.DataMiner.Utils.PerformanceAnalyzer.Models;
 
 	/// <summary>
 	/// <see cref="PerformanceTracker"/> tracks method calls in single or multi threaded environments.
