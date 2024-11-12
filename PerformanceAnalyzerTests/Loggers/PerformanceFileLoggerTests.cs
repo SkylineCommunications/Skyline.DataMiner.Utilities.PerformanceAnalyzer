@@ -4,6 +4,7 @@
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
+	using System.Text.RegularExpressions;
 
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -105,7 +106,7 @@
 			var logFileInfo = new LogFileInfo("test_log", testDirectory);
 			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
-			expectedFileContent = expectedFileContent.Replace("[STARTTIME]", logger.StartTime.ToString("O"));
+			expectedFileContent = expectedFileContent.Replace("[STARTTIME]", Regex.Replace(logger.StartTime.ToString("O"), @"(?<=\.\d*?)0+(?=\+)", string.Empty));
 			expectedFileContent = expectedFileContent.Replace("[ID]", logger.Id.ToString());
 
 			var performanceData = new List<PerformanceData>
@@ -176,7 +177,7 @@
 			var logFileInfo = new LogFileInfo("test_log", testDirectory);
 			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
-			expectedFileContent = expectedFileContent.Replace("[STARTTIME]", logger.StartTime.ToString("O"));
+			expectedFileContent = expectedFileContent.Replace("[STARTTIME]", Regex.Replace(logger.StartTime.ToString("O"), @"(?<=\.\d*?)0+(?=\+)", string.Empty));
 			expectedFileContent = expectedFileContent.Replace("[ID]", logger.Id.ToString());
 
 			var performanceData = new List<PerformanceData>
