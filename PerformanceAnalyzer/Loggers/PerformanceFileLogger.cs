@@ -260,15 +260,18 @@
 	internal class PerformanceLog
 	{
 		[JsonProperty(Order = 0)]
-		public string Name { get; set; }
+		public Guid Id { get; set; } = Guid.NewGuid();
 
 		[JsonProperty(Order = 1)]
-		public DateTime StartTime { get; set; }
+		public string Name { get; set; }
 
 		[JsonProperty(Order = 2)]
-		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+		public DateTime StartTime { get; set; }
 
 		[JsonProperty(Order = 3)]
+		public IReadOnlyDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+
+		[JsonProperty(Order = 4)]
 		public IReadOnlyList<PerformanceData> Data { get; set; } = new List<PerformanceData>();
 
 		[JsonIgnore]
