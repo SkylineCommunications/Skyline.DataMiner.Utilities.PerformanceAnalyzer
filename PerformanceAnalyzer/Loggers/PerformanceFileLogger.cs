@@ -16,7 +16,7 @@
 	/// </summary>
 	public class PerformanceFileLogger : IPerformanceLogger
 	{
-		private const string DirectoryPath = @"C:\Skyline_Data\PerformanceLogger";
+		private const string DirectoryPath = @"C:\Skyline_Data\PerformanceAnalyzer";
 
 		private static readonly object FileLock = new object();
 		private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
