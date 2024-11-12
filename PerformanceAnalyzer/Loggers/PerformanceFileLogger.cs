@@ -27,6 +27,7 @@
 		};
 
 		private readonly Dictionary<string, string> metadata = new Dictionary<string, string>();
+		private readonly Guid id = Guid.NewGuid();
 		private readonly string name;
 		private readonly DateTime startTime = DateTime.Now;
 
@@ -75,6 +76,12 @@
 		/// Gets list of all log files.
 		/// </summary>
 		public List<LogFileInfo> LogFiles { get; private set; } = new List<LogFileInfo>();
+
+		/// <summary>
+		/// Gets the id of the log collection.
+		/// Used to make distinction between different metrics collection instances.
+		/// </summary>
+		public Guid Id => id;
 
 		/// <summary>
 		/// Gets the name of the log collection.
@@ -189,6 +196,7 @@
 
 						var performanceLog = new PerformanceLog
 						{
+							Id = id,
 							Name = name,
 							StartTime = startTime,
 							Data = data.Where(d => d != null).ToList(),
@@ -260,7 +268,7 @@
 	internal class PerformanceLog
 	{
 		[JsonProperty(Order = 0)]
-		public Guid Id { get; set; } = Guid.NewGuid();
+		public Guid Id { get; set; }
 
 		[JsonProperty(Order = 1)]
 		public string Name { get; set; }

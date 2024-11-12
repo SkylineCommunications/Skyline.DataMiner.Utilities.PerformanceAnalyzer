@@ -101,11 +101,12 @@
 		public void PerformanceFileLogger_Report_CreatesFileWithCorrectData()
 		{
 			// Arrange
-			var expectedFileContent = @"[{""Name"":""Collection1"",""StartTime"":""[STARTTIME]"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
+			var expectedFileContent = @"[{""Id"":""[ID]"",""Name"":""Collection1"",""StartTime"":""[STARTTIME]"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
 			var logFileInfo = new LogFileInfo("test_log", testDirectory);
 			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
 			expectedFileContent = expectedFileContent.Replace("[STARTTIME]", logger.StartTime.ToString("O"));
+			expectedFileContent = expectedFileContent.Replace("[ID]", logger.Id.ToString());
 
 			var performanceData = new List<PerformanceData>
 			{
@@ -166,8 +167,8 @@
 			// Arrange
 			string expectedFilePath = Path.Combine(testDirectory, "test_log.json");
 
-			var existingDataInFile = @"[{""Name"":""Collection1"",""StartTime"":""2024-12-12T14:15:22Z"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
-			var expectedFileContent = @"[{""Name"":""Collection1"",""StartTime"":""2024-12-12T14:15:22Z"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]},{""Name"":""Collection1"",""StartTime"":""[STARTTIME]"",""Metadata"":{""key2"":""value2""},""Data"":[{""ClassName"":""NotProgram"",""MethodName"":""Foo"",""StartTime"":""2023-11-10T09:08:07Z"",""ExecutionTime"":""00:00:00.2000000""}]}]";
+			var existingDataInFile = @"[{""Id"":""9482285f-aea8-4099-9a93-d2f5680f0c95"",""Name"":""Collection1"",""StartTime"":""2024-12-12T14:15:22Z"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]}]";
+			var expectedFileContent = @"[{""Id"":""9482285f-aea8-4099-9a93-d2f5680f0c95"",""Name"":""Collection1"",""StartTime"":""2024-12-12T14:15:22Z"",""Metadata"":{""key1"":""value1""},""Data"":[{""ClassName"":""Program"",""MethodName"":""Main"",""StartTime"":""2024-12-12T14:15:22Z"",""ExecutionTime"":""00:00:00.1000000""}]},{""Id"":""[ID]"",""Name"":""Collection1"",""StartTime"":""[STARTTIME]"",""Metadata"":{""key2"":""value2""},""Data"":[{""ClassName"":""NotProgram"",""MethodName"":""Foo"",""StartTime"":""2023-11-10T09:08:07Z"",""ExecutionTime"":""00:00:00.2000000""}]}]";
 
 			File.Create(expectedFilePath).Close();
 			File.WriteAllText(expectedFilePath, existingDataInFile);
@@ -176,6 +177,7 @@
 			var logger = new PerformanceFileLogger("Collection1", logFileInfo);
 
 			expectedFileContent = expectedFileContent.Replace("[STARTTIME]", logger.StartTime.ToString("O"));
+			expectedFileContent = expectedFileContent.Replace("[ID]", logger.Id.ToString());
 
 			var performanceData = new List<PerformanceData>
 			{
