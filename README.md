@@ -73,7 +73,7 @@ The following properties are defined for ```PerformanceData```
  - ```SubMethods``` - list of tracked methods that were invoked from this method
  - ```Metadata``` - dictionary that contains additional information about the method
 
- > **_NOTE:_** Some properties for both ```PerformanceData``` and ```PerformanceFileLogger``` have been left out and shouldn't be used in general.
+ > **_NOTE:_** Some properties for ```PerformanceData``` and ```PerformanceFileLogger``` have been left out as they won't be used in most use cases.
 
 ```IPerformanceLogger``` is the interface on which ```PerformanceCollector``` is based, implementing it provides alternative ways to log metrics.
 
