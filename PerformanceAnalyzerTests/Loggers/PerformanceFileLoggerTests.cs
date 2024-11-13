@@ -61,7 +61,7 @@
 
 			// Assert
 			Assert.AreEqual("test_log", logFileInfo.FileName);
-			Assert.AreEqual(@"C:\Skyline_Data\PerformanceLogger", logFileInfo.FilePath);
+			Assert.AreEqual(@"C:\Skyline_Data\PerformanceAnalyzer", logFileInfo.FilePath);
 		}
 
 		[TestMethod]
