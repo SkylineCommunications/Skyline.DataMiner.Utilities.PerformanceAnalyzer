@@ -2,15 +2,15 @@
 
 #### Overview
 
-[Performance Analyzer NuGet]() allows us to gather the performance metrics for our solution, but collecting the data is only piece of the puzzle. If we want the collected metrics to bring value, we need to be able to interpret them and use them for decision-making. As humans, we often struggle to comprehend numbers, particularly when they are extremely large or, as is often the case with **performance metrics**, very small. This makes it essential to provide a more **intuitive way to interpret the data**, such as **visualization**. Performance Analyzer provides a **LCA that visualizes the metrics out of the box**, along with a **collection of GQIs that allow for custom visualizations**, tailored to the specific requirements of a project.
+[Performance Analyzer NuGet](https://www.nuget.org/packages/Skyline.DataMiner.Utils.PerformanceAnalyzer) allows us to gather the performance metrics for our solution, but collecting the data is only piece of the puzzle. If we want the collected metrics to bring value, we need to be able to interpret them and use them for decision-making. As humans, we often struggle to comprehend numbers, particularly when they are extremely large or, as is often the case with **performance metrics**, very small. This makes it essential to provide a more **intuitive way to interpret the data**, such as **visualization**. Performance Analyzer provides a **LCA that visualizes the metrics out of the box**, along with a **collection of GQIs that allow for custom visualizations**, tailored to the specific requirements of a project.
 
 ![Performance Analyzer LCA](./Images/lca_timeline.png)
 
 > [!IMPORTANT]
-> This package supplements the [Performance Analyzer NuGet](https://github.com/SkylineCommunications/Skyline.DataMiner.Utils.PerformanceAnalyzer). Implementing it in your code is a prerequisite.
+> This package supplements the [Performance Analyzer NuGet](https://www.nuget.org/packages/Skyline.DataMiner.Utils.PerformanceAnalyzer). Implementing it in your code is a prerequisite.
 
 > [!NOTE] 
-> Detailed introduction to Performance Analyzer NuGet and the LCA can be found on our docs: [Introduction to Performance Analyzer]().
+> Detailed introduction to Performance Analyzer NuGet and the LCA can be found on our docs: [Performance Analyzer](https://docs.dataminer.services/user-guide/Standard_Apps/Monitoring_Solutions/Performance_Analyzer/Performance_Analyzer.html).
 
 #### Use Cases
 
@@ -31,7 +31,7 @@ To deploy this integration from the Catalog, you’ll need:
 
 ##### Step 1: Implementing Performance Analyzer NuGet
 
-1. Implement the [Performance Analyzer NuGet]() in your code.
+1. Implement the [Performance Analyzer NuGet](https://www.nuget.org/packages/Skyline.DataMiner.Utils.PerformanceAnalyzer) in your code.
 
 > [!NOTE]
 > Detailed documentation is available in [Performance Analyzer ReadMe](https://github.com/SkylineCommunications/Skyline.DataMiner.Utils.PerformanceAnalyzer/blob/3.0.X/README.md)
