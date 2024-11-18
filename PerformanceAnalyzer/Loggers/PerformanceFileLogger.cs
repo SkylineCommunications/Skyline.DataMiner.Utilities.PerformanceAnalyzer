@@ -108,6 +108,7 @@
 		/// Logs specified data in to files.
 		/// </summary>
 		/// <param name="data">List of performance metrics to log.</param>
+		/// <exception cref="InvalidOperationException">Throws if <see cref="LogFiles"/> is empty.</exception>
 		public void Report(List<PerformanceData> data)
 		{
 			PerformanceRetry.Execute(
@@ -173,6 +174,11 @@
 
 		private void Store(List<PerformanceData> data)
 		{
+			if (!LogFiles.Any())
+			{
+				throw new InvalidOperationException("At least one log file needs to be configured.");
+			}
+
 			LogFiles.ForEach(logFile => Store(data, logFile));
 		}
 

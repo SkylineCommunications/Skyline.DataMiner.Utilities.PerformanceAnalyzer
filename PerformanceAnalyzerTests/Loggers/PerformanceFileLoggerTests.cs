@@ -233,6 +233,30 @@
 		}
 
 		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void PerformanceFileLogger_ThrowsInvalidOperationException_WhenLogFilesAreNotDefined()
+		{
+			// Arrange
+			var logger = new PerformanceFileLogger("collection_name");
+
+			var performanceData = new List<PerformanceData>
+			{
+				new PerformanceData
+				{
+					ClassName = "Program",
+					MethodName = "Main",
+					StartTime = new DateTime(2024, 12, 12, 14, 15, 22, DateTimeKind.Utc),
+					ExecutionTime = new TimeSpan(1_000_000),
+				},
+			};
+
+			// Act
+			logger.Report(performanceData);
+
+			// Assert is handled by ExpectedException
+		}
+
+		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
 		public void LogFileInfo_ThrowsArgumentException_WhenFileNameIsNull()
 		{
