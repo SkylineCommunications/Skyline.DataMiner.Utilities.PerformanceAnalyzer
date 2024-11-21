@@ -12,8 +12,8 @@ The [Performance Analyzer NuGet](https://www.nuget.org/packages/Skyline.DataMine
 > [!NOTE] 
 > For a detailed introduction to the Performance Analyzer NuGet and to DataMiner Low-Code Apps, refer to DataMiner Docs:
 >
-> - [Performance Analyzer](https://docs.dataminer.services/user-guide/Standard_Apps/Monitoring_Solutions/Performance_Analyzer/Performance_Analyzer.html)
-> - [DataMiner Low-Code Apps](https://docs.dataminer.services/user-guide/Advanced_Modules/Dashboards_and_Low_Code_Apps/Low_Code_Apps/Application_framework.html)
+> - [Performance Analyzer](https://aka.dataminer.services/Performance_Analyzer)
+> - [DataMiner Low-Code Apps](https://aka.dataminer.services/Low_Code_Apps)
 
 #### Use Cases
 
