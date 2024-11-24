@@ -16,6 +16,8 @@ The **Performance Analyzer** is a library designed to track and log performance 
  
  - **JSON-based logs**: Default loggers logs are written in JSON format for easy parsing and analysis.
 
+> **_NOTE:_** The [Performance Analyzer](https://github.com/SkylineCommunications/Skyline.DataMiner.Utils.PerformanceAnalyzer) library is an open-source project. Pull requests are welcomed.
+
 ## Getting started
 
 ### TLDR
