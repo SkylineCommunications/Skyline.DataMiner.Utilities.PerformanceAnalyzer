@@ -18,8 +18,8 @@
 		private readonly PerformanceClock clock;
 		private readonly IPerformanceLogger logger;
 		private readonly ConcurrentDictionary<int, PerformanceData> perThreadRootMethod = new ConcurrentDictionary<int, PerformanceData>();
-		private readonly List<PerformanceData> methodsToLog = new List<PerformanceData>();
 
+		private ConcurrentBag<PerformanceData> methodsToLog = new ConcurrentBag<PerformanceData>();
 		private bool disposed;
 
 		/// <summary>
@@ -91,8 +91,8 @@
 
 				if (!perThreadRootMethod.Any())
 				{
-					logger.Report(methodsToLog);
-					methodsToLog.Clear();
+					logger.Report(methodsToLog.ToList());
+					methodsToLog = new ConcurrentBag<PerformanceData>();
 
 					disposed = true;
 				}
