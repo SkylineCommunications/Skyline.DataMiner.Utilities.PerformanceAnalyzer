@@ -139,5 +139,34 @@
 			// Assert
 			mockLogger.Verify(l => l.Report(It.IsAny<List<PerformanceData>>()), Times.Never);
 		}
+
+		[TestMethod]
+		public void PerformanceCollector_ParallelDispose_ShouldWork()
+		{
+			// Arrange
+			var list = new List<int>();
+			for (int i = 0; i < 1000; i++)
+			{
+				list.Add(i);
+			}
+
+			// Act
+			for (int i = 0; i < 30; i++)
+			{
+				using (var parentTracker = new PerformanceTracker(collector))
+				{
+					Parallel.ForEach(list, x =>
+					{
+						using (new PerformanceTracker(parentTracker))
+						{
+							Thread.Sleep(2);
+						}
+					});
+				}
+			}
+
+			// Assert
+			mockLogger.Verify(l => l.Report(It.IsAny<List<PerformanceData>>()), Times.Exactly(30));
+		}
 	}
 }

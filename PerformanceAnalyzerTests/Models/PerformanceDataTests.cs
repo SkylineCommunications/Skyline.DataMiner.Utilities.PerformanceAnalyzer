@@ -18,8 +18,8 @@
 				.AddMetadata("key2", "value2");
 
 			// Assert
-			Assert.AreEqual("value1", data.Metadata["key1"]);
-			Assert.AreEqual("value2", data.Metadata["key2"]);
+			Assert.AreEqual("value1", data.MetadataConcurrent["key1"]);
+			Assert.AreEqual("value2", data.MetadataConcurrent["key2"]);
 		}
 	}
 }

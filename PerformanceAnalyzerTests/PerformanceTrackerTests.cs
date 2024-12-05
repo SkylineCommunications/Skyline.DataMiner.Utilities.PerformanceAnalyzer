@@ -273,7 +273,7 @@
 			PerformanceTracker tracker = new PerformanceTracker(this.tracker);
 
 			// Assert
-			Assert.IsTrue(this.tracker.TrackedMethod.SubMethods.Contains(tracker.TrackedMethod));
+			Assert.IsTrue(this.tracker.TrackedMethod.SubMethodsConcurrent.Contains(tracker.TrackedMethod));
 		}
 
 		[TestMethod]
@@ -293,7 +293,7 @@
 			PerformanceTracker tracker = new PerformanceTracker(this.tracker, "className", "methodName");
 
 			// Assert
-			Assert.IsTrue(this.tracker.TrackedMethod.SubMethods.Contains(tracker.TrackedMethod));
+			Assert.IsTrue(this.tracker.TrackedMethod.SubMethodsConcurrent.Contains(tracker.TrackedMethod));
 		}
 
 		[TestMethod]
@@ -309,7 +309,7 @@
 			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			var trackerThreadIdFieldInfo = tracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.AreEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
-			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
+			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethodsConcurrent.Where(m => m == tracker.TrackedMethod).Count());
 		}
 
 		[TestMethod]
@@ -325,7 +325,7 @@
 			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			var trackerThreadIdFieldInfo = tracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.AreEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
-			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
+			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethodsConcurrent.Where(m => m == tracker.TrackedMethod).Count());
 		}
 
 		[TestMethod]
@@ -346,7 +346,7 @@
 			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			var trackerThreadIdFieldInfo = tracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.AreNotEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
-			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
+			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethodsConcurrent.Where(m => m == tracker.TrackedMethod).Count());
 		}
 
 		[TestMethod]
@@ -367,7 +367,7 @@
 			var parentThreadIdFieldInfo = parentTracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			var trackerThreadIdFieldInfo = tracker.GetType().GetField("threadId", BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.AreNotEqual(parentThreadIdFieldInfo.GetValue(parentTracker), trackerThreadIdFieldInfo.GetValue(tracker));
-			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethods.Where(m => m == tracker.TrackedMethod).Count());
+			Assert.AreEqual(1, parentTracker.TrackedMethod.SubMethodsConcurrent.Where(m => m == tracker.TrackedMethod).Count());
 		}
 
 		[TestMethod]
@@ -387,8 +387,8 @@
 			}
 
 			// Assert
-			Assert.IsFalse(parentTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
-			Assert.IsTrue(middleTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
+			Assert.IsFalse(parentTracker.TrackedMethod.SubMethodsConcurrent.Contains(childTracker.TrackedMethod));
+			Assert.IsTrue(middleTracker.TrackedMethod.SubMethodsConcurrent.Contains(childTracker.TrackedMethod));
 		}
 
 		[TestMethod]
@@ -408,8 +408,8 @@
 			}
 
 			// Assert
-			Assert.IsFalse(parentTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
-			Assert.IsTrue(middleTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
+			Assert.IsFalse(parentTracker.TrackedMethod.SubMethodsConcurrent.Contains(childTracker.TrackedMethod));
+			Assert.IsTrue(middleTracker.TrackedMethod.SubMethodsConcurrent.Contains(childTracker.TrackedMethod));
 		}
 
 		[TestMethod]
@@ -434,8 +434,8 @@
 			}
 
 			// Assert
-			Assert.IsFalse(parentTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
-			Assert.IsTrue(middleTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
+			Assert.IsFalse(parentTracker.TrackedMethod.SubMethodsConcurrent.Contains(childTracker.TrackedMethod));
+			Assert.IsTrue(middleTracker.TrackedMethod.SubMethodsConcurrent.Contains(childTracker.TrackedMethod));
 		}
 
 		[TestMethod]
@@ -460,8 +460,8 @@
 			}
 
 			// Assert
-			Assert.IsFalse(parentTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
-			Assert.IsTrue(middleTracker.TrackedMethod.SubMethods.Contains(childTracker.TrackedMethod));
+			Assert.IsFalse(parentTracker.TrackedMethod.SubMethodsConcurrent.Contains(childTracker.TrackedMethod));
+			Assert.IsTrue(middleTracker.TrackedMethod.SubMethodsConcurrent.Contains(childTracker.TrackedMethod));
 		}
 
 		[TestMethod]
@@ -476,8 +476,8 @@
 				.Dispose();
 
 			// Assert
-			Assert.AreEqual("Value1", tracker.TrackedMethod.Metadata["Key1"]);
-			Assert.AreEqual("Value2", tracker.TrackedMethod.Metadata["Key2"]);
+			Assert.AreEqual("Value1", tracker.TrackedMethod.MetadataConcurrent["Key1"]);
+			Assert.AreEqual("Value2", tracker.TrackedMethod.MetadataConcurrent["Key2"]);
 		}
 
 		[TestMethod]
@@ -495,9 +495,9 @@
 			tracker.AddMetadata(metadata);
 
 			// Assert
-			Assert.AreEqual(2, tracker.TrackedMethod.Metadata.Count);
-			Assert.AreEqual("value1", tracker.TrackedMethod.Metadata["key1"]);
-			Assert.AreEqual("value2", tracker.TrackedMethod.Metadata["key2"]);
+			Assert.AreEqual(2, tracker.TrackedMethod.MetadataConcurrent.Count);
+			Assert.AreEqual("value1", tracker.TrackedMethod.MetadataConcurrent["key1"]);
+			Assert.AreEqual("value2", tracker.TrackedMethod.MetadataConcurrent["key2"]);
 		}
 
 		[TestMethod]

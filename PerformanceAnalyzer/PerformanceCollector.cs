@@ -19,7 +19,7 @@
 		private readonly IPerformanceLogger logger;
 		private readonly ConcurrentDictionary<int, PerformanceData> perThreadRootMethod = new ConcurrentDictionary<int, PerformanceData>();
 
-		private ConcurrentBag<PerformanceData> methodsToLog = new ConcurrentBag<PerformanceData>();
+		private ConcurrentQueue<PerformanceData> methodsToLog = new ConcurrentQueue<PerformanceData>();
 		private bool disposed;
 
 		/// <summary>
@@ -87,12 +87,12 @@
 			{
 				perThreadRootMethod.TryRemove(Thread.CurrentThread.ManagedThreadId, out var rootMethod);
 
-				methodsToLog.Add(rootMethod);
+				methodsToLog.Enqueue(rootMethod);
 
 				if (!perThreadRootMethod.Any())
 				{
 					logger.Report(methodsToLog.ToList());
-					methodsToLog = new ConcurrentBag<PerformanceData>();
+					methodsToLog = new ConcurrentQueue<PerformanceData>();
 
 					disposed = true;
 				}

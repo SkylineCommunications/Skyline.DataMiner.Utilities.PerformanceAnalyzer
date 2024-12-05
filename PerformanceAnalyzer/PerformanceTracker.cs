@@ -76,7 +76,7 @@
 
 			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker.threadId && !isSubMethod)
 			{
-				parentPerformanceTracker.trackedMethod.SubMethods.Add(methodData);
+				parentPerformanceTracker.trackedMethod.SubMethodsConcurrent.Enqueue(methodData);
 				isSubMethod = true;
 			}
 		}
@@ -107,7 +107,7 @@
 
 			if (Thread.CurrentThread.ManagedThreadId != parentPerformanceTracker.threadId && !isSubMethod)
 			{
-				parentPerformanceTracker.trackedMethod.SubMethods.Add(methodData);
+				parentPerformanceTracker.trackedMethod.SubMethodsConcurrent.Enqueue(methodData);
 				isSubMethod = true;
 			}
 		}
@@ -148,7 +148,7 @@
 		/// <returns>Returns current instance of <see cref="PerformanceTracker"/>.</returns>
 		public PerformanceTracker AddMetadata(string key, string value)
 		{
-			trackedMethod.Metadata[key] = value;
+			trackedMethod.MetadataConcurrent[key] = value;
 			return this;
 		}
 
@@ -161,7 +161,7 @@
 		{
 			foreach (var data in metadata)
 			{
-				trackedMethod.Metadata[data.Key] = data.Value;
+				trackedMethod.MetadataConcurrent[data.Key] = data.Value;
 			}
 
 			return this;
@@ -183,7 +183,7 @@
 
 			if (Stack.Any())
 			{
-				Stack.Peek().SubMethods.Add(methodData);
+				Stack.Peek().SubMethodsConcurrent.Enqueue(methodData);
 				methodData.Parent = Stack.Peek();
 				isSubMethod = true;
 			}

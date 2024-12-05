@@ -1,7 +1,9 @@
 ﻿namespace Skyline.DataMiner.Utils.PerformanceAnalyzer.Models
 {
 	using System;
+	using System.Collections.Concurrent;
 	using System.Collections.Generic;
+	using System.Linq;
 
 	using Newtonsoft.Json;
 
@@ -44,14 +46,20 @@
 		public TimeSpan ExecutionTime { get; set; }
 
 		[JsonProperty(Order = 4)]
-		public List<PerformanceData> SubMethods { get; } = new List<PerformanceData>();
+		public List<PerformanceData> SubMethods => SubMethodsConcurrent.ToList();
+
+		[JsonIgnore]
+		public ConcurrentQueue<PerformanceData> SubMethodsConcurrent { get; } = new ConcurrentQueue<PerformanceData>();
 
 		[JsonProperty(Order = 5)]
-		public Dictionary<string, string> Metadata { get; private set; } = new Dictionary<string, string>();
+		public Dictionary<string, string> Metadata => MetadataConcurrent.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+		[JsonIgnore]
+		public ConcurrentDictionary<string, string> MetadataConcurrent { get; private set; } = new ConcurrentDictionary<string, string>();
 
 		public PerformanceData AddMetadata(string key, string value)
 		{
-			Metadata[key] = value;
+			MetadataConcurrent[key] = value;
 			return this;
 		}
 
